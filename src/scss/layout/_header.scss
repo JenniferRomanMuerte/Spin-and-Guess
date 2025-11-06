@@ -1,6 +1,7 @@
 @use "../core/variables" as var;
 
 .header {
+  display: flex;
   background-color: var.$color-accent-2;
   padding: 3rem;
   text-align: center;
