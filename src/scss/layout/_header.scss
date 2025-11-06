@@ -1,18 +1,64 @@
 @use "../core/variables" as var;
 
 .header {
+  position: relative;
   display: flex;
-  background-color: var.$color-accent-2;
-  padding: 3rem;
+  padding-top: 3rem;
+  padding-bottom: 0.5rem;
   text-align: center;
-  font-size: 2rem;
-  color:var.$color-accent-1;
-  text-shadow: var.$shadow-default;
-  &__presenter{
-    width: 5rem;
-    background-image: url('images/presenter.webp');
-    background-position: center;
+  justify-content: space-around;
+  background: radial-gradient(
+    circle at top,
+    #ffc43d 0%,
+    #ffe36b 40%,
+    #fff9d6 100%
+  );
+  z-index: 2; // asegura que quede por encima del main
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.9);
 
+  &__title {
+    font-size: 4rem;
+
+    background: linear-gradient(
+      90deg,
+      #b30059 0%,
+      var.$color-accent-2 20%,
+      #fcbccb 40%,
+      var.$color-accent-2 60%,
+      #b30059 80%
+    );
+    background-size: 200%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    animation: titleLight 10s linear infinite;
+  }
+
+  &__presenter {
+    width: 10rem;
+    height: 8rem;
+    background-image: url("/images/presenter.webp");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    transform: scale(0.9);
+  }
+  &__conestants {
+    width: 10rem;
+    height: 8rem;
+    background-image: url("/images/contestants.webp");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
   }
 }
 
+@keyframes titleLight {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
