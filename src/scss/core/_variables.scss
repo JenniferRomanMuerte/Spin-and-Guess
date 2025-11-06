@@ -1,3 +1,12 @@
-:root{
-  font-size: 62.5%;
-}
+$color-primary: #1a46a0;
+$color-accent-1: #eed442;
+$color-accent-2:  #ff4d6d;
+$color-text: #000;
+$color-text-light: #cccccc;
+$color-bg-light: #f8f8f8;
+$shadow-default: 0 0 10px rgba(0, 0, 0, 0.6);
+$shadow-glow: 0 0 15px $color-accent-1;
+$font_family_play: "Play", sans-serif;
+$font-family_orbitron: "Orbitron", sans-serif;
+$font_weight_regular: 400;
+$font_weight_bold: 700;

@@ -1,0 +1,170 @@
+@use "../core/variables" as var;
+
+.main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var.$color-bg-light;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    padding-right: 10rem;
+    min-height: 78dvh;
+  }
+
+  &__article {
+    position: relative;
+    background: url("/images/roulette_frame.webp") center/cover no-repeat,
+      #1e1d1c;
+    border-radius: 40px;
+    gap: 2rem;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+    margin: 4rem;
+    overflow: hidden;
+    box-shadow: 0 25px 25px rgba(0, 0, 0, 1.9);
+    display: flex;
+    flex-direction: column;
+
+    /* pantalla gris */
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 30px; // lo dejamos como tú lo quieres
+      z-index: 1; // pantalla debajo del contenido
+      background: radial-gradient(circle at center, #1f2022, #828282);
+      border-radius: 25px;
+      border: 3px solid rgba(0, 0, 0, 0.9);
+      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.9),
+        inset 0 0 20px rgba(0, 0, 0, 0.6);
+    }
+
+    /* sección donde irá tu ruleta / imagen */
+    &--section {
+      width: 95%;
+      position: relative;
+      z-index: 4;
+      &-img {
+        width: 100%;
+        filter: drop-shadow(var.$shadow-default);
+        animation: zoomRoulette 10s ease forwards;
+      }
+    }
+
+    /* botones */
+    &--tv-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      z-index: 4; // por encima de la pantalla
+      &-tv-btn {
+        background: radial-gradient(
+          circle at top,
+          #f5f5f5 0%,
+          #d9d9d9 35%,
+          #a6a6a6 70%,
+          #5a5a5a 100%
+        );
+        color: var.$color-text;
+        border: 2px solid #111;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.25),
+          0 2px 8px rgba(0, 0, 0, 0.7);
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: radial-gradient(
+            circle,
+            #4d4c4c 0%,
+            #929292 40%,
+            #b9b9b9 75%,
+            #e2e2e2 100%
+          );
+
+          color: var.$color-text-light;
+          transform: scale(1.05);
+          animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        &:active {
+          transform: scale(0.95) translateY(2px);
+          box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
+        }
+
+        &.power {
+          background: radial-gradient(circle at center, #b30000, #4d0000);
+          color: #fff;
+          border: 2px solid #220000;
+
+          &:hover {
+            background: radial-gradient(circle at center, #ff0000, #660000);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+          }
+        }
+      }
+    }
+  }
+
+  &__form {
+    width: 65%;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    padding-block: 4rem;
+
+    @media (min-width: 768px) {
+      width: 35%;
+    }
+
+    &-inputName {
+      padding: 1rem;
+      border-radius: 5px;
+      border: 2px solid var.$color-primary;
+      box-shadow: var.$shadow-default;
+      background-color: var.$color-text-light;
+    }
+
+    &-btnBegin {
+      padding: 1rem;
+      border-radius: 5px;
+      border: none;
+      font-size: 2rem;
+      font-weight: var.$font_weight_bold;
+      box-shadow: var.$shadow-default;
+      background-color: var.$color-primary;
+      color: var.$color-accent-1;
+
+      &:hover {
+        background-color: var.$color-accent-1;
+        color: var.$color-accent-2;
+      }
+    }
+  }
+}
+
+/* animaciones */
+@keyframes zoomRoulette {
+  from {
+    transform: scale(0.4) rotate(0deg);
+  }
+  to {
+    transform: scale(1) rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0px rgba(0, 212, 255, 0.8);
+  }
+}
