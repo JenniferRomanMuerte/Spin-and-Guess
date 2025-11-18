@@ -6,8 +6,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(#ffc43d 0%, #d8d794 40%, #bd7272 100%);
-
+  background: linear-gradient(#ffc43d 0%, #bd7272 40%, #ffc43d 100%);
+  min-height: 78dvh;
 
   @media (min-width: 768px) {
     flex-direction: row;
@@ -28,6 +28,8 @@
     box-shadow: 5px 15px 15px rgba(0, 0, 0, 1.9);
     display: flex;
     flex-direction: column;
+    width: 90%;
+    max-width: 400px;
 
     /* pantalla gris */
     &::before {
@@ -152,12 +154,12 @@
 
 /* animaciones */
 @keyframes zoomRoulette {
-   0%,
+  0%,
   100% {
-    transform: scale(0.95) ;
+    transform: scale(0.95);
   }
   50% {
-    transform: scale(1) ;
+    transform: scale(1);
   }
 }
 
@@ -168,6 +170,6 @@
   }
   50% {
     box-shadow: 0 0 0px #00d4ffcc;
-    transform: translateY(-1px) ;
+    transform: translateY(-1px);
   }
 }

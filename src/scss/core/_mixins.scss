@@ -1,0 +1,9 @@
+@mixin bg{
+  background: radial-gradient(
+    circle at top,
+    #ffc43d 0%,
+    #ffe36b 40%,
+    #f1e9b6 100%
+  );
+  z-index: 2; 
+}

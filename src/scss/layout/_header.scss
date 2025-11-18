@@ -1,4 +1,5 @@
 @use "../core/variables" as var;
+@use "../core/mixins" as mix;
 
 .header {
   position: relative;
@@ -7,23 +8,16 @@
   padding-bottom: 0.5rem;
   text-align: center;
   justify-content: space-around;
-  background: radial-gradient(
-    circle at top,
-    #ffc43d 0%,
-    #ffe36b 40%,
-    #fff9d6 100%
-  );
-  z-index: 2; // asegura que quede por encima del main
+  @include mix.bg;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.9);
 
   &__title {
     font-size: 4rem;
-
     background: linear-gradient(
       90deg,
       #b30059 0%,
       var.$color-accent-2 20%,
-      #fcbccb 40%,
+      #d699a8 40%,
       var.$color-accent-2 60%,
       #b30059 80%
     );

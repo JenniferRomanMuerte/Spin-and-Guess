@@ -1,10 +1,14 @@
 @use "../core/variables" as var;
+@use "../core/mixins" as mix;
 
 .footer{
-  background-color: var.$color-accent-2;
+  position: relative;
   color:var.$color-primary;
   padding-block: 3rem;
-  font-size: 2rem;
-  text-align: right;
-  padding-right: 3rem;
+  font-size: 1.8rem;
+  text-align: center;
+  font-family: var.$font-family_orbitron;
+  font-weight: var.$font_weight_bold;
+  @include mix.bg;
+  box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.9);
 }
