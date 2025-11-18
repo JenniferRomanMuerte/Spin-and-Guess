@@ -1,0 +1,16 @@
+@use "../core/variables" as var;
+
+.gameMain {
+  display: grid;
+  grid-template-areas:
+    "panel"
+    "roulette"
+    "controls"
+    "markers";
+  @media (min-width: var.$media_desktop) {
+    grid-template-areas:
+      "panel roulette"
+      "controls roulette"
+      "markers markers";
+  }
+}

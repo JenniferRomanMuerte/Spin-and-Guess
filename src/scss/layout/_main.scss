@@ -9,7 +9,7 @@
   background: linear-gradient(#ffc43d 0%, #bd7272 40%, #ffc43d 100%);
   min-height: 78dvh;
 
-  @media (min-width: 768px) {
+  @media (min-width: var.$media_desktop) {
     flex-direction: row;
     padding-right: 10rem;
     min-height: 78dvh;
@@ -122,7 +122,7 @@
     gap: 3rem;
     padding-block: 4rem;
 
-    @media (min-width: 768px) {
+    @media (min-width: var.$media_desktop) {
       width: 35%;
     }
 
@@ -135,6 +135,9 @@
     }
 
     &-btnBegin {
+      display: inline-block;
+      text-align: center;
+      text-decoration: none;
       padding: 1rem;
       border-radius: 5px;
       border: none;

@@ -1,0 +1,17 @@
+@use "../../core/variables" as var;
+
+.controls{
+  grid-area: controls;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap:3rem;
+  &__buttons{
+    color: var.$color-accent-1;
+    background-color: var.$color-primary;
+    border-radius: 5px;
+    border: 2px solid var.$color-accent-1;
+    font-size: 1.5rem;
+    padding: 1rem 2rem;
+  }
+}
