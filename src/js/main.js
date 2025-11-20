@@ -4,28 +4,17 @@
 
 // Array con los valores de la ruleta
 const wedges = [
+  // Normales + especiales alternados
   {
-    label: "500",
-    color: "var(--color-wedge-yellow)",
+    label: "200",
+    color: "var(--color-wedge-pink)",
     action: "sumar",
-    value: 500,
+    value: 200,
   },
   {
-    label: "700",
-    color: "var(--color-wedge-blue)",
-    action: "sumar",
-    value: 700,
-  },
-  {
-    label: "1000",
-    color: "var(--color-wedge-green)",
-    action: "sumar",
-    value: 1000,
-  },
-  {
-    label: "PIERDE TURNO",
-    color: "var(--color-wedge-silver)",
-    action: "pierdeTurno",
+    label: "QUIEBRA",
+    color: "var(--color-wedge-black)",
+    action: "quiebra",
     value: 0,
   },
   {
@@ -35,26 +24,39 @@ const wedges = [
     value: 300,
   },
   {
-    label: "800",
+    label: "PIERDE TURNO",
+    color: "var(--color-wedge-silver)",
+    action: "pierdeTurno",
+    value: 0,
+  },
+  {
+    label: "1000",
     color: "var(--color-wedge-purple)",
     action: "sumar",
-    value: 800,
+    value: 1000,
   },
   {
     label: "400",
-    color: "var(--color-wedge-pink)",
+    color: "var(--color-wedge-blue)",
     action: "sumar",
     value: 400,
   },
   {
-    label: "BAZUCA",
-    color: "var(--color-wedge-red)",
-    action: "especial",
-    value: -1,
+    label: "MISTERIO",
+    color: "var(--color-wedge-gold)",
+    action: "misterio",
+    value: 0,
   },
   {
-    label: "600",
+    label: "500",
     color: "var(--color-wedge-green)",
+    action: "sumar",
+    value: 500,
+  },
+
+  {
+    label: "600",
+    color: "var(--color-wedge-pink)",
     action: "sumar",
     value: 600,
   },
@@ -65,64 +67,17 @@ const wedges = [
     value: 0,
   },
   {
-    label: "200",
-    color: "var(--color-wedge-yellow)",
-    action: "sumar",
-    value: 200,
-  },
-  {
-    label: "900",
-    color: "var(--color-wedge-blue)",
-    action: "sumar",
-    value: 900,
-  },
-  {
     label: "700",
-    color: "var(--color-wedge-pink)",
+    color: "var(--color-wedge-blue)",
     action: "sumar",
     value: 700,
   },
-  {
-    label: "1000",
-    color: "var(--color-wedge-green)",
-    action: "sumar",
-    value: 1000,
-  },
-  {
-    label: "500",
-    color: "var(--color-wedge-orange)",
-    action: "sumar",
-    value: 500,
-  },
-  {
-    label: "MISTERIO",
-    color: "var(--color-wedge-gold)",
-    action: "misterio",
-    value: 0,
-  },
-  {
-    label: "300",
-    color: "var(--color-wedge-purple)",
-    action: "sumar",
-    value: 300,
-  },
+
   {
     label: "800",
-    color: "var(--color-wedge-pink)",
+    color: "var(--color-wedge-orange)",
     action: "sumar",
     value: 800,
-  },
-  {
-    label: "400",
-    color: "var(--color-wedge-blue)",
-    action: "sumar",
-    value: 400,
-  },
-  {
-    label: "1000",
-    color: "var(--color-wedge-green)",
-    action: "sumar",
-    value: 1000,
   },
   {
     label: "PIERDE TURNO",
@@ -131,16 +86,16 @@ const wedges = [
     value: 0,
   },
   {
-    label: "200",
-    color: "var(--color-wedge-yellow)",
+    label: "900",
+    color: "var(--color-wedge-green)",
     action: "sumar",
-    value: 200,
+    value: 900,
   },
   {
-    label: "QUIEBRA",
-    color: "var(--color-wedge-black)",
-    action: "quiebra",
-    value: 0,
+    label: "1000",
+    color: "var(--color-wedge-purple)",
+    action: "sumar",
+    value: 1000,
   },
   {
     label: "SUPERPREMIO",
@@ -167,22 +122,23 @@ const createRoulette = () => {
   // ancho del triángulo según el ángulo
   const sliceWidth = 2 * sliceHeight * Math.tan(angleRad / 2);
 
-
   wedges.forEach((wedge, index) => {
     const slice = document.createElement("div");
     slice.classList.add("roulette__slice");
-    slice.style.backgroundColor = wedge.color;
 
-    // aquí fijamos tamaño real del triángulo
+    // Tamaños
     slice.style.height = `${sliceHeight}px`;
     slice.style.width = `${sliceWidth}px`;
 
-    // rotamos cada gajo su ángulo exacto
+    // Color SOLO en la custom prop
+    slice.style.setProperty("--wedge-color", wedge.color);
+    slice.style.setProperty("--slice-width", `${sliceWidth}px`);
+    slice.style.setProperty("--slice-height", `${sliceHeight}px`);
+
     slice.style.transform = `translateX(-50%) rotate(${
       index * degreesPerWedge
     }deg)`;
 
-     // 👇 AÑADIMOS EL TEXTO
     const label = document.createElement("span");
     label.classList.add("roulette__label");
     label.textContent = wedge.label;

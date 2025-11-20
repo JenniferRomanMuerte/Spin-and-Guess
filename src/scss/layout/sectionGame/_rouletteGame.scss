@@ -24,13 +24,24 @@
     border-radius: 50%;
     border: 5px solid var.$color-bgPanel-1;
     overflow: hidden;
+    background-color: #d8e217;
   }
   &__slice {
     position: absolute;
     left: 50%;
     bottom: 50%;
     transform-origin: bottom center;
+    width: var(--slice-width);
+    height: var(--slice-height);
     clip-path: polygon(50% 100%, 0 0, 100% 0);
+     background-color: #333;
+  }
+  &__slice::before {
+    content: "";
+    position: absolute;
+    inset: 2px; // grosor del borde
+    clip-path: inherit; // mismo triángulo
+    background-color: var(--wedge-color);
   }
   &__label {
     position: absolute;
@@ -44,8 +55,9 @@
     pointer-events: none;
   }
   &__btn {
+    position: absolute;
     border-radius: 50%;
-    padding: 1.5rem;
+    padding: 2rem 1rem;
     background-color: var.$color-bgPanel-1;
     border: 1px solid var.$color-bgPanel-2;
     color: var.$color-text;
