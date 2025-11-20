@@ -1,4 +1,5 @@
 @use "../core/variables" as var;
+@use "../core/mixins" as mix;
 
 .main {
   position: relative;
@@ -6,7 +7,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(#ffc43d 0%, #bd7272 40%, #ffc43d 100%);
+  @include mix.bgMain();
   min-height: 78dvh;
 
   @media (min-width: var.$media_desktop) {

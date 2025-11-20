@@ -46,13 +46,6 @@ $media_desktop: 768px;
   --color-wheel-border: #f7b801;   /* Borde exterior */
   --color-pointer: #d62828;        /* Triángulo superior */
 
-  /* 🌈 Gradiente opcional de la ruleta */
-  --gradient-wheel-bg: linear-gradient(
-    135deg,
-    var(--color-wedge-pink),
-    var(--color-wedge-gold),
-    var(--color-wedge-green),
-    var(--color-wedge-blue),
-    var(--color-wedge-purple)
-  );
+ /* Variable del tamaño de la ruleta para hacer los calculos*/
+ --scale: 300px;
 }

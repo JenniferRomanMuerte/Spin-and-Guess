@@ -1,4 +1,4 @@
-@use " ../../../../core/variables" as var;
+@use "../../core/variables" as var;
 .markers{
   grid-area: markers;
   display: flex;
@@ -11,7 +11,7 @@
       font-family: var.$font_family_play;
       font-size: 2rem;
       padding-bottom: 1rem;
-      color: var.$color-accent-2;
+      color: var.$color-text;
     }
      &--score{
     background-color: var.$color-text;

@@ -1,3 +1,53 @@
-.roulette{
+@use "../../core/variables" as var;
+
+.roulette {
   grid-area: roulette;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+  &__indicator {
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 28px solid var.$color-text;
+    margin-bottom: -10px;
+    z-index: 10;
+  }
+  &__wheel {
+    position: relative;
+    width: var(--scale);
+    height: var(--scale);
+    border-radius: 50%;
+    border: 5px solid var.$color-bgPanel-1;
+    overflow: hidden;
+  }
+  &__slice {
+    position: absolute;
+    left: 50%;
+    bottom: 50%;
+    transform-origin: bottom center;
+    clip-path: polygon(50% 100%, 0 0, 100% 0);
+  }
+  &__label {
+    position: absolute;
+    left: 50%;
+    top: 35%; // 🔹 más cerca del centro que del borde
+    transform: translate(-50%, -50%) rotate(-90deg);
+    transform-origin: center;
+    font-size: 1rem;
+    text-align: center;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  &__btn {
+    border-radius: 50%;
+    padding: 1.5rem;
+    background-color: var.$color-bgPanel-1;
+    border: 1px solid var.$color-bgPanel-2;
+    color: var.$color-text;
+  }
 }

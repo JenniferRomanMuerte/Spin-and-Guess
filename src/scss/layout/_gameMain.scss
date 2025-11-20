@@ -1,6 +1,8 @@
 @use "../core/variables" as var;
+@use "../core/mixins" as mix;
 
 .gameMain {
+  @include mix.bgMain();
   display: grid;
   grid-template-areas:
     "panel"
