@@ -8,23 +8,109 @@
   justify-content: center;
   gap: 1.5rem;
   margin-bottom: 3rem;
+
   &__indicator {
-    width: 0;
-    height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-top: 28px solid var.$color-text;
-    margin-bottom: -10px;
-    z-index: 10;
+    width: 80px; // ajusta tamaño
+    height: 80px;
+    margin-bottom: -44px;
+    z-index: 30;
+    background: url("/images/arrow-transparent.svg") no-repeat center;
+    background-size: contain;
+
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.9));
   }
+
   &__wheel {
     position: relative;
     width: var(--scale);
     height: var(--scale);
     border-radius: 50%;
-    border: 5px solid var.$color-bgPanel-1;
     overflow: hidden;
-    background-color: #d8e217;
+
+    // 🎨 fondo interior cálido (debajo de los gajos)
+    background: radial-gradient(
+      circle at 50% 40%,
+      #fff8d1 0%,
+      lighten(var.$color-accent-1, 15%) 40%,
+      var.$color-accent-1 70%,
+      darken(var.$color-accent-1, 5%) 80%
+    );
+
+    // sombra general de la ruleta
+    box-shadow: 0 0px 15px rgba(0, 0, 0, 0.95);
+
+    &--btn {
+      position: absolute;
+      left: 40%;
+      top: 40%;
+      border-radius: 50%;
+      padding: 1.6rem 1rem;
+      font-family: var.$font_family_comic;
+      font-weight: var.$font_weight_bold;
+      z-index: 50;
+      // fondo azul “gomoso”
+      background: radial-gradient(
+        circle at 30% 20%,
+        #e5f1ff 0%,
+        // brillo fuerte
+        lighten(var.$color-primary, 10%) 40%,
+        var.$color-primary 80%
+      );
+
+      border: 3px solid var.$color-accent-1; // aro amarillo
+      color: var.$color-accent-1;
+      // o si quieres usar variable: color: var.$color-bg-light;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      z-index: 50;
+
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.6),
+        inset 0 4px 5px rgba(255, 255, 255, 0.85),
+        inset 0 -4px 5px rgba(0, 0, 0, 0.45);
+    }
+
+    &--btn:active {
+      box-shadow: 0 3px 4px rgba(0, 0, 0, 0.5),
+        inset 0 2px 3px rgba(255, 255, 255, 0.7),
+        inset 0 -2px 3px rgba(0, 0, 0, 0.5);
+    }
+  }
+  &__wheel::before {
+    content: "";
+    position: absolute;
+    inset: 0; // ocupa todo el círculo
+    border-radius: 50%;
+    pointer-events: none;
+
+    // 🎨 degradado dorado estilo “gomoso” como la flecha
+    background: radial-gradient(
+      circle at 30% 20%,
+      // luz arriba-izquierda
+      #fffbe9 0%,
+      #ffe08f 30%,
+      #ffc34a 55%,
+      #f29b23 75%,
+      #b86a10 100%
+    );
+
+    // 🧲 usamos máscara para que solo se vea el ARO
+    -webkit-mask: radial-gradient(
+      farthest-side,
+      transparent calc(100% - 10px),
+      #000 calc(100% - 4px)
+    );
+    mask: radial-gradient(
+      farthest-side,
+      transparent calc(100% - 10px),
+      #000 calc(100% - 4px)
+    );
+
+    // ✨ brillo arriba + sombra abajo, como la flecha
+    box-shadow: inset 0 4px 6px rgba(255, 255, 255, 0.9),
+      // luz superior
+      inset 0 -5px 8px rgba(0, 0, 0, 0.55); // sombra inferior
   }
   &__slice {
     position: absolute;
@@ -34,7 +120,7 @@
     width: var(--slice-width);
     height: var(--slice-height);
     clip-path: polygon(50% 100%, 0 0, 100% 0);
-     background-color: #333;
+    background-color: rgba(0, 0, 0, 0.3);
   }
   &__slice::before {
     content: "";
@@ -43,7 +129,129 @@
     clip-path: inherit; // mismo triángulo
     background-color: var(--wedge-color);
   }
+
+  &__slice::after {
+    content: "";
+    position: absolute;
+    top: 1px; // cuanto más pequeño, más pegado al borde exterior
+    left: 50%;
+    transform: translateX(-580%);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+
+    // 🌟 efecto metal plateado
+    background: radial-gradient(
+      circle at 30% 30%,
+      #f3efb5 0%,
+      #f7f7c5 35%,
+      #dad594 70%,
+      #e2cf25 100%
+    );
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.9),
+      inset 0 1px 1px rgba(247, 207, 99, 0.8);
+
+    pointer-events: none;
+    z-index: 20;
+  }
+
+  // Amarillo (brillo fuerte)
+  &__slice--yellow::before {
+    background-image: linear-gradient(
+      to top,
+      #e9a800,
+      // un pelín más oscuro
+      var(--color-wedge-yellow) 40%,
+      #fff3a8 // luz fuerte arriba
+    );
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.8),
+      inset 0 -2px 3px rgba(0, 0, 0, 0.25);
+  }
+
+  // Verde (más “gomoso”)
+  &__slice--green::before {
+    background-image: linear-gradient(
+      to top,
+      #4b8f3a,
+      var(--color-wedge-green) 45%,
+      #c4f3a4
+    );
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.7),
+      inset 0 -3px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  // Azul (rollo plástico brillante)
+  &__slice--blue::before {
+    background-image: linear-gradient(
+      to top,
+      #1a6f93,
+      var(--color-wedge-blue) 50%,
+      #b4f0ff
+    );
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.85),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.35);
+  }
+
+  // Naranja
+  &__slice--orange::before {
+    background-image: linear-gradient(
+      to top,
+      #c35a24,
+      var(--color-wedge-orange) 45%,
+      #ffd0a0
+    );
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.8),
+      inset 0 -3px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  // Rosa
+  &__slice--pink::before {
+    background-image: linear-gradient(
+      to top,
+      #b62547,
+      var(--color-wedge-pink) 45%,
+      #ffc0d4
+    );
+  }
+
+  // Morado
+  &__slice--purple::before {
+    background-image: linear-gradient(
+      to top,
+      #5d279d,
+      var(--color-wedge-purple) 45%,
+      #e2c3ff
+    );
+  }
+
+  // Negro (QUIEBRA) más mate
+  &__slice--black::before {
+    background-image: linear-gradient(to top, #555, #3b3b3b 40%, #111);
+  }
+
+  // Dorado (MISTERIO / SUPERPREMIO)
+  &__slice--gold::before {
+    background-image: linear-gradient(
+      to top,
+      #c27a00,
+      var(--color-wedge-gold) 45%,
+      #ffe7a3
+    );
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.85),
+      inset 0 -3px 4px rgba(0, 0, 0, 0.35);
+  }
+
+  // Plata (PIERDE TURNO)
+  &__slice--silver::before {
+    background-image: linear-gradient(
+      to top,
+      #8c939a,
+      var(--color-wedge-silver) 50%,
+      #f5f7fa
+    );
+  }
   &__label {
+    font-weight: var.$font_weight_bold;
     position: absolute;
     left: 50%;
     top: 35%; // 🔹 más cerca del centro que del borde
@@ -53,13 +261,14 @@
     text-align: center;
     white-space: nowrap;
     pointer-events: none;
-  }
-  &__btn {
-    position: absolute;
-    border-radius: 50%;
-    padding: 2rem 1rem;
-    background-color: var.$color-bgPanel-1;
-    border: 1px solid var.$color-bgPanel-2;
-    color: var.$color-text;
+    text-shadow: -1px -1px 0 rgba(255, 255, 255, 0.5),
+      // borde blanco arriba-izquierda
+      1px -1px 0 rgba(255, 255, 255, 0.5),
+      // borde blanco arriba-dcha
+      -1px 1px 0 rgba(255, 255, 255, 0.5),
+      // borde blanco abajo-izq
+      1px 1px 0 rgba(255, 255, 255, 0.5),
+      // borde blanco abajo-dcha
+      0 2px 3px rgba(0, 0, 0, 0.45); // sombrita para volumen
   }
 }

@@ -7,48 +7,56 @@ const wedges = [
   // Normales + especiales alternados
   {
     label: "200",
+    theme: "pink",
     color: "var(--color-wedge-pink)",
     action: "sumar",
     value: 200,
   },
   {
     label: "QUIEBRA",
+    theme: "black",
     color: "var(--color-wedge-black)",
     action: "quiebra",
     value: 0,
   },
   {
     label: "300",
+    theme: "orange",
     color: "var(--color-wedge-orange)",
     action: "sumar",
     value: 300,
   },
   {
     label: "PIERDE TURNO",
+    theme: "silver",
     color: "var(--color-wedge-silver)",
     action: "pierdeTurno",
     value: 0,
   },
   {
     label: "1000",
+    theme: "purple",
     color: "var(--color-wedge-purple)",
     action: "sumar",
     value: 1000,
   },
   {
     label: "400",
+    theme: "blue",
     color: "var(--color-wedge-blue)",
     action: "sumar",
     value: 400,
   },
   {
     label: "MISTERIO",
+    theme: "gold",
     color: "var(--color-wedge-gold)",
     action: "misterio",
     value: 0,
   },
   {
     label: "500",
+    theme: "green",
     color: "var(--color-wedge-green)",
     action: "sumar",
     value: 500,
@@ -56,18 +64,21 @@ const wedges = [
 
   {
     label: "600",
+    theme: "pink",
     color: "var(--color-wedge-pink)",
     action: "sumar",
     value: 600,
   },
   {
     label: "QUIEBRA",
+    theme: "black",
     color: "var(--color-wedge-black)",
     action: "quiebra",
     value: 0,
   },
   {
     label: "700",
+    theme: "blue",
     color: "var(--color-wedge-blue)",
     action: "sumar",
     value: 700,
@@ -75,30 +86,35 @@ const wedges = [
 
   {
     label: "800",
+    theme: "orange",
     color: "var(--color-wedge-orange)",
     action: "sumar",
     value: 800,
   },
   {
     label: "PIERDE TURNO",
+    theme: "silver",
     color: "var(--color-wedge-silver)",
     action: "pierdeTurno",
     value: 0,
   },
   {
     label: "900",
+    theme: "green",
     color: "var(--color-wedge-green)",
     action: "sumar",
     value: 900,
   },
   {
     label: "1000",
+    theme: "purple",
     color: "var(--color-wedge-purple)",
     action: "sumar",
     value: 1000,
   },
   {
     label: "SUPERPREMIO",
+    theme: "gold",
     color: "var(--color-wedge-gold)",
     action: "superPremio",
     value: 2000,
@@ -117,7 +133,7 @@ const createRoulette = () => {
   const angleRad = (degreesPerWedge * Math.PI) / 180;
 
   // altura del triángulo = radio
-  const sliceHeight = radius;
+  const sliceHeight = radius * 0.95;
 
   // ancho del triángulo según el ángulo
   const sliceWidth = 2 * sliceHeight * Math.tan(angleRad / 2);
@@ -125,6 +141,9 @@ const createRoulette = () => {
   wedges.forEach((wedge, index) => {
     const slice = document.createElement("div");
     slice.classList.add("roulette__slice");
+
+    // clase según el tema de color
+    slice.classList.add(`roulette__slice--${wedge.theme}`);
 
     // Tamaños
     slice.style.height = `${sliceHeight}px`;
