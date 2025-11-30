@@ -171,23 +171,48 @@ createRoulette();
 
 // Frase simulada para hacer el diseño:
 // 🧠 Frase temporal (simula lo que luego vendrá de la BBDD)
-const phrase = "La ruleta de la suerte";
 
-// 📦 Contenedor del panel
+const clue = "Esta es la pista de la frase"
+const phrase = "La ruleta de la suerte";
+const sectionPanel = document.querySelector(".sectionPanel");
 const panel = document.querySelector("#panel");
 
-// 🚀 Convertir frase en letras (divs individuales)
-phrase.split("").forEach((char) => {
-  const letterDiv = document.createElement("div");
-  letterDiv.classList.add("panel__letter");
+const clueTitle = document.createElement("h2");
+clueTitle.classList.add("sectionPanel__title");
+clueTitle.textContent = clue;
 
-  if (char === " ") {
-    // Si es espacio, dejamos hueco visual
-    letterDiv.classList.add("space");
-  } else {
-    // Por ahora las mostramos, luego se ocultarán
+sectionPanel.appendChild(clueTitle);
+
+
+panel.innerHTML = "";
+
+const words = phrase.split(" ");
+
+words.forEach((word, wordIndex) => {
+  // contenedor de la palabra
+  const wordDiv = document.createElement("div");
+  wordDiv.classList.add("sectionPanel__panel--word");
+
+  // letras de la palabra
+  word.split("").forEach((char) => {
+    const letterDiv = document.createElement("div");
+    letterDiv.classList.add("sectionPanel__panel--letter");
     letterDiv.textContent = char.toUpperCase();
+
+    // Ocultamos la letra desde el inicio
+    letterDiv.classList.add("sectionPanel__panel--letter--hidden");
+    wordDiv.appendChild(letterDiv);
+  });
+
+  // 👉 añadimos el espacio visual después de la palabra,
+  // excepto en la última
+  if (wordIndex < words.length - 1) {
+    const gapDiv = document.createElement("div");
+    gapDiv.classList.add("sectionPanel__panel--gap");
+    wordDiv.appendChild(gapDiv);
   }
 
-  panel.appendChild(letterDiv);
+  panel.appendChild(wordDiv);
 });
+
+sectionPanel.appendChild(panel)

@@ -1,36 +1,72 @@
 @use "../../core/variables" as var;
 
-.panel {
+.sectionPanel {
   grid-area: panel;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
-  padding: 2rem;
-  background: radial-gradient(circle at center, var.$color-bgPanel-1, var.$color-bgPanel-2);
-  border-radius: 20px;
-  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);
-  min-height: 12rem;
   margin-top: 3rem;
   margin-inline: 2rem;
-  &__letter {
-    width: 2.5rem;
-    height: 3rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: "Orbitron", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  &__title{
     font-size: 2rem;
-    color: var.$color-text;
-    background: var.$color-bg-light;
-    border: 2px solid var.$color-text-light;
-    border-radius: 8px;
-    box-shadow: var.$shadow-default;
-    text-transform: uppercase;
+    color: var.$color-bgPanel-2;
+    font-family: "Orbitron", sans-serif;
+
   }
-  & .space {
-    border: none;
-    background: #c2dfc4;
-    width: 1rem;
+  &__panel {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    padding: 2rem;
+    background: radial-gradient(
+      circle at center,
+      var.$color-bgPanel-1,
+      var.$color-bgPanel-2
+    );
+    border-radius: 20px;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);
+    min-height: 12rem;
+
+    &--word {
+      display: flex;
+      gap: 1rem;
+    }
+    &--letter {
+      width: 2.5rem;
+      height: 3rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: "Orbitron", sans-serif;
+      font-size: 2rem;
+      color: var.$color-text;
+      background: var.$color-bg-light;
+      border: 2px solid var.$color-text-light;
+      border-radius: 8px;
+      box-shadow: var.$shadow-glow;
+      text-transform: uppercase;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+    &--letter--hidden {
+      width: 2.5rem;
+      height: 3rem;
+      background: var.$color-text-light;
+      // borde verde panel
+      border-color: var.$color-bgPanel-2;
+      // ocultamos la letra
+      color: transparent;
+      text-shadow: none;
+      box-shadow: var.$shadow-default;
+    }
+    // 🔹 Bloque visual para el espacio entre palabras
+    &--gap {
+      width: 1.2rem;
+      height: 3rem;
+      border-radius: 8px;
+      background: #c2dfc4; // como tu antiguo .space
+      border: none;
+    }
   }
 }
