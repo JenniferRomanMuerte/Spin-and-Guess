@@ -8,6 +8,7 @@
   justify-content: center;
   gap: 1.5rem;
   margin-bottom: 3rem;
+  min-width: 75dvw;
 
   &__indicator {
     width: 80px; // ajusta tamaño
@@ -257,7 +258,7 @@
     top: 35%; // 🔹 más cerca del centro que del borde
     transform: translate(-50%, -50%) rotate(-90deg);
     transform-origin: center;
-    font-size: 1rem;
+    font-size: 1.2rem;
     text-align: center;
     white-space: nowrap;
     pointer-events: none;
