@@ -4,8 +4,9 @@
 .header {
   position: relative;
   display: flex;
-  padding-top: 3rem;
+  padding-top: 2rem;
   padding-bottom: 0.5rem;
+  padding-inline: 1.5rem;
   text-align: center;
   justify-content: space-around;
   @include mix.bg;
@@ -31,16 +32,16 @@
 
   &__presenter {
     width: 10rem;
-    height: 8rem;
+    height: 7rem;
     background-image: url("/images/presenter.webp");
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
-    transform: scale(0.9);
+
   }
   &__conestants {
     width: 10rem;
-    height: 8rem;
+    height: 7rem;
     background-image: url("/images/contestants.webp");
     background-position: center;
     background-size: cover;
