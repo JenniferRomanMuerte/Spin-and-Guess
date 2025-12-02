@@ -13,7 +13,7 @@
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.9);
 
   &__title {
-    font-size: 3.5rem;
+    font-size: 2.5rem;
     background: linear-gradient(
       90deg,
       #b30059 0%,
@@ -28,23 +28,26 @@
     color: transparent;
     -webkit-text-fill-color: transparent;
     animation: titleLight 10s linear infinite;
+
+    @media (min-width: var.$media_desktop) {
+      font-size: 3.5rem;
+    }
   }
 
   &__presenter {
-    width: 10rem;
-    height: 7rem;
+    width: 40rem;
+
     background-image: url("/images/presenter.webp");
     background-position: center;
-    background-size: cover;
+    background-size: contain;
     background-repeat: no-repeat;
-
   }
   &__conestants {
-    width: 10rem;
-    height: 7rem;
+    width: 40rem;
+
     background-image: url("/images/contestants.webp");
     background-position: center;
-    background-size: cover;
+    background-size: contain;
     background-repeat: no-repeat;
   }
 }
