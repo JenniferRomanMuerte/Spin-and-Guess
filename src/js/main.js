@@ -126,6 +126,9 @@ const totalWedges = wedges.length;
 const degreesPerWedge = 360 / totalWedges; // Calculamos los grados que debe tener cada gajo
 
 const createRoulette = () => {
+
+   wheel.querySelectorAll(".roulette__slice").forEach((el) => el.remove());
+
   // radio de la ruleta (mitad del ancho)
   const radius = wheel.offsetWidth / 2;
 
@@ -168,6 +171,12 @@ const createRoulette = () => {
 };
 
 createRoulette();
+
+let resizeTimer;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(createRoulette, 150);
+});
 
 // Frase simulada para hacer el diseño:
 // 🧠 Frase temporal (simula lo que luego vendrá de la BBDD)

@@ -261,7 +261,7 @@
     top: 35%; // 🔹 más cerca del centro que del borde
     transform: translate(-50%, -50%) rotate(-90deg);
     transform-origin: center;
-    font-size: clamp(0.8rem, 2vw, 2rem);
+    font-size: clamp(0.8rem, 2.4vw, 1.2rem);
     text-align: center;
     white-space: nowrap;
     pointer-events: none;
