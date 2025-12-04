@@ -2,14 +2,14 @@
 .markers{
   grid-area: markers;
   display: flex;
-  gap: 3rem;
-  margin: 2rem;
+  margin-top: 2rem;
+  margin-bottom: 3rem;
   justify-content: space-around;
   &__section{
     text-align: center;
     &--players{
       font-family: var.$font_family_orbitron;
-      font-size: 2rem;
+      font-size: 1.5rem;
       padding-bottom: 1rem;
       color: var.$color-bgPanel-2;
       font-weight: var.$font_weight_bold;
@@ -20,7 +20,7 @@
     background-color: var.$color-text;
     border-radius: 5px;
     border: 2px solid var.$color-bgPanel-2;
-    padding: 1rem 4rem;
+    padding: 0.5rem 3rem;
     color: var.$color-bgPanel-2;
     font-family: var.$font-family_orbitron;
     font-size: 2rem;

@@ -2,24 +2,33 @@
 
 .sectionPanel {
   grid-area: panel;
-  margin-top: 3rem;
-  margin-inline: 2rem;
+  width: 100%;
+  margin: 3rem auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2rem;
-  &__title{
-    font-size: 2rem;
+   @media (min-width: var.$media_desktop) {
+    justify-content: center;
+    padding: clamp(1rem, 8vw, 5.75rem) clamp(1rem, 8vw, 5.5rem) 0;
+   }
+  &__title {
+    text-align: center;
+    font-size: clamp(1.5rem, 4vw, 2.75rem);
     color: var.$color-bgPanel-2;
     font-family: "Orbitron", sans-serif;
-
   }
   &__panel {
+    width: 90%;
+    max-width: 36rem;
+    min-width: none;
+    margin: 0 auto;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 1rem;
-    padding: 2rem;
+    align-items: center;
+    gap: clamp(0.43rem, 2.3vw, 1rem);
+    padding: clamp(0.75rem, 3vw, 1.25rem) clamp(0.5rem, 3vw, 1rem);
     background: radial-gradient(
       circle at center,
       var.$color-bgPanel-1,
@@ -31,16 +40,16 @@
 
     &--word {
       display: flex;
-      gap: 1rem;
+      gap: clamp(0.45rem, 2.3vw, 1rem);
     }
     &--letter {
-      width: 2.5rem;
-      height: 3rem;
+      width: clamp(1.7rem, 10vw, 2.5rem);
+      height: clamp(2rem, 12vw, 3rem);
       display: flex;
       justify-content: center;
       align-items: center;
       font-family: "Orbitron", sans-serif;
-      font-size: 2rem;
+      font-size: clamp(1rem, 6vw, 1.8rem);
       color: var.$color-text;
       background: var.$color-bg-light;
       border: 2px solid var.$color-text-light;
@@ -50,22 +59,20 @@
       transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     }
     &--letter--hidden {
-      width: 2.5rem;
-      height: 3rem;
+      width: clamp(1.7rem, 10vw, 2.8rem);
+      height: clamp(2rem, 12vw, 3.2rem);
       background: var.$color-text-light;
-      // borde verde panel
       border-color: var.$color-bgPanel-2;
-      // ocultamos la letra
       color: transparent;
       text-shadow: none;
       box-shadow: var.$shadow-default;
     }
-    // 🔹 Bloque visual para el espacio entre palabras
+
     &--gap {
-      width: 1.2rem;
-      height: 3rem;
+      width: clamp(0.8rem, 5vw, 1.2rem);
+      height: clamp(2rem, 12vw, 3rem);
       border-radius: 8px;
-      background: #c2dfc4; // como tu antiguo .space
+      background: #c2dfc4;
       border: none;
     }
   }

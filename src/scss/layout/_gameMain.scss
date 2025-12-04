@@ -5,9 +5,10 @@
   @include mix.bgMain();
   display: grid;
   grid-template-areas:
-    "panel panel"
-    "roulette controls"
-    "markers markers";
+    "panel"
+    "roulette"
+    "controls"
+    "markers";
   @media (min-width: var.$media_desktop) {
     grid-template-areas:
       "panel roulette"

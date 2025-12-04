@@ -8,12 +8,14 @@
   justify-content: center;
   gap: 1.5rem;
   margin-bottom: 3rem;
-  min-width: 75dvw;
+  width: min(100%, 420px);
+  margin-inline: auto;
+  --scale: clamp(240px, 80vw, 340px);
 
   &__indicator {
-    width: 80px; // ajusta tamaño
-    height: 80px;
-    margin-bottom: -44px;
+    width: clamp(6rem, 15vw, 10rem);
+    height: clamp(48px, 15vw, 72px);
+    margin-bottom: -2.6rem;
     z-index: 30;
     background: url("/images/arrow-transparent.svg") no-repeat center;
     background-size: contain;
@@ -42,10 +44,11 @@
 
     &--btn {
       position: absolute;
-      left: 40%;
-      top: 40%;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
       border-radius: 50%;
-      padding: 1.6rem 1rem;
+      padding: clamp(1rem, 3vw, 1.4rem) clamp(0.9rem, 3vw, 1.2rem);
       font-family: var.$font_family_comic;
       font-weight: var.$font_weight_bold;
       z-index: 50;
@@ -61,7 +64,7 @@
       border: 3px solid var.$color-accent-1; // aro amarillo
       color: var.$color-accent-1;
       // o si quieres usar variable: color: var.$color-bg-light;
-      font-size: 1.1rem;
+      font-size: clamp(0.95rem, 3vw, 1.2rem);
       text-transform: uppercase;
       letter-spacing: 0.05em;
       cursor: pointer;
@@ -258,7 +261,7 @@
     top: 35%; // 🔹 más cerca del centro que del borde
     transform: translate(-50%, -50%) rotate(-90deg);
     transform-origin: center;
-    font-size: 1.2rem;
+    font-size: clamp(0.8rem, 2vw, 2rem);
     text-align: center;
     white-space: nowrap;
     pointer-events: none;
