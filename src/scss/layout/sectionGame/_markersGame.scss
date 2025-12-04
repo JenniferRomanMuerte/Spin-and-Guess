@@ -1,31 +1,33 @@
 @use "../../core/variables" as var;
-.markers{
+.markers {
   grid-area: markers;
   display: flex;
-  margin-top: 2rem;
-  margin-bottom: 3rem;
+  margin-block: 3rem;
   justify-content: space-around;
-  &__section{
-    text-align: center;
-    &--players{
+  &__section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 11rem;
+    &--players {
       font-family: var.$font_family_orbitron;
-      font-size: 1.5rem;
+      font-size: clamp(1.4rem, 2.8vw, 2rem);
       padding-bottom: 1rem;
       color: var.$color-bgPanel-2;
       font-weight: var.$font_weight_bold;
-      letter-spacing: 0.2rem;
+      letter-spacing: 0.1rem;
       text-shadow: 0px 2px 8px rgba(0, 0, 0, 0.25);
     }
-     &--score{
-    background-color: var.$color-text;
-    border-radius: 5px;
-    border: 2px solid var.$color-bgPanel-2;
-    padding: 0.5rem 3rem;
-    color: var.$color-bgPanel-2;
-    font-family: var.$font-family_orbitron;
-    font-size: 2rem;
-    font-weight: var.$font_weight_bold;
+    &--score {
+      background-color: var.$color-text;
+      border-radius: 5px;
+      border: 2px solid var.$color-bgPanel-2;
+      padding: clamp(0.35rem, 2vw, 0.6rem) clamp(1.2rem, 5vw, 2.4rem);
+      color: var.$color-bgPanel-2;
+      font-family: var.$font-family_orbitron;
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: var.$font_weight_bold;
+    }
   }
-  }
-
 }
