@@ -1,30 +1,45 @@
 {
-	"name": "adalab-web-starter-kit",
-	"version": "4.0.0",
-	"description": "Adalab web starter kit",
-	"type": "module",
-	"devDependencies": {
-		"@vituum/vite-plugin-concat": "^1.1.1",
-		"sass": "^1.83.4",
-		"sharp": "^0.32.6",
-		"vite": "^7.1.9",
-		"vite-plugin-html-inject": "^1.1.2",
-		"vite-plugin-image-optimizer": "^1.1.7"
-	},
-	"scripts": {
-		"start": "vite",
-		"dev": "vite",
-		"build": "vite build --emptyOutDir",
-		"docs": "vite build --emptyOutDir",
-		"preview": "vite preview",
-		"push-docs": "npm run deploy",
-		"deploy": "vite build --emptyOutDir && git add docs && git commit -m 'Deployed new version of the page to production' && git push"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+ssh://git@github.com:Adalab/adalab-web-starter-kit.git"
-	},
-	"author": "Adalab",
-	"license": "MIT",
-	"homepage": "https://github.com/adalab/adalab-web-starter-kit"
+  "name": "my-react-app",
+  "homepage": "./",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "deploy": "rm -rf docs ; npm run build ; mv dist docs ; git add docs ; git commit -m 'New deployment' ; git push",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "jest": {
+    "testEnvironment": "jsdom"
+  },
+  "dependencies": {
+    "prop-types": "^15.8.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.9.6",
+    "sass": "^1.94.1"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.28.5",
+    "@babel/preset-react": "^7.28.5",
+    "@eslint/js": "^9.39.1",
+    "@testing-library/react": "^16.3.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^5.1.0",
+    "babel-jest": "^30.2.0",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0",
+    "react-test-renderer": "^19.2.0",
+    "vite": "^7.2.2"
+  }
 }

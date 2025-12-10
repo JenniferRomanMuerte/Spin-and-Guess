@@ -1,0 +1,62 @@
+@use "../core/variables" as var;
+@use "../core/mixins" as mix;
+
+.header {
+  position: relative;
+  display: flex;
+  padding-top: 2rem;
+  padding-bottom: 0.5rem;
+  padding-inline: 1.5rem;
+  text-align: center;
+  justify-content: space-around;
+  @include mix.bg;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.9);
+
+  &__title {
+    font-size: 2.5rem;
+    background: linear-gradient(
+      90deg,
+      #b30059 0%,
+      var.$color-accent-2 20%,
+      #d699a8 40%,
+      var.$color-accent-2 60%,
+      #b30059 80%
+    );
+    background-size: 200%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    animation: titleLight 10s linear infinite;
+
+    @media (min-width: var.$media_desktop) {
+      font-size: 3.5rem;
+    }
+  }
+
+  &__presenter {
+    width: 40rem;
+
+    background-image: url("../../images/presenter.webp");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+  &__conestants {
+    width: 40rem;
+
+    background-image: url("../../images/contestants.webp");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+}
+
+@keyframes titleLight {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
