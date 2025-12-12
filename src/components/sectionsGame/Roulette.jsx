@@ -118,7 +118,7 @@ const wedges = [
   },
 ];
 
-const Roulette = () => {
+const Roulette = ({spinEnd}) => {
   /*
   useRef: referencia al elemento de la ruleta
   con const wheelRef = useRef(null); creamos un objeto con la propiedad current en null porque
@@ -201,11 +201,11 @@ const Roulette = () => {
   y luego solo cuando cambie el tamaño de la ventana (por el listener).
 */
 
-// De momento para mostrar por consola el gajo
+// Mandamos los datos del gajo
   useEffect(() => {
     if (winnerIndex === null) return;
     const winner = wedges[winnerIndex];
-    console.log("Ha salido:", winner.label, winner.action, winner.value);
+    spinEnd(winner)
   }, [winnerIndex]);
 
   // Función para girar la ruleta
@@ -216,7 +216,7 @@ const Roulette = () => {
     setIsSpinning(true);
     setIndicatorActive(false);
 
-    // Vueltas aleatorias entre 3 y 6
+    // Vueltas aleatorias entre 1 y 3
     const minTurns = 1;
     const maxTurns = 3;
     const randomTurns =
