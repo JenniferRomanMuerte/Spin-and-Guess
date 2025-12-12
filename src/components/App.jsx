@@ -1,11 +1,19 @@
 // Fichero src/components/App.jsx
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/layout/Main.scss";
 import rouletteImg from "../images/roulette.webp";
 
 function App() {
+
+  const [namePlayer, setnamePlayer] = useState('');
+  const handleName = (ev) =>{
+    ev.preventDefault();
+    setnamePlayer(ev.target.value);
+  }
+
   return (
-    <main className="main">
+    <main className="main landing">
       <article className="main__article">
         <section className="main__article--section">
           <img
@@ -28,8 +36,14 @@ function App() {
           type="text"
           className="main__form-inputName"
           placeholder="Introduce tu nombre"
+          value={namePlayer}
+          onChange={handleName}
         />
-        <Link className="main__form-btnBegin" to="/game">
+        <Link
+        className="main__form-btnBegin"
+        to="/game"
+        state={{namePlayer}}
+        >
           A jugar!
         </Link>
       </form>

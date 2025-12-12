@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import "../../styles/layout/sectionGame/RouletteGame.scss";
 
+// Array con los gajos de la ruleta
+// Cada objeto es un gajo: qué texto muestra, qué color/tema tiene y qué acción haría
 const wedges = [
   {
     label: "200",
@@ -117,48 +119,110 @@ const wedges = [
 ];
 
 const Roulette = () => {
+  /*
+  useRef: referencia al elemento de la ruleta
+  con const wheelRef = useRef(null); creamos un objeto con la propiedad current en null porque
+  al principio aún no está pintado el elemento que queremos guardar aqui.
+  Después de renderizar la sección de la ruleta le asignamos el section a ref={wheelRef},
+  wheelRef.current apuntará a ese elemento
+  */
   const wheelRef = useRef(null);
+
+  // Estado para guardar las dimensiones de cada gajo
   const [sliceSize, setSliceSize] = useState({ width: 0, height: 0 });
+
+  /*
+  Ángulo que le corresponde a cada gajo (en grados)
+  360º dividido entre el número de gajos
+  */
   const degreesPerWedge = 360 / wedges.length;
 
+  //useEffect: calcula el tamaño de los gajos según el tamaño real de la ruleta
   useEffect(() => {
+    // Función que calcula tamaños y los guarda en el estado
     const updateSizes = () => {
+      // Si aún no hay referencia al DOM, salimos (por seguridad)
       if (!wheelRef.current) return;
 
+      //radius = mitad del ancho del círculo
       const radius = wheelRef.current.offsetWidth / 2;
+
+      //convertimos el ángulo de cada gajo a radianes para usar trigonometría
       const angleRad = (degreesPerWedge * Math.PI) / 180;
+
+      //alto del triángulo (gajo):
+      // usamos casi todo el radio (0.95 para dejar un aro bonito alrededor)
       const sliceHeight = radius * 0.95;
+
+      /*
+      ancho del triángulo:
+      fórmula: 2 * altura * tan(ángulo/2)
+      */
       const sliceWidth = 2 * sliceHeight * Math.tan(angleRad / 2);
 
+      // Guardamos los tamaños en el estado
       setSliceSize({ width: sliceWidth, height: sliceHeight });
     };
 
+    //Llamamos una primera vez para calcular tamaños cuando el componente se monta
     updateSizes();
+
+    //Si cambia el tamaño de la ventana, recalculamos tamaños
     window.addEventListener("resize", updateSizes);
+
+    /*
+    Cleanup del efecto:
+    cuando el componente se desmonte, quitamos el listener de resize
+    */
     return () => window.removeEventListener("resize", updateSizes);
   }, [degreesPerWedge]);
 
+  /*
+  Dependencias del efecto:
+  Solo depende de degreesPerWedge, que viene de wedges.length.
+  Como wedges no cambia, en la práctica se ejecuta una vez al montar
+  y luego solo cuando cambie el tamaño de la ventana (por el listener).
+*/
+
   return (
     <article className="roulette">
+      {/* Indicador (flecha) arriba de la ruleta */}
       <section className="roulette__indicator"></section>
-      <section className="roulette__wheel" id="rouletteWheel" ref={wheelRef}>
+
+      {/* Círculo de la ruleta. ref={wheelRef} conecta este elemento con wheelRef.current */}
+      <section
+        className="roulette__wheel"
+        id="rouletteWheel"
+        ref={wheelRef} 
+      >
+        {/* Botón central de "TIRAR" */}
         <button id="spinButton" className="roulette__wheel--btn">
           TIRAR
         </button>
+
+        {/* Solo pintamos gajos si ya hemos calculado un width > 0 */}
         {sliceSize.width > 0 &&
           wedges.map((wedge, index) => (
             <div
-              key={`${wedge.label}-${index}`}
+              key={`${wedge.label}-${index}`} // clave única para React
               className={`roulette__slice roulette__slice--${wedge.theme}`}
               style={{
+                // tamaño del triángulo calculado en el efecto
                 height: `${sliceSize.height}px`,
                 width: `${sliceSize.width}px`,
-                transform: `translateX(-50%) rotate(${index * degreesPerWedge}deg)`,
+
+                // rotamos cada gajo su ángulo correspondiente
+                transform: `translateX(-50%) rotate(${
+                  index * degreesPerWedge
+                }deg)`,
+
+                // pasamos variables CSS a los estilos (para usarlas en el SCSS)
                 "--wedge-color": wedge.color,
                 "--slice-width": `${sliceSize.width}px`,
                 "--slice-height": `${sliceSize.height}px`,
               }}
             >
+              {/* Texto del gajo, que se pinta siguiendo los estilos de .roulette__label */}
               <span className="roulette__label">{wedge.label}</span>
             </div>
           ))}
