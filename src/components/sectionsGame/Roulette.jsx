@@ -47,10 +47,10 @@ const wedges = [
     value: 400,
   },
   {
-    label: "MISTERIO",
+    label: "COMODIN",
     theme: "gold",
     color: "var(--color-wedge-gold)",
-    action: "misterio",
+    action: "comodin",
     value: 0,
   },
   {
@@ -137,10 +137,16 @@ const Roulette = () => {
   */
   const degreesPerWedge = 360 / wedges.length;
 
-  // ESTADOS PARA CONTROLAR EL GITO
+  // ESTADOS PARA CONTROLAR EL GIRO DE LA RULETA Y LA POSICION DEL GAJO
 
   // Angulo acumulado de la ruleta
   const [rotation, setRotation] = useState(0);
+
+  // Para saber la rotación real
+  const rotationRef = useRef(0);
+
+  // Para saber que gajo ha salido
+  const [winnerIndex, setWinnerIndex] = useState(null);
 
   // Saber si la riuleta está girando
   const [isSpinning, setIsSpinning] = useState(false);
@@ -195,6 +201,13 @@ const Roulette = () => {
   y luego solo cuando cambie el tamaño de la ventana (por el listener).
 */
 
+// De momento para mostrar por consola el gajo
+  useEffect(() => {
+    if (winnerIndex === null) return;
+    const winner = wedges[winnerIndex];
+    console.log("Ha salido:", winner.label, winner.action, winner.value);
+  }, [winnerIndex]);
+
   // Función para girar la ruleta
   const handleSpin = () => {
     // Si ya está girando, ignoramos el click
@@ -215,19 +228,56 @@ const Roulette = () => {
     // Le añadimos aleatoriedad al giro
     const extraDegrees = randomTurns * 360 + randomOffset;
 
+    // actualizamos el ángulo acumulado en el ref
+    rotationRef.current += extraDegrees;
+
     // actualizamos la rotación acumulada
-    setRotation((prevRotation) => prevRotation + extraDegrees);
+    setRotation(rotationRef.current);
 
     // ⏱️ cuando termine la animación, marcamos que ya no está girando
     setTimeout(() => {
       setIsSpinning(false);
       setIndicatorActive(true);
 
+      // calculamos qué gajo ha salido
+      const index = getWinnerIndexFromRotation(rotationRef.current);
+      setWinnerIndex(index);
+
       setTimeout(() => {
         setIndicatorActive(false);
       }, 2000);
     }, 4500); // debe coincidir con la duración de la transición de CSS
   };
+
+  // Dado un ángulo total, calcula qué gajo ha quedado bajo el indicador
+  const getWinnerIndexFromRotation = (totalRotation) => {
+  // 1. Normalizamos a 0–360
+  const normalized = ((totalRotation % 360) + 360) % 360;
+
+  /*
+    2. Pensamos así:
+
+    - La rueda gira clockwise (rotate positivo).
+    - El indicador está fijo arriba.
+    - Si la rueda gira R grados, es como si el indicador mirara
+      R grados hacia atrás.
+
+    Por eso usamos (360 - normalized).
+
+    Además sumamos degreesPerWedge / 2 para “centrar” en el
+    medio del gajo, no en la línea que separa dos gajos.
+  */
+
+  const angleFromTop =
+    (360 - normalized + degreesPerWedge / 2) % 360;
+
+  // 3. Ese ángulo lo convertimos en índice de gajo
+  const index = Math.floor(angleFromTop / degreesPerWedge);
+
+  // 4. Lo dejamos entre 0 y wedges.length - 1 por seguridad
+  return (index + wedges.length) % wedges.length;
+};
+
 
   return (
     <article className="roulette">
