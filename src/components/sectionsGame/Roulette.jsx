@@ -137,6 +137,17 @@ const Roulette = () => {
   */
   const degreesPerWedge = 360 / wedges.length;
 
+  // ESTADOS PARA CONTROLAR EL GITO
+
+  // Angulo acumulado de la ruleta
+  const [rotation, setRotation] = useState(0);
+
+  // Saber si la riuleta está girando
+  const [isSpinning, setIsSpinning] = useState(false);
+
+  // Saber si el indicador está activo
+  const [indicatorActive, setIndicatorActive] = useState(false);
+
   //useEffect: calcula el tamaño de los gajos según el tamaño real de la ruleta
   useEffect(() => {
     // Función que calcula tamaños y los guarda en el estado
@@ -184,48 +195,92 @@ const Roulette = () => {
   y luego solo cuando cambie el tamaño de la ventana (por el listener).
 */
 
+  // Función para girar la ruleta
+  const handleSpin = () => {
+    // Si ya está girando, ignoramos el click
+    if (isSpinning) return;
+
+    setIsSpinning(true);
+    setIndicatorActive(false);
+
+    // Vueltas aleatorias entre 3 y 6
+    const minTurns = 1;
+    const maxTurns = 3;
+    const randomTurns =
+      Math.floor(Math.random() * (maxTurns - minTurns + 1)) + minTurns;
+
+    // offset aleatorio
+    const randomOffset = Math.random() * 360;
+
+    // Le añadimos aleatoriedad al giro
+    const extraDegrees = randomTurns * 360 + randomOffset;
+
+    // actualizamos la rotación acumulada
+    setRotation((prevRotation) => prevRotation + extraDegrees);
+
+    // ⏱️ cuando termine la animación, marcamos que ya no está girando
+    setTimeout(() => {
+      setIsSpinning(false);
+      setIndicatorActive(true);
+
+      setTimeout(() => {
+        setIndicatorActive(false);
+      }, 2000);
+    }, 4500); // debe coincidir con la duración de la transición de CSS
+  };
+
   return (
     <article className="roulette">
       {/* Indicador (flecha) arriba de la ruleta */}
-      <section className="roulette__indicator"></section>
+      <section
+        className={`roulette__indicator ${
+          indicatorActive ? "roulette__indicator--active" : ""
+        }`}
+      ></section>
 
       {/* Círculo de la ruleta. ref={wheelRef} conecta este elemento con wheelRef.current */}
-      <section
-        className="roulette__wheel"
-        id="rouletteWheel"
-        ref={wheelRef} 
-      >
+      <section className="roulette__wheel" id="rouletteWheel" ref={wheelRef}>
         {/* Botón central de "TIRAR" */}
-        <button id="spinButton" className="roulette__wheel--btn">
+        <button
+          id="spinButton"
+          className="roulette__wheel--btn"
+          onClick={handleSpin}
+          disabled={isSpinning}
+        >
           TIRAR
         </button>
+        {/* Contenedor interno que SÍ gira */}
+        <div
+          className="roulette__wheelInner"
+          style={{ transform: `rotate(${rotation}deg)` }}
+        >
+          {/* Solo pintamos gajos si ya hemos calculado un width > 0 */}
+          {sliceSize.width > 0 &&
+            wedges.map((wedge, index) => (
+              <div
+                key={`${wedge.label}-${index}`} // clave única para React
+                className={`roulette__slice roulette__slice--${wedge.theme}`}
+                style={{
+                  // tamaño del triángulo calculado en el efecto
+                  height: `${sliceSize.height}px`,
+                  width: `${sliceSize.width}px`,
 
-        {/* Solo pintamos gajos si ya hemos calculado un width > 0 */}
-        {sliceSize.width > 0 &&
-          wedges.map((wedge, index) => (
-            <div
-              key={`${wedge.label}-${index}`} // clave única para React
-              className={`roulette__slice roulette__slice--${wedge.theme}`}
-              style={{
-                // tamaño del triángulo calculado en el efecto
-                height: `${sliceSize.height}px`,
-                width: `${sliceSize.width}px`,
+                  // rotamos cada gajo su ángulo correspondiente
+                  transform: `translateX(-50%) rotate(${
+                    index * degreesPerWedge
+                  }deg)`,
 
-                // rotamos cada gajo su ángulo correspondiente
-                transform: `translateX(-50%) rotate(${
-                  index * degreesPerWedge
-                }deg)`,
-
-                // pasamos variables CSS a los estilos (para usarlas en el SCSS)
-                "--wedge-color": wedge.color,
-                "--slice-width": `${sliceSize.width}px`,
-                "--slice-height": `${sliceSize.height}px`,
-              }}
-            >
-              {/* Texto del gajo, que se pinta siguiendo los estilos de .roulette__label */}
-              <span className="roulette__label">{wedge.label}</span>
-            </div>
-          ))}
+                  // pasamos variables CSS a los estilos (para usarlas en el SCSS)
+                  "--wedge-color": wedge.color,
+                  "--slice-width": `${sliceSize.width}px`,
+                  "--slice-height": `${sliceSize.height}px`,
+                }}
+              >
+                {/* Texto del gajo, que se pinta siguiendo los estilos de .roulette__label */}
+                <span className="roulette__label">{wedge.label}</span>
+              </div>
+            ))}
+        </div>
       </section>
     </article>
   );

@@ -21,6 +21,13 @@
     background-size: contain;
 
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.9));
+
+    transform-origin: center bottom;
+  }
+
+  &__indicator--active {
+    animation: roulette-indicator-active 0.5s ease-out;
+    animation-iteration-count: 4; // 4 latidos ≈ 2s
   }
 
   &__wheel {
@@ -81,6 +88,16 @@
         inset 0 -2px 3px rgba(0, 0, 0, 0.5);
     }
   }
+
+  &__wheelInner {
+    position: absolute;
+    inset: 0; // ocupa todo dentro del círculo
+    border-radius: 50%;
+    transform-origin: center center;
+
+    transition: transform 4s ease-out; // o lo que tuvieses
+  }
+
   &__wheel::before {
     content: "";
     position: absolute;
@@ -274,5 +291,21 @@
       1px 1px 0 rgba(255, 255, 255, 0.5),
       // borde blanco abajo-dcha
       0 2px 3px rgba(0, 0, 0, 0.45); // sombrita para volumen
+  }
+}
+
+// Animación indicador
+@keyframes roulette-indicator-active {
+  0% {
+    transform: scale(1) translateY(0);
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.9));
+  }
+  50% {
+    transform: scale(1.18) translateY(3px);
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 1));
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.9));
   }
 }
