@@ -118,7 +118,7 @@ const wedges = [
   },
 ];
 
-const Roulette = ({spinEnd}) => {
+const Roulette = ({ spinEnd, actionMode }) => {
   /*
   useRef: referencia al elemento de la ruleta
   con const wheelRef = useRef(null); creamos un objeto con la propiedad current en null porque
@@ -201,11 +201,11 @@ const Roulette = ({spinEnd}) => {
   y luego solo cuando cambie el tamaño de la ventana (por el listener).
 */
 
-// Mandamos los datos del gajo
+  // Mandamos los datos del gajo
   useEffect(() => {
     if (winnerIndex === null) return;
     const winner = wedges[winnerIndex];
-    spinEnd(winner)
+    spinEnd(winner);
   }, [winnerIndex]);
 
   // Función para girar la ruleta
@@ -251,10 +251,10 @@ const Roulette = ({spinEnd}) => {
 
   // Dado un ángulo total, calcula qué gajo ha quedado bajo el indicador
   const getWinnerIndexFromRotation = (totalRotation) => {
-  // 1. Normalizamos a 0–360
-  const normalized = ((totalRotation % 360) + 360) % 360;
+    // 1. Normalizamos a 0–360
+    const normalized = ((totalRotation % 360) + 360) % 360;
 
-  /*
+    /*
     2. Pensamos así:
 
     - La rueda gira clockwise (rotate positivo).
@@ -268,16 +268,14 @@ const Roulette = ({spinEnd}) => {
     medio del gajo, no en la línea que separa dos gajos.
   */
 
-  const angleFromTop =
-    (360 - normalized + degreesPerWedge / 2) % 360;
+    const angleFromTop = (360 - normalized + degreesPerWedge / 2) % 360;
 
-  // 3. Ese ángulo lo convertimos en índice de gajo
-  const index = Math.floor(angleFromTop / degreesPerWedge);
+    // 3. Ese ángulo lo convertimos en índice de gajo
+    const index = Math.floor(angleFromTop / degreesPerWedge);
 
-  // 4. Lo dejamos entre 0 y wedges.length - 1 por seguridad
-  return (index + wedges.length) % wedges.length;
-};
-
+    // 4. Lo dejamos entre 0 y wedges.length - 1 por seguridad
+    return (index + wedges.length) % wedges.length;
+  };
 
   return (
     <article className="roulette">
@@ -332,6 +330,14 @@ const Roulette = ({spinEnd}) => {
             ))}
         </div>
       </section>
+      {actionMode && (
+        <div className="roulette__overlay">
+          {actionMode === "vowel" && <p>Elige una vocal</p>}
+          {actionMode === "consonant" && <p>Elige una consonante</p>}
+          {actionMode === "solve" && <p>Escribe la solución</p>}
+          {actionMode === "jocker" && <p>Usar comodín</p>}
+        </div>
+      )}
     </article>
   );
 };

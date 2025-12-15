@@ -15,36 +15,50 @@ const GamePage = () => {
   // Para saber el gajo que ha salido en la ruleta
   const [wedgeResult, setWedgeResult] = useState(null);
 
+  // Controlamos el modal que vamos a mostrar para la accion elegida en controlsGame
+  const [actionMode, setActionMode] = useState(null);
+
   // Función para guardar el gajo y actualizar los estados de los botones
   const spinEnd = (wedge) => {
     setWedgeResult(wedge);
     updateControls({ source: "roulette", action: wedge.label });
   };
 
-// Funcion para actualizar los estados de los controles
-const updateControls = ({ source, action }) => {
-  if (source === "roulette") {
-    setChoose(false);                    // tras girar, bloqueas elegir hasta que pulses algo
-    setHasJocker(action !== "COMODIN"); // solo true si ha salido COMODIN
-    return;
-  }
-
-  if (source === "button") {
-    if (action === "Comodin") {
-      setHasJocker(true);
-      setChoose(true);
-    } else {
-      setChoose(true);
+  // Funcion para actualizar los estados de los controles
+  const updateControls = ({ source, action }) => {
+    if (source === "roulette") {
+      setChoose(false); // tras girar, bloqueas elegir hasta que pulses algo
+      setHasJocker(action !== "COMODIN"); // solo true si ha salido COMODIN
+      return;
     }
-  }
-};
+
+    if (source === "button") {
+      if (action === "Comodin") {
+        setHasJocker(true);
+        setChoose(true);
+        setActionMode("joker");
+      } else if (action === "Vocal") {
+        setActionMode("vowel");
+      } else if (action === "Consonante") {
+        setActionMode("consonant");
+      } else if (action === "Resolver") {
+        setActionMode("solve");
+      } else {
+        setChoose(true);
+      }
+    }
+  };
 
   return (
     <main className="gameMain">
       <Panel />
       <Markers />
-      <Roulette spinEnd ={spinEnd}/>
-      <ControlsGame choose={choose} hasJocker={hasJocker} updateControls={updateControls}/>
+      <Roulette spinEnd={spinEnd} actionMode={actionMode} />
+      <ControlsGame
+        choose={choose}
+        hasJocker={hasJocker}
+        updateControls={updateControls}
+      />
     </main>
   );
 };
