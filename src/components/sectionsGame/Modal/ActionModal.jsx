@@ -1,25 +1,21 @@
-const ActionModal = () => {
-   return (
-    <div className="actionModal">
-      <div className="actionModal__backdrop" onClick={onClose} />
-      <div className="actionModal__content">
-        {mode === "Vocal" && (
-          <VowelPicker wedge={wedgeResult} onClose={onClose} />
-        )}
+import "../../../styles/layout/sectionGame/Modal.scss";
+import VowelPicker from "./VowelPicker";
 
-        {mode === "Consonante" && (
-          <ConsonantPicker wedge={wedgeResult} onClose={onClose} />
-        )}
+const ActionModal = ({ actionMode, closeActionMode }) => {
+  return (
+    <section className="modal">
+      <div className="modal__overlay">
+        <div className="modal__content">
+          {actionMode === "vowel" && <VowelPicker closeActionMode = {closeActionMode}/>}
 
-        {mode === "Resolver" && (
-          <SolveForm wedge={wedgeResult} onClose={onClose} />
-        )}
+          {actionMode === "Consonante" && <ConsonantPicker closeActionMode = {closeActionMode}/>}
 
-        {mode === "Comodin" && (
-          <JokerPanel wedge={wedgeResult} onClose={onClose} />
-        )}
+          {actionMode === "Resolver" && <SolveForm closeActionMode = {closeActionMode}/>}
+
+          {actionMode === "Comodin" && <JokerPanel closeActionMode = {closeActionMode}/>}
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 

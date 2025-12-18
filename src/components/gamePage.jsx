@@ -18,6 +18,9 @@ const GamePage = () => {
   // Controlamos el modal que vamos a mostrar para la accion elegida en controlsGame
   const [actionMode, setActionMode] = useState(null);
 
+  // Función para cerrar el modal
+  const closeActionMode = () => setActionMode(null);
+
   // Función para guardar el gajo y actualizar los estados de los botones
   const spinEnd = (wedge) => {
     setWedgeResult(wedge);
@@ -53,7 +56,7 @@ const GamePage = () => {
     <main className="gameMain">
       <Panel />
       <Markers />
-      <Roulette spinEnd={spinEnd} actionMode={actionMode} />
+      <Roulette spinEnd={spinEnd} actionMode={actionMode} closeActionMode={closeActionMode}/>
       <ControlsGame
         choose={choose}
         hasJocker={hasJocker}

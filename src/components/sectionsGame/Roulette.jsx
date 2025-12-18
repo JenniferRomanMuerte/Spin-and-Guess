@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "../../styles/layout/sectionGame/RouletteGame.scss";
+import ActionModal from "./Modal/ActionModal";
 
 // Array con los gajos de la ruleta
 // Cada objeto es un gajo: qué texto muestra, qué color/tema tiene y qué acción haría
@@ -118,7 +119,7 @@ const wedges = [
   },
 ];
 
-const Roulette = ({ spinEnd, actionMode }) => {
+const Roulette = ({ spinEnd, actionMode, closeActionMode }) => {
   /*
   useRef: referencia al elemento de la ruleta
   con const wheelRef = useRef(null); creamos un objeto con la propiedad current en null porque
@@ -331,12 +332,7 @@ const Roulette = ({ spinEnd, actionMode }) => {
         </div>
       </section>
       {actionMode && (
-        <div className="roulette__overlay">
-          {actionMode === "vowel" && <p>Elige una vocal</p>}
-          {actionMode === "consonant" && <p>Elige una consonante</p>}
-          {actionMode === "solve" && <p>Escribe la solución</p>}
-          {actionMode === "jocker" && <p>Usar comodín</p>}
-        </div>
+        <ActionModal actionMode = {actionMode} closeActionMode = {closeActionMode}/>
       )}
     </article>
   );
