@@ -1,18 +1,35 @@
 import "../../../styles/layout/sectionGame/Modal.scss";
-import VowelPicker from "./VowelPicker";
+import LetterPicker from "./LetterPicker";
 
-const ActionModal = ({ actionMode, closeActionMode }) => {
+const ActionModal = ({
+  actionMode,
+  vowels,
+  consonants,
+  letterSelected,
+  closeActionMode,
+}) => {
   return (
     <section className="modal">
       <div className="modal__overlay">
         <div className="modal__content">
-          {actionMode === "vowel" && <VowelPicker closeActionMode = {closeActionMode}/>}
+          {(actionMode === "vowel" ||
+            actionMode === "consonant") && (
+              <LetterPicker
+                actionMode={actionMode}
+                closeActionMode={closeActionMode}
+                vowels={vowels}
+                consonants={consonants}
+                letterSelected={letterSelected}
+              />
+            )}
 
-          {actionMode === "Consonante" && <ConsonantPicker closeActionMode = {closeActionMode}/>}
+          {actionMode === "solve" && (
+            <SolveForm closeActionMode={closeActionMode} />
+          )}
 
-          {actionMode === "Resolver" && <SolveForm closeActionMode = {closeActionMode}/>}
-
-          {actionMode === "Comodin" && <JokerPanel closeActionMode = {closeActionMode}/>}
+          {actionMode === "jocker" && (
+            <JokerPanel closeActionMode={closeActionMode} />
+          )}
         </div>
       </div>
     </section>

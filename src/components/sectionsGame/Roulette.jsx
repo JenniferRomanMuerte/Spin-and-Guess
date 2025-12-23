@@ -119,7 +119,14 @@ const wedges = [
   },
 ];
 
-const Roulette = ({ spinEnd, actionMode, closeActionMode }) => {
+const Roulette = ({
+  spinEnd,
+  actionMode,
+  vowels,
+  consonants,
+  letterSelected,
+  closeActionMode,
+}) => {
   /*
   useRef: referencia al elemento de la ruleta
   con const wheelRef = useRef(null); creamos un objeto con la propiedad current en null porque
@@ -332,7 +339,13 @@ const Roulette = ({ spinEnd, actionMode, closeActionMode }) => {
         </div>
       </section>
       {actionMode && (
-        <ActionModal actionMode = {actionMode} closeActionMode = {closeActionMode}/>
+        <ActionModal
+          actionMode={actionMode}
+          vowels={vowels}
+          consonants={consonants}
+          letterSelected={letterSelected}
+          closeActionMode={closeActionMode}
+        />
       )}
     </article>
   );
