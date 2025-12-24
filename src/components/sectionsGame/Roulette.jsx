@@ -119,7 +119,7 @@ const wedges = [
   },
 ];
 
-const Roulette = ({ spinEnd }) => {
+const Roulette = ({ rouletteDisabled, spinEnd, startSpin}) => {
   /*
   useRef: referencia al elemento de la ruleta
   con const wheelRef = useRef(null); creamos un objeto con la propiedad current en null porque
@@ -214,6 +214,7 @@ const Roulette = ({ spinEnd }) => {
     // Si ya está girando, ignoramos el click
     if (isSpinning) return;
 
+    startSpin();
     setIsSpinning(true);
     setIndicatorActive(false);
 
@@ -294,7 +295,7 @@ const Roulette = ({ spinEnd }) => {
           id="spinButton"
           className="roulette__wheel--btn"
           onClick={handleSpin}
-          disabled={isSpinning}
+          disabled={isSpinning || rouletteDisabled}
         >
           TIRAR
         </button>

@@ -5,6 +5,7 @@ import Markers from "./sectionsGame/Markers";
 import Panel from "./sectionsGame/Panel";
 import Roulette from "./sectionsGame/Roulette";
 import ActionModal from "./sectionsGame/Modal/ActionModal";
+import { countLetterInPhrase } from "../utils/gameUtils";
 
 const initialVowels = [
   { letter: "A", enabled: true },
@@ -47,10 +48,10 @@ const GamePage = () => {
   const [clue, setclue] = useState("Esta es la pista de la frase");
 
   // Puntucion del jugador
-  const [playerScore, setPlayerScore] = useState(null);
+  const [playerScore, setPlayerScore] = useState(0);
 
   // Puntuacion de la computadora
-  const [computerScore, setComputerScore] = useState(null);
+  const [computerScore, setComputerScore] = useState(0);
 
   // Mensaje para RoundInfo
   const [messageRoundInfo, setMessageRoundInfo] = useState("");
@@ -88,7 +89,7 @@ const GamePage = () => {
     setRouletteDisabled(true);
 
     // Deshabilitamos botones por seguridad
-      setControlsDisabled(true);
+    setControlsDisabled(true);
 
     // Actualizamos mensaje y habilitamos botones dependiendo de la accion
     if (wedge.action === "sumar") {
@@ -128,7 +129,8 @@ const GamePage = () => {
 
   // Funcion para actualizar las vocales o consonantes elegidas
   const handleletterSelected = (letter, modalMode) => {
-    setselectedLetters([...selectedLetters, letter]);
+    setselectedLetters((prev) => [...prev, letter]);
+
     if (modalMode === "vowel") {
       setVowels((prev) =>
         prev.map((item) =>
@@ -142,6 +144,30 @@ const GamePage = () => {
         )
       );
     }
+
+    // Calculamos los puntos
+    // Si la accion no es sumar o superPremio no hacemos nada
+    if (
+      !currentWedge ||
+      (currentWedge.action !== "sumar" && currentWedge.action !== "superPremio")
+    ) {
+      return;
+    }
+
+    // Si no usamos la funcion para calcular cuantas letras hay de la elegida en la frase
+    const hits = countLetterInPhrase(phrase, letter);
+
+    if (hits > 0) {
+      const earned = hits * currentWedge.value;
+
+      setPlayerScore((prev) => prev + earned);
+
+      setMessageRoundInfo(
+        `La letra ${letter} aparece ${hits} vez/veces. Ganas ${earned} (${hits} × ${currentWedge.value}).`
+      );
+    } else {
+      setMessageRoundInfo(`La letra ${letter} no está en la frase 😬`);
+    }
   };
 
   // Función para cerrar el modal, habilitar la ruleta, desactivar botones
@@ -150,6 +176,12 @@ const GamePage = () => {
     setRouletteDisabled(false);
     setControlsDisabled(true);
   };
+
+  // Funcion para resetear valores cuando vuelve as girar la ruleta:
+  const startSpin = () => {
+  setMessageRoundInfo("");
+  setcurrentWedge(null);
+};
 
   return (
     <main className="gameMain">
@@ -160,7 +192,7 @@ const GamePage = () => {
         messageRoundInfo={messageRoundInfo}
       />
       <article className="gameMain__rouletteArea">
-        <Roulette rouletteDisabled={rouletteDisabled} spinEnd={spinEnd} />
+        <Roulette rouletteDisabled={rouletteDisabled} spinEnd={spinEnd} startSpin={startSpin}/>
         {modalMode && (
           <ActionModal
             modalMode={modalMode}

@@ -2,8 +2,8 @@ import "../../styles/layout/sectionGame/RoundInfo.scss";
 
 const RoundInfo = ({ messageRoundInfo }) => {
   return (
-    <article>
-      <p className="roundInfo">{messageRoundInfo}</p>
+    <article className="roundInfo">
+      <p  className="roundInfo__text">{messageRoundInfo}</p>
     </article>
   );
 };
