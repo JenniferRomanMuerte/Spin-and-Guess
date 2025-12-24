@@ -212,7 +212,7 @@ const Roulette = ({ rouletteDisabled, spinEnd, startSpin}) => {
   // Función para girar la ruleta
   const handleSpin = () => {
     // Si ya está girando, ignoramos el click
-    if (isSpinning) return;
+    if (isSpinning  || rouletteDisabled) return;
 
     startSpin();
     setIsSpinning(true);
