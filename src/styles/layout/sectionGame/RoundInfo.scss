@@ -1,0 +1,11 @@
+@use "../../core/variables" as var;
+
+.roundInfo{
+  color: var.$color-primary;
+  font-size: clamp(1.4rem, 2.8vw, 2.8rem);
+  font-family: var.$font_family_comic;
+  font-weight: 600;
+  text-shadow: 1px 1px 2px var.$color-bgPanel-1;
+  letter-spacing: 1px;
+  padding-bottom: 1rem;
+}

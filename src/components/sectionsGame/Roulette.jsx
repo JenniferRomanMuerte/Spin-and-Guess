@@ -333,7 +333,7 @@ const Roulette = ({
                 }}
               >
                 {/* Texto del gajo, que se pinta siguiendo los estilos de .roulette__label */}
-                <span className="roulette__label">{wedge.label}</span>
+                <span className="roulette__label" >{wedge.label}</span>
               </div>
             ))}
         </div>

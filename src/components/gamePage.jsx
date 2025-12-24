@@ -120,7 +120,7 @@ const GamePage = () => {
   return (
     <main className="gameMain">
       <Panel phrase={phrase} clue={clue} selectedLetter={selectedLetter} />
-      <Markers />
+      <Markers wedgeResult={wedgeResult} />
       <Roulette
         spinEnd={spinEnd}
         actionMode={actionMode}
