@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import "../styles/layout/GameMain.scss";
 import ControlsGame from "./sectionsGame/ControlsGame";
 import Markers from "./sectionsGame/Markers";
@@ -40,12 +40,12 @@ const initialConsonants = [
   { letter: "Z", enabled: true },
 ];
 
-const GamePage = () => {
+const GamePage = ({ namePlayer, turn, changeTurn }) => {
   // Para almacenar la frase
-  const [phrase, setphrase] = useState("La ruleta de la suerte");
+  const [phrase, setPhrase] = useState("La ruleta de la suerte");
 
   // Para almacenar la pista de la  frase
-  const [clue, setclue] = useState("Esta es la pista de la frase");
+  const [clue, setClue] = useState("Esta es la pista de la frase");
 
   // Puntucion del jugador
   const [playerScore, setPlayerScore] = useState(0);
@@ -66,10 +66,10 @@ const GamePage = () => {
   const [hasJocker, setHasJocker] = useState(false);
 
   // Para saber el gajo que ha salido en la ruleta
-  const [currentWedge, setcurrentWedge] = useState(null);
+  const [currentWedge, setCurrentWedge] = useState(null);
 
   // Controlamos el modal que vamos a mostrar para la accion elegida en controlsGame
-  const [modalMode, setmodalMode] = useState(null);
+  const [modalMode, setModalMode] = useState(null);
 
   // Para almacenar las vocales que hay, activas o desactivas
   const [vowels, setVowels] = useState(initialVowels);
@@ -78,12 +78,48 @@ const GamePage = () => {
   const [consonants, setConsonants] = useState(initialConsonants);
 
   // Para almacenar las letras elegida
-  const [selectedLetters, setselectedLetters] = useState([]);
+  const [selectedLetters, setSelectedLetters] = useState([]);
+
+  /*
+  Para almacenar el nº que devuelve setTimeout).
+  Asi no se actualiza con ningun render
+  */
+  const messageTimeoutRef = useRef(null);
+
+  // Muestra un mensaje y lo borra automáticamente pasado X tiempo.
+  const setMessageTemp = (text, ms = 3000) => {
+    // Actualizamos el mensaje con el texto que recibimos
+    setMessageRoundInfo(text);
+
+    // Si ya había un timeout anterior programado, lo cancelamos.
+    if (messageTimeoutRef.current) {
+      clearTimeout(messageTimeoutRef.current);
+    }
+
+    // Creamos un  timeout y guardamos su ID en el ref.
+    messageTimeoutRef.current = setTimeout(() => {
+      // Borramos el mensaje pasados los ms
+      setMessageRoundInfo("");
+
+      //Limpiamos el ref para dejar claro que ya no hay timeout activo
+      messageTimeoutRef.current = null;
+    }, ms);
+  };
+
+  // Para limpiar el timeout si el componente se va de pantalla
+  useEffect(() => {
+    return () => {
+      // Si había un timeout pendiente, lo cancelamos.
+      if (messageTimeoutRef.current) {
+        clearTimeout(messageTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Función para guardar el gajo y actualizar los estados de botones, ruleta y mensaje
   const spinEnd = (wedge) => {
     // Guardamos el gajo que ha salido
-    setcurrentWedge(wedge);
+    setCurrentWedge(wedge);
 
     // Bloqueamos la ruleta
     setRouletteDisabled(true);
@@ -103,10 +139,12 @@ const GamePage = () => {
       setControlsDisabled(false);
       setHasJocker(true);
     } else if (wedge.action === "pierdeTurno") {
-      setMessageRoundInfo("Lo siento has perdido el turno");
+      setMessageTemp("Lo siento, has perdido el turno", 3000);
+      goToComputerTurn();
     } else if (wedge.action === "quiebra") {
-      setMessageRoundInfo("Ohhh, lo has perdido todo");
+      setMessageTemp("Ohhh, lo has perdido todo", 3000);
       setPlayerScore(0);
+      goToComputerTurn();
     }
   };
 
@@ -117,19 +155,19 @@ const GamePage = () => {
 
     if (text === "Comodin") {
       setHasJocker(false);
-      setmodalMode("joker");
+      setModalMode("joker");
     } else if (text === "Vocal") {
-      setmodalMode("vowel");
+      setModalMode("vowel");
     } else if (text === "Consonante") {
-      setmodalMode("consonant");
+      setModalMode("consonant");
     } else if (text === "Resolver") {
-      setmodalMode("solve");
+      setModalMode("solve");
     }
   };
 
   // Funcion para actualizar las vocales o consonantes elegidas
   const handleletterSelected = (letter, modalMode) => {
-    setselectedLetters((prev) => [...prev, letter]);
+    setSelectedLetters((prev) => [...prev, letter]);
 
     if (modalMode === "vowel") {
       setVowels((prev) =>
@@ -166,33 +204,49 @@ const GamePage = () => {
         `La letra ${letter} aparece ${hits} vez/veces. Ganas ${earned} (${hits} × ${currentWedge.value}).`
       );
     } else {
-      setMessageRoundInfo(`La letra ${letter} no está en la frase 😬`);
+      setMessageTemp(
+        `La letra ${letter} no está en la frase 😬, pierdes el turno`,
+        3000
+      );
+      goToComputerTurn();
     }
   };
 
   // Función para cerrar el modal, habilitar la ruleta, desactivar botones
   const closeModal = () => {
-    setmodalMode(null);
+    setModalMode(null);
     setRouletteDisabled(false);
     setControlsDisabled(true);
   };
 
   // Funcion para resetear valores cuando vuelve as girar la ruleta:
   const startSpin = () => {
-  setMessageRoundInfo("");
-  setcurrentWedge(null);
-};
+    setMessageRoundInfo("");
+    setCurrentWedge(null);
+  };
+
+  // Funcion para pasar el truno a la computadora
+  const goToComputerTurn = () => {
+    changeTurn("computer");
+    setControlsDisabled(true);
+    setRouletteDisabled(true);
+  };
 
   return (
     <main className="gameMain">
       <Panel phrase={phrase} clue={clue} selectedLetters={selectedLetters} />
       <Markers
+        namePlayer={namePlayer}
         playerScore={playerScore}
         computerScore={computerScore}
         messageRoundInfo={messageRoundInfo}
       />
       <article className="gameMain__rouletteArea">
-        <Roulette rouletteDisabled={rouletteDisabled} spinEnd={spinEnd} startSpin={startSpin}/>
+        <Roulette
+          rouletteDisabled={rouletteDisabled}
+          spinEnd={spinEnd}
+          startSpin={startSpin}
+        />
         {modalMode && (
           <ActionModal
             modalMode={modalMode}

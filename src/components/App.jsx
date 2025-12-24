@@ -4,12 +4,11 @@ import { Link } from "react-router-dom";
 import "../styles/layout/Main.scss";
 import rouletteImg from "../images/roulette.webp";
 
-function App() {
+function App({namePlayer, changeNamePlayer}) {
 
-  const [namePlayer, setnamePlayer] = useState('');
   const handleName = (ev) =>{
     ev.preventDefault();
-    setnamePlayer(ev.target.value);
+    changeNamePlayer(ev.target.value);
   }
 
   return (
@@ -42,7 +41,6 @@ function App() {
         <Link
         className="main__form-btnBegin"
         to="/game"
-        state={{namePlayer}}
         >
           A jugar!
         </Link>

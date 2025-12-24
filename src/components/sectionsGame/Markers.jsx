@@ -1,13 +1,9 @@
-import { useLocation } from "react-router-dom";
+
 import RoundInfo from "./RoundInfo";
 import "../../styles/layout/sectionGame/MarkersGame.scss";
 
-const Markers = ({ playerScore, computerScore, messageRoundInfo}) => {
+const Markers = ({ namePlayer, playerScore, computerScore, messageRoundInfo}) => {
 
-  const location = useLocation();
-
-  // Recuperamos el valor el nombre del jugador que está guardado en el estado
-  const namePlayer = location.state?.namePlayer;
 
   return (
     <article className="markers">
