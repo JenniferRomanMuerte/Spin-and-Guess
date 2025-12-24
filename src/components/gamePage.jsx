@@ -39,6 +39,12 @@ const initialConsonants = [
 ];
 
 const GamePage = () => {
+  // Para almacenar la frase
+  const [phrase, setphrase] = useState("La ruleta de la suerte");
+
+  // Para almacenar la pista de la  frase
+  const [clue, setclue] = useState("Esta es la pista de la frase");
+
   // Para activar o desactivar los botones de juego
   const [choose, setChoose] = useState(true);
 
@@ -51,11 +57,14 @@ const GamePage = () => {
   // Controlamos el modal que vamos a mostrar para la accion elegida en controlsGame
   const [actionMode, setActionMode] = useState(null);
 
-  // Para almacenar las vocales elegidas
+  // Para almacenar las vocales que hay, activas o desactivas
   const [vowels, setVowels] = useState(initialVowels);
 
-  // Para almacenar las vocales elegidas
+  // Para almacenar las  consonantes que hay, activas o desactivas
   const [consonants, setConsonants] = useState(initialConsonants);
+
+  // Para almacenar la letra elegida
+  const [selectedLetter, setSelectedLetter] = useState([]);
 
   // Función para cerrar el modal
   const closeActionMode = () => setActionMode(null);
@@ -75,9 +84,9 @@ const GamePage = () => {
     }
 
     if (source === "button") {
+      setChoose(true);
       if (action === "Comodin") {
         setHasJocker(true);
-        setChoose(true);
         setActionMode("joker");
       } else if (action === "Vocal") {
         setActionMode("vowel");
@@ -86,12 +95,13 @@ const GamePage = () => {
       } else if (action === "Resolver") {
         setActionMode("solve");
       } else {
-        setChoose(true);
+        setChoose(false);
       }
     }
   };
 
-  const letterSelected = (letter, actionMode) => {
+  const handleletterSelected = (letter, actionMode) => {
+    setSelectedLetter([...selectedLetter, letter]);
     if (actionMode === "vowel") {
       setVowels((prev) =>
         prev.map((item) =>
@@ -109,14 +119,14 @@ const GamePage = () => {
 
   return (
     <main className="gameMain">
-      <Panel />
+      <Panel phrase={phrase} clue={clue} selectedLetter={selectedLetter} />
       <Markers />
       <Roulette
         spinEnd={spinEnd}
         actionMode={actionMode}
         vowels={vowels}
         consonants={consonants}
-        letterSelected={letterSelected}
+        handleletterSelected={handleletterSelected}
         closeActionMode={closeActionMode}
       />
       <ControlsGame

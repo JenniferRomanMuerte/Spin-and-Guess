@@ -5,7 +5,7 @@ const ActionModal = ({
   actionMode,
   vowels,
   consonants,
-  letterSelected,
+  handleletterSelected,
   closeActionMode,
 }) => {
   return (
@@ -19,7 +19,7 @@ const ActionModal = ({
                 closeActionMode={closeActionMode}
                 vowels={vowels}
                 consonants={consonants}
-                letterSelected={letterSelected}
+                handleletterSelected={handleletterSelected}
               />
             )}
 

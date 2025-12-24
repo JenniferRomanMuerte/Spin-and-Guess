@@ -124,7 +124,7 @@ const Roulette = ({
   actionMode,
   vowels,
   consonants,
-  letterSelected,
+  handleletterSelected,
   closeActionMode,
 }) => {
   /*
@@ -343,7 +343,7 @@ const Roulette = ({
           actionMode={actionMode}
           vowels={vowels}
           consonants={consonants}
-          letterSelected={letterSelected}
+          handleletterSelected={handleletterSelected}
           closeActionMode={closeActionMode}
         />
       )}

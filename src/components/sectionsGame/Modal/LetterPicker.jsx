@@ -1,11 +1,11 @@
 import "../../../styles/layout/sectionGame/Modal.scss";
 
-const LetterPicker = ({ actionMode, closeActionMode, vowels, consonants, letterSelected}) => {
+const LetterPicker = ({ actionMode, closeActionMode, vowels, consonants, handleletterSelected}) => {
 
    const letters = actionMode === "vowel" ? vowels : consonants;
 
   const handleSelect = (letter) => {
-    letterSelected(letter, actionMode);
+    handleletterSelected(letter, actionMode);
     closeActionMode();
   };
 
