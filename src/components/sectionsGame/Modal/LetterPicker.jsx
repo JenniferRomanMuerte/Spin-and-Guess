@@ -1,24 +1,27 @@
 import "../../../styles/layout/sectionGame/Modal.scss";
 
-const LetterPicker = ({ actionMode, closeActionMode, vowels, consonants, handleletterSelected}) => {
-
-   const letters = actionMode === "vowel" ? vowels : consonants;
+const LetterPicker = ({
+  modalMode,
+  closemodalMode,
+  vowels,
+  consonants,
+  handleletterSelected,
+}) => {
+  const letters = modalMode === "vowel" ? vowels : consonants;
 
   const handleSelect = (letter) => {
-    handleletterSelected(letter, actionMode);
-    closeActionMode();
+    handleletterSelected(letter, modalMode);
+    closemodalMode();
   };
 
   return (
     <div className="letterPicker">
       <h2 className="letterPicker__title">
-        {actionMode === "vowel"
-          ? "Elige una vocal"
-          : "Elige una consonante"}
+        {modalMode === "vowel" ? "Elige una vocal" : "Elige una consonante"}
       </h2>
 
       <ul className="letterPicker__list">
-        {letters.map(({letter,enabled}) => (
+        {letters.map(({ letter, enabled }) => (
           <li key={letter}>
             <button
               className="letterPicker__button"

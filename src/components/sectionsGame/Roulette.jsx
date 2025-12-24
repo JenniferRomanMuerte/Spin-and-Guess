@@ -121,11 +121,11 @@ const wedges = [
 
 const Roulette = ({
   spinEnd,
-  actionMode,
+  modalMode,
   vowels,
   consonants,
   handleletterSelected,
-  closeActionMode,
+  closemodalMode,
 }) => {
   /*
   useRef: referencia al elemento de la ruleta
@@ -333,18 +333,18 @@ const Roulette = ({
                 }}
               >
                 {/* Texto del gajo, que se pinta siguiendo los estilos de .roulette__label */}
-                <span className="roulette__label" >{wedge.label}</span>
+                <span className="roulette__label">{wedge.label}</span>
               </div>
             ))}
         </div>
       </section>
-      {actionMode && (
+      {modalMode && (
         <ActionModal
-          actionMode={actionMode}
+          modalMode={modalMode}
           vowels={vowels}
           consonants={consonants}
           handleletterSelected={handleletterSelected}
-          closeActionMode={closeActionMode}
+          closemodalMode={closemodalMode}
         />
       )}
     </article>

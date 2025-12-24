@@ -1,11 +1,9 @@
 import "../../styles/layout/sectionGame/RoundInfo.scss";
 
-const RoundInfo = ({wedgeResult}) => {
+const RoundInfo = ({ messageRoundInfo }) => {
   return (
     <article>
-      {wedgeResult !== null &&<p className="roundInfo">
-        Juegas por:  {wedgeResult.value}
-      </p>}
+      <p className="roundInfo">{messageRoundInfo}</p>
     </article>
   );
 };

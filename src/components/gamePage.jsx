@@ -45,17 +45,26 @@ const GamePage = () => {
   // Para almacenar la pista de la  frase
   const [clue, setclue] = useState("Esta es la pista de la frase");
 
+  // Puntucion del jugador
+  const [playerScore, setPlayerScore] = useState(null);
+
+  // Puntuacion de la computadora
+  const [computerScore, setComputerScore] = useState(null);
+
+  // Mensaje para RoundInfo
+  const [messageRoundInfo, setMessageRoundInfo] = useState("");
+
   // Para activar o desactivar los botones de juego
-  const [choose, setChoose] = useState(true);
+  const [controlsDisabled, setcontrolsDisabled] = useState(true);
 
   // Para saber si tiene comodin
   const [hasJocker, setHasJocker] = useState(true);
 
   // Para saber el gajo que ha salido en la ruleta
-  const [wedgeResult, setWedgeResult] = useState(null);
+  const [currentWedge, setcurrentWedge] = useState(null);
 
   // Controlamos el modal que vamos a mostrar para la accion elegida en controlsGame
-  const [actionMode, setActionMode] = useState(null);
+  const [modalMode, setmodalMode] = useState(null);
 
   // Para almacenar las vocales que hay, activas o desactivas
   const [vowels, setVowels] = useState(initialVowels);
@@ -63,52 +72,70 @@ const GamePage = () => {
   // Para almacenar las  consonantes que hay, activas o desactivas
   const [consonants, setConsonants] = useState(initialConsonants);
 
-  // Para almacenar la letra elegida
-  const [selectedLetter, setSelectedLetter] = useState([]);
+  // Para almacenar las letras elegida
+  const [selectedLetters, setselectedLetters] = useState([]);
 
   // Función para cerrar el modal
-  const closeActionMode = () => setActionMode(null);
+  const closemodalMode = () => setmodalMode(null);
 
-  // Función para guardar el gajo y actualizar los estados de los botones
+  // Función para guardar el gajo y actualizar los estados de botones y mensaje
   const spinEnd = (wedge) => {
-    setWedgeResult(wedge);
-    updateControls({ source: "roulette", action: wedge.label });
+    setcurrentWedge(wedge);
+    updateControls({ source: "roulette", action: wedge.action });
+
+    if (wedge.action === "sumar") {
+      setMessageRoundInfo(`Juegas por ${wedge.value}`);
+    } else if (wedge.action === "superPremio") {
+      setMessageRoundInfo(`SUPERPREMIO!!! Juegas por:  ${wedge.value}`);
+    } else if (wedge.action === "pierdeTurno") {
+      setMessageRoundInfo("Lo siento has perdido el turno");
+    } else if (wedge.action === "quiebra") {
+      setMessageRoundInfo("Ohhh, lo has perdido todo");
+      setPlayerScore(0);
+    } else if (wedge.action === "comodin") {
+      setMessageRoundInfo("Enhorabuena! Has consegido un comodin");
+    }
   };
 
   // Funcion para actualizar los estados de los controles
   const updateControls = ({ source, action }) => {
     if (source === "roulette") {
-      setChoose(false); // tras girar, bloqueas elegir hasta que pulses algo
-      setHasJocker(action !== "COMODIN"); // solo true si ha salido COMODIN
+      setHasJocker(action !== "comodin"); // solo true si ha salido COMODIN
+      if (action === "pierdeTurno" || action === "quiebra") {
+        return;
+      } else {
+        setcontrolsDisabled(false);
+      }
       return;
     }
 
     if (source === "button") {
-      setChoose(true);
+      setcontrolsDisabled(true);
       if (action === "Comodin") {
         setHasJocker(true);
-        setActionMode("joker");
+        setmodalMode("joker");
       } else if (action === "Vocal") {
-        setActionMode("vowel");
+        setmodalMode("vowel");
       } else if (action === "Consonante") {
-        setActionMode("consonant");
+        setmodalMode("consonant");
       } else if (action === "Resolver") {
-        setActionMode("solve");
+        setmodalMode("solve");
       } else {
-        setChoose(false);
+        setcontrolsDisabled(false);
       }
     }
   };
 
-  const handleletterSelected = (letter, actionMode) => {
-    setSelectedLetter([...selectedLetter, letter]);
-    if (actionMode === "vowel") {
+  // Funcion para actualizar las vocales o consonantes elegidas
+  const handleletterSelected = (letter, modalMode) => {
+    setselectedLetters([...selectedLetters, letter]);
+    if (modalMode === "vowel") {
       setVowels((prev) =>
         prev.map((item) =>
           item.letter === letter ? { ...item, enabled: false } : item
         )
       );
-    } else if (actionMode === "consonant") {
+    } else if (modalMode === "consonant") {
       setConsonants((prev) =>
         prev.map((item) =>
           item.letter === letter ? { ...item, enabled: false } : item
@@ -119,18 +146,23 @@ const GamePage = () => {
 
   return (
     <main className="gameMain">
-      <Panel phrase={phrase} clue={clue} selectedLetter={selectedLetter} />
-      <Markers wedgeResult={wedgeResult} />
+      <Panel phrase={phrase} clue={clue} selectedLetters={selectedLetters} />
+      <Markers
+        playerScore={playerScore}
+        computerScore={computerScore}
+        messageRoundInfo={messageRoundInfo}
+      />
+      
       <Roulette
         spinEnd={spinEnd}
-        actionMode={actionMode}
+        modalMode={modalMode}
         vowels={vowels}
         consonants={consonants}
         handleletterSelected={handleletterSelected}
-        closeActionMode={closeActionMode}
+        closemodalMode={closemodalMode}
       />
       <ControlsGame
-        choose={choose}
+        controlsDisabled={controlsDisabled}
         hasJocker={hasJocker}
         updateControls={updateControls}
       />
