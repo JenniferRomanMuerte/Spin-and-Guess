@@ -3,6 +3,7 @@
 
 .gameMain {
   @include mix.bgMain();
+
   display: grid;
   grid-template-areas:
     "panel"
@@ -14,5 +15,9 @@
       "panel roulette"
       "controls roulette"
       "markers markers";
+  }
+
+  &__rouletteArea{
+    position: relative;
   }
 }

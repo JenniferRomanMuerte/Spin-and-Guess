@@ -4,6 +4,7 @@ import ControlsGame from "./sectionsGame/ControlsGame";
 import Markers from "./sectionsGame/Markers";
 import Panel from "./sectionsGame/Panel";
 import Roulette from "./sectionsGame/Roulette";
+import ActionModal from "./sectionsGame/Modal/ActionModal";
 
 const initialVowels = [
   { letter: "A", enabled: true },
@@ -152,15 +153,19 @@ const GamePage = () => {
         computerScore={computerScore}
         messageRoundInfo={messageRoundInfo}
       />
-      
+      <article className = "gameMain__rouletteArea">
       <Roulette
         spinEnd={spinEnd}
-        modalMode={modalMode}
-        vowels={vowels}
-        consonants={consonants}
-        handleletterSelected={handleletterSelected}
-        closemodalMode={closemodalMode}
       />
+       {modalMode && <ActionModal
+          modalMode={modalMode}
+          vowels={vowels}
+          consonants={consonants}
+          handleletterSelected={handleletterSelected}
+          closemodalMode={closemodalMode}
+        />
+       }
+      </article>
       <ControlsGame
         controlsDisabled={controlsDisabled}
         hasJocker={hasJocker}

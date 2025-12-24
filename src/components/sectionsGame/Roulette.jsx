@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "../../styles/layout/sectionGame/RouletteGame.scss";
-import ActionModal from "./Modal/ActionModal";
+
 
 // Array con los gajos de la ruleta
 // Cada objeto es un gajo: qué texto muestra, qué color/tema tiene y qué acción haría
@@ -119,14 +119,7 @@ const wedges = [
   },
 ];
 
-const Roulette = ({
-  spinEnd,
-  modalMode,
-  vowels,
-  consonants,
-  handleletterSelected,
-  closemodalMode,
-}) => {
+const Roulette = ({ spinEnd }) => {
   /*
   useRef: referencia al elemento de la ruleta
   con const wheelRef = useRef(null); creamos un objeto con la propiedad current en null porque
@@ -286,16 +279,16 @@ const Roulette = ({
   };
 
   return (
-    <article className="roulette">
+    <section className="roulette">
       {/* Indicador (flecha) arriba de la ruleta */}
-      <section
+      <div
         className={`roulette__indicator ${
           indicatorActive ? "roulette__indicator--active" : ""
         }`}
-      ></section>
+      ></div>
 
       {/* Círculo de la ruleta. ref={wheelRef} conecta este elemento con wheelRef.current */}
-      <section className="roulette__wheel" id="rouletteWheel" ref={wheelRef}>
+      <div className="roulette__wheel" id="rouletteWheel" ref={wheelRef}>
         {/* Botón central de "TIRAR" */}
         <button
           id="spinButton"
@@ -337,17 +330,8 @@ const Roulette = ({
               </div>
             ))}
         </div>
-      </section>
-      {modalMode && (
-        <ActionModal
-          modalMode={modalMode}
-          vowels={vowels}
-          consonants={consonants}
-          handleletterSelected={handleletterSelected}
-          closemodalMode={closemodalMode}
-        />
-      )}
-    </article>
+      </div>
+    </section>
   );
 };
 
