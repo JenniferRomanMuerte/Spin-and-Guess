@@ -2,7 +2,7 @@ import "../../../styles/layout/sectionGame/Modal.scss";
 
 const LetterPicker = ({
   modalMode,
-  closemodalMode,
+  closeModal,
   vowels,
   consonants,
   handleletterSelected,
@@ -11,7 +11,7 @@ const LetterPicker = ({
 
   const handleSelect = (letter) => {
     handleletterSelected(letter, modalMode);
-    closemodalMode();
+    closeModal();
   };
 
   return (

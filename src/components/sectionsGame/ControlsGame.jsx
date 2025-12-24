@@ -4,7 +4,7 @@ import Button from "./ButtonsGame";
 const ControlsGame = ({
   controlsDisabled,
   hasJocker,
-  updateControls,
+  updateControlsGame,
   selectedAction,
 }) => {
   return (
@@ -12,25 +12,25 @@ const ControlsGame = ({
       <Button
         disabled={controlsDisabled}
         text="Consonante"
-        updateControls={updateControls}
+        updateControlsGame={updateControlsGame}
         selectedAction={selectedAction}
       />
       <Button
         disabled={controlsDisabled}
         text="Vocal"
-        updateControls={updateControls}
+        updateControlsGame={updateControlsGame}
         selectedAction={selectedAction}
       />
       <Button
-        disabled={hasJocker}
+        disabled={!hasJocker}
         text="Comodin"
-        updateControls={updateControls}
+        updateControlsGame={updateControlsGame}
         selectedAction={selectedAction}
       />
       <Button
         disabled={controlsDisabled}
         text="Resolver"
-        updateControls={updateControls}
+        updateControlsGame={updateControlsGame}
         selectedAction={selectedAction}
       />
     </article>

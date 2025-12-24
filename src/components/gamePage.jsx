@@ -56,10 +56,13 @@ const GamePage = () => {
   const [messageRoundInfo, setMessageRoundInfo] = useState("");
 
   // Para activar o desactivar los botones de juego
-  const [controlsDisabled, setcontrolsDisabled] = useState(true);
+  const [controlsDisabled, setControlsDisabled] = useState(true);
+
+  // Para activar o desactivar el botón de girar la ruleta
+  const [rouletteDisabled, setRouletteDisabled] = useState(false);
 
   // Para saber si tiene comodin
-  const [hasJocker, setHasJocker] = useState(true);
+  const [hasJocker, setHasJocker] = useState(false);
 
   // Para saber el gajo que ha salido en la ruleta
   const [currentWedge, setcurrentWedge] = useState(null);
@@ -76,54 +79,50 @@ const GamePage = () => {
   // Para almacenar las letras elegida
   const [selectedLetters, setselectedLetters] = useState([]);
 
-  // Función para cerrar el modal
-  const closemodalMode = () => setmodalMode(null);
-
-  // Función para guardar el gajo y actualizar los estados de botones y mensaje
+  // Función para guardar el gajo y actualizar los estados de botones, ruleta y mensaje
   const spinEnd = (wedge) => {
+    // Guardamos el gajo que ha salido
     setcurrentWedge(wedge);
-    updateControls({ source: "roulette", action: wedge.action });
 
+    // Bloqueamos la ruleta
+    setRouletteDisabled(true);
+
+    // Deshabilitamos botones por seguridad
+      setControlsDisabled(true);
+
+    // Actualizamos mensaje y habilitamos botones dependiendo de la accion
     if (wedge.action === "sumar") {
       setMessageRoundInfo(`Juegas por ${wedge.value}`);
+      setControlsDisabled(false);
     } else if (wedge.action === "superPremio") {
       setMessageRoundInfo(`SUPERPREMIO!!! Juegas por:  ${wedge.value}`);
+      setControlsDisabled(false);
+    } else if (wedge.action === "comodin") {
+      setMessageRoundInfo("Enhorabuena! Has consegido un comodin");
+      setControlsDisabled(false);
+      setHasJocker(true);
     } else if (wedge.action === "pierdeTurno") {
       setMessageRoundInfo("Lo siento has perdido el turno");
     } else if (wedge.action === "quiebra") {
       setMessageRoundInfo("Ohhh, lo has perdido todo");
       setPlayerScore(0);
-    } else if (wedge.action === "comodin") {
-      setMessageRoundInfo("Enhorabuena! Has consegido un comodin");
     }
   };
 
-  // Funcion para actualizar los estados de los controles
-  const updateControls = ({ source, action }) => {
-    if (source === "roulette") {
-      setHasJocker(action !== "comodin"); // solo true si ha salido COMODIN
-      if (action === "pierdeTurno" || action === "quiebra") {
-        return;
-      } else {
-        setcontrolsDisabled(false);
-      }
-      return;
-    }
+  // Funcion para actualizar los botones y mostrar un mopdal u otro
+  const updateControlsGame = ({ text }) => {
+    // Deshabiltamos los botones
+    setControlsDisabled(true);
 
-    if (source === "button") {
-      setcontrolsDisabled(true);
-      if (action === "Comodin") {
-        setHasJocker(true);
-        setmodalMode("joker");
-      } else if (action === "Vocal") {
-        setmodalMode("vowel");
-      } else if (action === "Consonante") {
-        setmodalMode("consonant");
-      } else if (action === "Resolver") {
-        setmodalMode("solve");
-      } else {
-        setcontrolsDisabled(false);
-      }
+    if (text === "Comodin") {
+      setHasJocker(false);
+      setmodalMode("joker");
+    } else if (text === "Vocal") {
+      setmodalMode("vowel");
+    } else if (text === "Consonante") {
+      setmodalMode("consonant");
+    } else if (text === "Resolver") {
+      setmodalMode("solve");
     }
   };
 
@@ -145,6 +144,13 @@ const GamePage = () => {
     }
   };
 
+  // Función para cerrar el modal, habilitar la ruleta, desactivar botones
+  const closeModal = () => {
+    setmodalMode(null);
+    setRouletteDisabled(false);
+    setControlsDisabled(true);
+  };
+
   return (
     <main className="gameMain">
       <Panel phrase={phrase} clue={clue} selectedLetters={selectedLetters} />
@@ -153,23 +159,22 @@ const GamePage = () => {
         computerScore={computerScore}
         messageRoundInfo={messageRoundInfo}
       />
-      <article className = "gameMain__rouletteArea">
-      <Roulette
-        spinEnd={spinEnd}
-      />
-       {modalMode && <ActionModal
-          modalMode={modalMode}
-          vowels={vowels}
-          consonants={consonants}
-          handleletterSelected={handleletterSelected}
-          closemodalMode={closemodalMode}
-        />
-       }
+      <article className="gameMain__rouletteArea">
+        <Roulette rouletteDisabled={rouletteDisabled} spinEnd={spinEnd} />
+        {modalMode && (
+          <ActionModal
+            modalMode={modalMode}
+            vowels={vowels}
+            consonants={consonants}
+            handleletterSelected={handleletterSelected}
+            closeModal={closeModal}
+          />
+        )}
       </article>
       <ControlsGame
         controlsDisabled={controlsDisabled}
         hasJocker={hasJocker}
-        updateControls={updateControls}
+        updateControlsGame={updateControlsGame}
       />
     </main>
   );

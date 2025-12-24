@@ -6,7 +6,7 @@ const ActionModal = ({
   vowels,
   consonants,
   handleletterSelected,
-  closemodalMode,
+  closeModal,
 }) => {
   return (
     <section className="modal">
@@ -15,20 +15,16 @@ const ActionModal = ({
           {(modalMode === "vowel" || modalMode === "consonant") && (
             <LetterPicker
               modalMode={modalMode}
-              closemodalMode={closemodalMode}
+              closeModal={closeModal}
               vowels={vowels}
               consonants={consonants}
               handleletterSelected={handleletterSelected}
             />
           )}
 
-          {modalMode === "solve" && (
-            <SolveForm closemodalMode={closemodalMode} />
-          )}
+          {modalMode === "solve" && <SolveForm closeModal={closeModal} />}
 
-          {modalMode === "jocker" && (
-            <JokerPanel closemodalMode={closemodalMode} />
-          )}
+          {modalMode === "joker" && <JokerPanel closeModal={closeModal} />}
         </div>
       </div>
     </section>
