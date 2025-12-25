@@ -22,6 +22,16 @@ export const useRoundInfoMessages = (setMessage) => {
     setMessage("");
   }, [cancelTimeout, setMessage]);
 
+
+    // Resetea la cola de mensajes (corta todo lo pendiente)
+  const resetQueue = useCallback(() => {
+    cancelTimeout();
+    setMessage("");
+    queueRef.current = Promise.resolve();
+  }, [cancelTimeout, setMessage]);
+
+
+
   // Muestra un mensaje fijo (no se borra solo)
   const show = useCallback(
     (text) => {
@@ -75,5 +85,5 @@ export const useRoundInfoMessages = (setMessage) => {
     };
   }, []);
 
-  return { show, showTemp, enqueue, clear, cancelTimeout };
+  return { show, showTemp, enqueue, clear,  resetQueue, cancelTimeout};
 };
