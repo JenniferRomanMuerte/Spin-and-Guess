@@ -1,4 +1,4 @@
-const initialVowels = [
+export  const initialVowels = [
   { letter: "A", enabled: true },
   { letter: "E", enabled: true },
   { letter: "I", enabled: true },
@@ -6,7 +6,7 @@ const initialVowels = [
   { letter: "U", enabled: true },
 ];
 
-const initialConsonants = [
+export  const initialConsonants = [
   { letter: "B", enabled: true },
   { letter: "C", enabled: true },
   { letter: "D", enabled: true },

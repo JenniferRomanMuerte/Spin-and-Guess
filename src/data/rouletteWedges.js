@@ -1,6 +1,6 @@
 // Array con los gajos de la ruleta
 // Cada objeto es un gajo: qué texto muestra, qué color/tema tiene y qué acción haría
-const wedges = [
+export const wedges = [
   {
     label: "200",
     theme: "pink",
