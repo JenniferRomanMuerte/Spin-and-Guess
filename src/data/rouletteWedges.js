@@ -16,11 +16,11 @@ export const wedges = [
     value: 0,
   },
   {
-    label: "300",
+    label: "100",
     theme: "orange",
     color: "var(--color-wedge-orange)",
     action: "sumar",
-    value: 300,
+    value: 100,
   },
   {
     label: "PIERDE TURNO",
@@ -37,12 +37,13 @@ export const wedges = [
     value: 1000,
   },
   {
-    label: "400",
+    label: "50",
     theme: "blue",
     color: "var(--color-wedge-blue)",
     action: "sumar",
-    value: 400,
+    value: 50,
   },
+  /*
   {
     label: "COMODIN",
     theme: "gold",
@@ -50,19 +51,20 @@ export const wedges = [
     action: "comodin",
     value: 0,
   },
+  */
   {
-    label: "500",
+    label: "150",
     theme: "green",
     color: "var(--color-wedge-green)",
     action: "sumar",
-    value: 500,
+    value: 150,
   },
   {
-    label: "600",
+    label: "200",
     theme: "pink",
     color: "var(--color-wedge-pink)",
     action: "sumar",
-    value: 600,
+    value: 200,
   },
   {
     label: "QUIEBRA",
@@ -72,18 +74,18 @@ export const wedges = [
     value: 0,
   },
   {
-    label: "700",
+    label: "50",
     theme: "blue",
     color: "var(--color-wedge-blue)",
     action: "sumar",
-    value: 700,
+    value: 50,
   },
   {
-    label: "800",
+    label: "100",
     theme: "orange",
     color: "var(--color-wedge-orange)",
     action: "sumar",
-    value: 800,
+    value: 100,
   },
   {
     label: "PIERDE TURNO",
@@ -93,11 +95,11 @@ export const wedges = [
     value: 0,
   },
   {
-    label: "900",
+    label: "150",
     theme: "green",
     color: "var(--color-wedge-green)",
     action: "sumar",
-    value: 900,
+    value: 150,
   },
   {
     label: "1000",
