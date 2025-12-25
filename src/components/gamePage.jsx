@@ -181,9 +181,33 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
   const handleComputerSpinEnd = async (wedge) => {
   // Si no es gajo de puntos: solo informamos
   if (!isScoringWedge(wedge)) {
-   await enqueue(`La computadora cayó en: ${wedge.label}`, 2000);
+    // Quiebra: resetea puntuación de la compu y pasa turno
+    if (wedge.action === "quiebra") {
+      setComputerScore(0);
+      await enqueue("¡Quiebra! La computadora pierde todos sus puntos 💸", 2000);
+      goToPlayerTurn();
+      return;
+    }
+
+    // Pierde turno: pasa turno directamente
+    if (wedge.action === "pierdeTurno") {
+      await enqueue("La computadora pierde el turno. Te toca 👇", 2000);
+      goToPlayerTurn();
+      return;
+    }
+
+    // Comodín: por ahora solo lo anunciamos (luego decides si lo guarda)
+    if (wedge.action === "comodin") {
+      await enqueue("La computadora consigue un comodín 🎟️", 2000);
+      // Regla simple: pasa turno (o si quieres que siga jugando, aquí harías rouletteRef.current?.spin())
+      goToPlayerTurn();
+      return;
+    }
+
+    // Cualquier otra acción no contemplada
     goToPlayerTurn();
     return;
+
   }
 
   // Gajo de puntos: elige consonante y calcula
