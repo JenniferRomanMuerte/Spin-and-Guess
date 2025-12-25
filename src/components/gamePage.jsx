@@ -1,150 +1,228 @@
 import { useState, useRef, useEffect } from "react";
 import "../styles/layout/GameMain.scss";
+
 import ControlsGame from "./sectionsGame/ControlsGame";
 import Markers from "./sectionsGame/Markers";
 import Panel from "./sectionsGame/Panel";
 import Roulette from "./sectionsGame/Roulette";
 import ActionModal from "./sectionsGame/Modal/ActionModal";
-import { countLetterInPhrase } from "../utils/gameUtils";
 
+import { countLetterInPhrase } from "../utils/gameUtils";
+import { useRoundInfoMessages } from "../hooks/useRoundInfoMessages";
 import { initialVowels, initialConsonants } from "../data/letters";
 
 const GamePage = ({ namePlayer, turn, changeTurn }) => {
-  // Para almacenar la frase
-  const [phrase, setPhrase] = useState("La ruleta de la suerte");
+  /******************************************************************
+   * REFS (no provocan re-render)
+   ******************************************************************/
+  // Permite llamar a métodos del componente Roulette (spin)
+  const rouletteRef = useRef(null);
 
-  // Para almacenar la pista de la  frase
-  const [clue, setClue] = useState("Esta es la pista de la frase");
+  // Timeout para retrasar el cambio de turno (para que se vea el mensaje)
+  const turnTimeoutRef = useRef(null);
 
-  // Puntucion del jugador
+  // Evita doble giro automático en desarrollo (StrictMode)
+  const didComputerSpinRef = useRef(false);
+
+  /******************************************************************
+   * ESTADO DEL JUEGO (datos)
+   ******************************************************************/
+  // Frase y pista (luego vendrán de API o de un generador)
+  const [phrase] = useState("La ruleta de la suerte");
+  const [clue] = useState("Esta es la pista de la frase");
+
+  // Marcadores
   const [playerScore, setPlayerScore] = useState(0);
+  const [computerScore] = useState(0); // (por ahora no lo modificas)
 
-  // Puntuacion de la computadora
-  const [computerScore, setComputerScore] = useState(0);
-
-  // Mensaje para RoundInfo
+  // Info en pantalla (RoundInfo)
   const [messageRoundInfo, setMessageRoundInfo] = useState("");
 
-  // Para activar o desactivar los botones de juego
-  const [controlsDisabled, setControlsDisabled] = useState(true);
+  // Hook de mensajes (ahora usas show/showTemp/clear/cancelTimeout)
+  // enqueue está bien tenerlo aunque aún no lo uses (te servirá para encadenar mensajes)
+  const { show, showTemp, enqueue, clear, cancelTimeout } =
+    useRoundInfoMessages(setMessageRoundInfo);
 
-  // Para activar o desactivar el botón de girar la ruleta
-  const [rouletteDisabled, setRouletteDisabled] = useState(false);
-
-  // Para saber si tiene comodin
-  const [hasJocker, setHasJocker] = useState(false);
-
-  // Para saber el gajo que ha salido en la ruleta
-  const [currentWedge, setCurrentWedge] = useState(null);
-
-  // Controlamos el modal que vamos a mostrar para la accion elegida en controlsGame
-  const [modalMode, setModalMode] = useState(null);
-
-  // Para almacenar las vocales que hay, activas o desactivas
+  // Letras disponibles (enabled true/false)
   const [vowels, setVowels] = useState(initialVowels);
-
-  // Para almacenar las  consonantes que hay, activas o desactivas
   const [consonants, setConsonants] = useState(initialConsonants);
 
-  // Para almacenar las letras elegida
+  // Letras ya elegidas (para pintar en Panel)
   const [selectedLetters, setSelectedLetters] = useState([]);
 
-  /*
-  Para almacenar el nº que devuelve setTimeout).
-  Asi no se actualiza con ningun render
-  */
-  const messageTimeoutRef = useRef(null);
+  // Último gajo que salió en la ruleta
+  const [currentWedge, setCurrentWedge] = useState(null);
 
-  // Muestra un mensaje y lo borra automáticamente pasado X tiempo.
-  const setMessageTemp = (text, ms = 3000) => {
-    // Actualizamos el mensaje con el texto que recibimos
-    setMessageRoundInfo(text);
+  // Si el jugador tiene comodín
+  const [hasJocker, setHasJocker] = useState(false);
 
-    // Si ya había un timeout anterior programado, lo cancelamos.
-    if (messageTimeoutRef.current) {
-      clearTimeout(messageTimeoutRef.current);
+  /******************************************************************
+   * ESTADO DE UI (control de botones/modales)
+   ******************************************************************/
+  const [controlsDisabled, setControlsDisabled] = useState(true);
+  const [rouletteDisabled, setRouletteDisabled] = useState(false);
+  const [modalMode, setModalMode] = useState(null);
+
+  /******************************************************************
+   * HELPERS: timeouts / transición de turnos
+   ******************************************************************/
+  // Cancela el timeout pendiente de cambio de turno (si existe)
+  const cancelTurnTimeout = () => {
+    if (turnTimeoutRef.current) {
+      clearTimeout(turnTimeoutRef.current);
+      turnTimeoutRef.current = null;
     }
+  };
 
-    // Creamos un  timeout y guardamos su ID en el ref.
-    messageTimeoutRef.current = setTimeout(() => {
-      // Borramos el mensaje pasados los ms
-      setMessageRoundInfo("");
+  // Limpieza al desmontar (evita leaks)
+  useEffect(() => {
+  return cancelTurnTimeout;
+}, []);
 
-      //Limpiamos el ref para dejar claro que ya no hay timeout activo
-      messageTimeoutRef.current = null;
+  // Cambia al turno computer DESPUÉS de ms (para que el mensaje no se borre enseguida)
+  const goToComputerTurnAfter = (ms) => {
+    cancelTurnTimeout();
+    turnTimeoutRef.current = setTimeout(() => {
+      goToComputerTurn();
     }, ms);
   };
 
-  // Para limpiar el timeout si el componente se va de pantalla
+  /******************************************************************
+   * EFECTO: cuando entra el turno de la computadora, gira solo
+   ******************************************************************/
   useEffect(() => {
-    return () => {
-      // Si había un timeout pendiente, lo cancelamos.
-      if (messageTimeoutRef.current) {
-        clearTimeout(messageTimeoutRef.current);
-      }
-    };
-  }, []);
+    // Si no es turno computer: resetea candado y sal
+    if (turn !== "computer") {
+      didComputerSpinRef.current = false;
+      return;
+    }
 
-  // Función para guardar el gajo y actualizar los estados de botones, ruleta y mensaje
+    // StrictMode: evita doble ejecución
+    if (didComputerSpinRef.current) return;
+    didComputerSpinRef.current = true;
+
+    // Seguridad UI
+    setControlsDisabled(true);
+    setModalMode(null);
+
+    // Gira la ruleta automáticamente
+    rouletteRef.current?.spin();
+
+    // Mensaje (lo pones después porque startSpin limpia)
+    show("Turno de la computadora 🤖... girando la ruleta 🎛️");
+  }, [turn, show]);
+
+  /******************************************************************
+   * CALLBACK: la ruleta terminó de girar
+   * (cosas comunes + delega a jugador o computer)
+   ******************************************************************/
   const spinEnd = (wedge) => {
-    // Guardamos el gajo que ha salido
+    // Cosas comunes (siempre)
     setCurrentWedge(wedge);
-
-    // Bloqueamos la ruleta
     setRouletteDisabled(true);
-
-    // Deshabilitamos botones por seguridad
     setControlsDisabled(true);
 
-    // Actualizamos mensaje y habilitamos botones dependiendo de la accion
+    // Delegamos según turno
+    if (turn === "computer") handleComputerSpinEnd(wedge);
+    else handlePlayerSpinEnd(wedge);
+  };
+
+  /******************************************************************
+   * LÓGICA TURNO JUGADOR: qué pasa según el gajo
+   ******************************************************************/
+  const handlePlayerSpinEnd = (wedge) => {
     if (wedge.action === "sumar") {
-      setMessageRoundInfo(`Juegas por ${wedge.value}`);
+      show(`Juegas por ${wedge.value}`);
       setControlsDisabled(false);
-    } else if (wedge.action === "superPremio") {
-      setMessageRoundInfo(`SUPERPREMIO!!! Juegas por:  ${wedge.value}`);
+      return;
+    }
+
+    if (wedge.action === "superPremio") {
+      show(`SUPERPREMIO!!! Juegas por: ${wedge.value}`);
       setControlsDisabled(false);
-    } else if (wedge.action === "comodin") {
-      setMessageRoundInfo("Enhorabuena! Has consegido un comodin");
-      setControlsDisabled(false);
+      return;
+    }
+
+    if (wedge.action === "comodin") {
+      show("Enhorabuena! Has conseguido un comodín");
       setHasJocker(true);
-    } else if (wedge.action === "pierdeTurno") {
-      setMessageTemp("Lo siento, has perdido el turno", 3000);
-      goToComputerTurn();
-    } else if (wedge.action === "quiebra") {
-      setMessageTemp("Ohhh, lo has perdido todo", 3000);
+      setControlsDisabled(false);
+      return;
+    }
+
+    // IMPORTANTE: el ms del mensaje y el ms del cambio de turno deben ser el MISMO
+    if (wedge.action === "pierdeTurno") {
+      const ms = 2500;
+      showTemp("Lo siento, has perdido el turno", ms);
+      goToComputerTurnAfter(ms);
+      return;
+    }
+    if (wedge.action === "quiebra") {
+      const ms = 2500;
+      showTemp("Ohhh, lo has perdido todo", ms);
       setPlayerScore(0);
-      goToComputerTurn();
+      goToComputerTurnAfter(ms);
+      return;
     }
   };
 
-  // Funcion para actualizar los botones y mostrar un mopdal u otro
+  /******************************************************************
+   * LÓGICA TURNO COMPUTER (de momento solo informa)
+   ******************************************************************/
+  const handleComputerSpinEnd = (wedge) => {
+    // A futuro: aquí irá todo el flujo IA (elige letra, calcula, etc.)
+    showTemp(`La computadora juega por: ${wedge.label}`, 2000);
+
+    // TIP: aquí es donde luego usarás enqueue para encadenar mensajes.
+    // enqueue(`Cayó ${wedge.label}`, 1200);
+    // enqueue("Pensando...", 800);
+  };
+
+  /******************************************************************
+   * UI: botones de ControlsGame -> abre modal correspondiente
+   ******************************************************************/
   const updateControlsGame = ({ text }) => {
-    // Deshabiltamos los botones
     setControlsDisabled(true);
 
     if (text === "Comodin") {
       setHasJocker(false);
       setModalMode("joker");
-    } else if (text === "Vocal") {
+      return;
+    }
+    if (text === "Vocal") {
       setModalMode("vowel");
-    } else if (text === "Consonante") {
+      return;
+    }
+    if (text === "Consonante") {
       setModalMode("consonant");
-    } else if (text === "Resolver") {
+      return;
+    }
+    if (text === "Resolver") {
       setModalMode("solve");
+      return;
     }
   };
 
-  // Funcion para actualizar las vocales o consonantes elegidas
-  const handleletterSelected = (letter, modalMode) => {
+  /******************************************************************
+   * JUGADOR ELIGE LETRA (desde ActionModal)
+   * - desactiva la letra
+   * - calcula puntos si corresponde
+   * - si falla, pasa turno a computer con delay
+   ******************************************************************/
+  const handleLetterSelected = (letter, mode) => {
+    // Guarda letra seleccionada para pintar en Panel
     setSelectedLetters((prev) => [...prev, letter]);
 
-    if (modalMode === "vowel") {
+    // Desactiva la letra en su lista
+    if (mode === "vowel") {
       setVowels((prev) =>
         prev.map((item) =>
           item.letter === letter ? { ...item, enabled: false } : item
         )
       );
-    } else if (modalMode === "consonant") {
+    }
+
+    if (mode === "consonant") {
       setConsonants((prev) =>
         prev.map((item) =>
           item.letter === letter ? { ...item, enabled: false } : item
@@ -152,8 +230,7 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
       );
     }
 
-    // Calculamos los puntos
-    // Si la accion no es sumar o superPremio no hacemos nada
+    // Si el gajo actual no suma puntos, salimos
     if (
       !currentWedge ||
       (currentWedge.action !== "sumar" && currentWedge.action !== "superPremio")
@@ -161,71 +238,94 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
       return;
     }
 
-    // Si no usamos la funcion para calcular cuantas letras hay de la elegida en la frase
+    // Cuenta cuántas veces aparece la letra
     const hits = countLetterInPhrase(phrase, letter);
 
     if (hits > 0) {
       const earned = hits * currentWedge.value;
-
       setPlayerScore((prev) => prev + earned);
 
-      setMessageRoundInfo(
+      show(
         `La letra ${letter} aparece ${hits} vez/veces. Ganas ${earned} (${hits} × ${currentWedge.value}).`
       );
+      return;
     } else {
-      setMessageTemp(
+      // Fallo: mensaje + pasar turno tras delay (mismo ms)
+      const ms = 2500;
+      showTemp(
         `La letra ${letter} no está en la frase 😬, pierdes el turno`,
-        3000
+        ms
       );
-      goToComputerTurn();
+      goToComputerTurnAfter(ms);
     }
   };
 
-  // Función para cerrar el modal, habilitar la ruleta, desactivar botones
+  /******************************************************************
+   * MODAL: cerrar (vuelve a permitir girar)
+   ******************************************************************/
   const closeModal = () => {
     setModalMode(null);
     setRouletteDisabled(false);
     setControlsDisabled(true);
   };
 
-  // Funcion para resetear valores cuando vuelve as girar la ruleta:
+  /******************************************************************
+   * CUANDO EMPIEZA UN GIRO (desde Roulette)
+   * - cancela auto-clear del mensaje
+   * - limpia el texto
+   * - resetea el gajo actual
+   ******************************************************************/
   const startSpin = () => {
-    setMessageRoundInfo("");
-    setCurrentWedge(null);
-  };
+  cancelTurnTimeout(); // corta cambios de turno pendientes (goToComputerTurnAfter)
+  cancelTimeout();     // corta el auto-borrado del mensaje (showTemp)
+  clear();             // limpia el mensaje
+  setCurrentWedge(null);
+};
 
-  // Funcion para pasar el truno a la computadora
+  /******************************************************************
+   * CAMBIO DE TURNO: a computadora (inmediato)
+   * (el delay lo controla goToComputerTurnAfter)
+   ******************************************************************/
   const goToComputerTurn = () => {
     changeTurn("computer");
     setControlsDisabled(true);
     setRouletteDisabled(true);
   };
 
+  /******************************************************************
+   * RENDER
+   ******************************************************************/
   return (
     <main className="gameMain">
       <Panel phrase={phrase} clue={clue} selectedLetters={selectedLetters} />
+
       <Markers
         namePlayer={namePlayer}
         playerScore={playerScore}
         computerScore={computerScore}
         messageRoundInfo={messageRoundInfo}
       />
+
       <article className="gameMain__rouletteArea">
         <Roulette
+          ref={rouletteRef}
           rouletteDisabled={rouletteDisabled}
           spinEnd={spinEnd}
           startSpin={startSpin}
+          blockUserSpin={turn === "computer"} // bloquea el botón TIRAR cuando juega la computer
         />
+
         {modalMode && (
           <ActionModal
             modalMode={modalMode}
             vowels={vowels}
             consonants={consonants}
-            handleletterSelected={handleletterSelected}
+            handleletterSelected={handleLetterSelected} // ✅ nombre consistente
             closeModal={closeModal}
           />
         )}
       </article>
+
       <ControlsGame
         controlsDisabled={controlsDisabled}
         hasJocker={hasJocker}
