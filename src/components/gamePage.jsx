@@ -11,7 +11,7 @@ import {
   countLetterInPhrase,
   isScoringWedge,
   getRandomEnabledLetter,
-  pluralize
+  pluralize,
 } from "../utils/gameUtils";
 import { useRoundInfoMessages } from "../hooks/useRoundInfoMessages";
 import { initialVowels, initialConsonants } from "../data/letters";
@@ -45,7 +45,7 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
 
   // Hook de mensajes (ahora usas show/showTemp/clear/cancelTimeout)
   // enqueue está bien tenerlo aunque aún no lo uses (te servirá para encadenar mensajes)
-  const { show, showTemp, enqueue, clear,  resetQueue , cancelTimeout } =
+  const { show, showTemp, enqueue, clear, resetQueue, cancelTimeout } =
     useRoundInfoMessages(setMessageRoundInfo);
 
   // Letras disponibles (enabled true/false)
@@ -60,7 +60,6 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
 
   // Si el jugador tiene comodín
   const [hasJocker, setHasJocker] = useState(false);
-
 
   /******************************************************************
    * ESTADO DE UI (control de botones/modales)
@@ -179,92 +178,94 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
    * LÓGICA TURNO COMPUTER
    ******************************************************************/
   const handleComputerSpinEnd = async (wedge) => {
-  // Si no es gajo de puntos: solo informamos
-  if (!isScoringWedge(wedge)) {
-    // Quiebra: resetea puntuación de la compu y pasa turno
-    if (wedge.action === "quiebra") {
-      setComputerScore(0);
-      await enqueue("¡Quiebra! La computadora pierde todos sus puntos 💸", 2000);
+    // Si no es gajo de puntos: solo informamos
+    if (!isScoringWedge(wedge)) {
+      // Quiebra: resetea puntuación de la compu y pasa turno
+      if (wedge.action === "quiebra") {
+        setComputerScore(0);
+        await enqueue(
+          "¡QUIEBRA! La computadora pierde todos sus puntos 💸, TE TOCA!",
+          2000
+        );
+        goToPlayerTurn();
+        return;
+      }
+
+      // Pierde turno: pasa turno directamente
+      if (wedge.action === "pierdeTurno") {
+        await enqueue("La computadora pierde el turno. TE TOCA!", 2000);
+        goToPlayerTurn();
+        return;
+      }
+
+      // Comodín: por ahora solo lo anunciamos (luego decides si lo guarda)
+      if (wedge.action === "comodin") {
+        await enqueue("La computadora consigue un comodín 🎟️", 2000);
+
+        await enqueue("La computadora vuelve a tirar…", 1000);
+        rouletteRef.current?.spin();
+
+        return;
+      }
+
+      // Cualquier otra acción no contemplada
       goToPlayerTurn();
       return;
     }
 
-    // Pierde turno: pasa turno directamente
-    if (wedge.action === "pierdeTurno") {
-      await enqueue("La computadora pierde el turno. Te toca 👇", 2000);
-      goToPlayerTurn();
-      return;
-    }
+    // Gajo de puntos: elige consonante y calcula
+    //1) Primero informamos del gajo (y esperamos)
+    await enqueue(`La computadora juega por: ${wedge.value}`, 2000);
 
-    // Comodín: por ahora solo lo anunciamos (luego decides si lo guarda)
-    if (wedge.action === "comodin") {
-      await enqueue("La computadora consigue un comodín 🎟️", 2000);
-      // Regla simple: pasa turno (o si quieres que siga jugando, aquí harías rouletteRef.current?.spin())
-      goToPlayerTurn();
-      return;
-    }
+    // 2) Luego elige consonante
+    const letter = computerChooseRandomConsonant();
 
-    // Cualquier otra acción no contemplada
+     if (!letter) {
+    await enqueue("La computadora no tiene consonantes disponibles 😵, TE TOCA!", 2000);
     goToPlayerTurn();
     return;
-
   }
 
-  // Gajo de puntos: elige consonante y calcula
-  //1) Primero informamos del gajo (y esperamos)
-  await enqueue(`La computadora juega por: ${wedge.value}`, 2000);
+    const hits = countLetterInPhrase(phrase, letter);
 
-  // 2) Luego elige consonante
-  const letter = computerChooseRandomConsonant();
+    const ms = 2500;
 
-  if (!letter) {
-    const ms = 2000;
-    showTemp("La computadora no tiene consonantes disponibles 😵", ms);
-    goToPlayerTurnAfter(ms);
-    return;
-  }
+    if (hits > 0) {
+      const earned = hits * wedge.value;
+      setComputerScore((prev) => prev + earned);
 
-  const hits = countLetterInPhrase(phrase, letter);
+      const timesText = pluralize(hits, "vez", "veces");
 
-  const ms = 2500;
+      await enqueue(
+        `La computadora elige ${letter}. Aparece ${hits} ${timesText}. Gana ${earned}.`,
+        2500
+      );
 
-  if (hits > 0) {
-    const earned = hits * wedge.value;
-    setComputerScore((prev) => prev + earned);
+      await enqueue("La computadora ha acertado, sigue jugando 🎛️", 1200);
+      rouletteRef.current?.spin(); //  sigue el turno
+      return;
+    }
 
-    const timesText = pluralize(hits, "vez", "veces");
-
-    await enqueue(
-      `La computadora elige ${letter}. Aparece ${hits} ${timesText}. Gana ${earned}.`,
-      2500
-    );
-
-    // ✅ Para empezar simple: tras acertar también devolvemos turno al jugador
-    // (Luego si quieres, hacemos que siga jugando y vuelva a girar)
-    goToPlayerTurnAfter(ms);
-    return;
-  }
-
-  await enqueue(`La computadora elige ${letter}… y falla 😬`, 2500);
-  goToPlayerTurnAfter(ms);
-};
-
+    await enqueue(`La computadora elige ${letter}… y falla 😬`, 2500);
+    await enqueue("TE TOCA!", 1200);
+    goToPlayerTurn();
+  };
 
   // Funcion para que computer elija consonante aleatoria
   const computerChooseRandomConsonant = () => {
-  const letter = getRandomEnabledLetter(consonants); // devuelve string o null
-  if (!letter) return null;
+    const letter = getRandomEnabledLetter(consonants); // devuelve string o null
+    if (!letter) return null;
 
-  setSelectedLetters((prev) => [...prev, letter]);
+    setSelectedLetters((prev) => [...prev, letter]);
 
-  setConsonants((prev) =>
-    prev.map((item) =>
-      item.letter === letter ? { ...item, enabled: false } : item
-    )
-  );
+    setConsonants((prev) =>
+      prev.map((item) =>
+        item.letter === letter ? { ...item, enabled: false } : item
+      )
+    );
 
-  return letter;
-};
+    return letter;
+  };
 
   /******************************************************************
    * UI: botones de ControlsGame -> abre modal correspondiente
@@ -330,7 +331,7 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
 
       const timesText = pluralize(hits, "vez", "veces");
       show(
-        `La letra ${letter} aparece ${hits}  ${timesText}. Ganas ${earned} (${hits} × ${currentWedge.value}).`
+        `La letra ${letter} aparece ${hits}  ${timesText}. Ganas ${earned}, sigue tirando!).`
       );
       return;
     } else {
