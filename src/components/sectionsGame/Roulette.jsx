@@ -1,185 +1,57 @@
 import { useEffect, useRef, useState } from "react";
 import "../../styles/layout/sectionGame/RouletteGame.scss";
+import { wedges } from "../../data/rouletteWedges";
+import {
+  calcSliceSize,
+  getWinnerIndexFromRotation,
+  getRandomSpinDegrees,
+} from "../../utils/rouletteUtils";
 
-
-// Array con los gajos de la ruleta
-// Cada objeto es un gajo: qué texto muestra, qué color/tema tiene y qué acción haría
-const wedges = [
-  {
-    label: "200",
-    theme: "pink",
-    color: "var(--color-wedge-pink)",
-    action: "sumar",
-    value: 200,
-  },
-  {
-    label: "QUIEBRA",
-    theme: "black",
-    color: "var(--color-wedge-black)",
-    action: "quiebra",
-    value: 0,
-  },
-  {
-    label: "300",
-    theme: "orange",
-    color: "var(--color-wedge-orange)",
-    action: "sumar",
-    value: 300,
-  },
-  {
-    label: "PIERDE TURNO",
-    theme: "silver",
-    color: "var(--color-wedge-silver)",
-    action: "pierdeTurno",
-    value: 0,
-  },
-  {
-    label: "1000",
-    theme: "purple",
-    color: "var(--color-wedge-purple)",
-    action: "sumar",
-    value: 1000,
-  },
-  {
-    label: "400",
-    theme: "blue",
-    color: "var(--color-wedge-blue)",
-    action: "sumar",
-    value: 400,
-  },
-  {
-    label: "COMODIN",
-    theme: "gold",
-    color: "var(--color-wedge-gold)",
-    action: "comodin",
-    value: 0,
-  },
-  {
-    label: "500",
-    theme: "green",
-    color: "var(--color-wedge-green)",
-    action: "sumar",
-    value: 500,
-  },
-  {
-    label: "600",
-    theme: "pink",
-    color: "var(--color-wedge-pink)",
-    action: "sumar",
-    value: 600,
-  },
-  {
-    label: "QUIEBRA",
-    theme: "black",
-    color: "var(--color-wedge-black)",
-    action: "quiebra",
-    value: 0,
-  },
-  {
-    label: "700",
-    theme: "blue",
-    color: "var(--color-wedge-blue)",
-    action: "sumar",
-    value: 700,
-  },
-  {
-    label: "800",
-    theme: "orange",
-    color: "var(--color-wedge-orange)",
-    action: "sumar",
-    value: 800,
-  },
-  {
-    label: "PIERDE TURNO",
-    theme: "silver",
-    color: "var(--color-wedge-silver)",
-    action: "pierdeTurno",
-    value: 0,
-  },
-  {
-    label: "900",
-    theme: "green",
-    color: "var(--color-wedge-green)",
-    action: "sumar",
-    value: 900,
-  },
-  {
-    label: "1000",
-    theme: "purple",
-    color: "var(--color-wedge-purple)",
-    action: "sumar",
-    value: 1000,
-  },
-  {
-    label: "SUPERPREMIO",
-    theme: "gold",
-    color: "var(--color-wedge-gold)",
-    action: "superPremio",
-    value: 2000,
-  },
-];
-
-const Roulette = ({ rouletteDisabled, spinEnd, startSpin}) => {
+const Roulette = ({ rouletteDisabled, spinEnd, startSpin }) => {
   /*
-  useRef: referencia al elemento de la ruleta
-  con const wheelRef = useRef(null); creamos un objeto con la propiedad current en null porque
+  useRef: Referencia al DOM de la rueda (para medir su tamaño real)
+  creamos un objeto con la propiedad current en null porque
   al principio aún no está pintado el elemento que queremos guardar aqui.
-  Después de renderizar la sección de la ruleta le asignamos el section a ref={wheelRef},
+  Después de renderizar la sección de la ruleta se la  asignamos
   wheelRef.current apuntará a ese elemento
   */
   const wheelRef = useRef(null);
 
-  // Estado para guardar las dimensiones de cada gajo
+  // Tamaño calculado de cada gajo (triángulo)
   const [sliceSize, setSliceSize] = useState({ width: 0, height: 0 });
 
-  /*
-  Ángulo que le corresponde a cada gajo (en grados)
-  360º dividido entre el número de gajos
-  */
+  // Grados que ocupa cada gajo
   const degreesPerWedge = 360 / wedges.length;
 
-  // ESTADOS PARA CONTROLAR EL GIRO DE LA RULETA Y LA POSICION DEL GAJO
-
-  // Angulo acumulado de la ruleta
+  // Rotación actual que aplicamos al contenedor que gira (para pintarlo)
   const [rotation, setRotation] = useState(0);
 
-  // Para saber la rotación real
+  // Rotación acumulada real (ref para que NO se reinicie en re-renders)
   const rotationRef = useRef(0);
 
-  // Para saber que gajo ha salido
+  // Índice del gajo ganador (lo calculamos cuando termina el giro)
   const [winnerIndex, setWinnerIndex] = useState(null);
 
-  // Saber si la riuleta está girando
+  // Para saber si la ruleta está girando y así para bloquear clicks
   const [isSpinning, setIsSpinning] = useState(false);
 
-  // Saber si el indicador está activo
+  // Animación visual del indicador (flecha)
   const [indicatorActive, setIndicatorActive] = useState(false);
 
   //useEffect: calcula el tamaño de los gajos según el tamaño real de la ruleta
   useEffect(() => {
-    // Función que calcula tamaños y los guarda en el estado
     const updateSizes = () => {
       // Si aún no hay referencia al DOM, salimos (por seguridad)
       if (!wheelRef.current) return;
 
-      //radius = mitad del ancho del círculo
-      const radius = wheelRef.current.offsetWidth / 2;
+      // Calcula width/height del triángulo según el ancho de la rueda
+      const { width, height } = calcSliceSize(
+        wheelRef.current.offsetWidth,
+        degreesPerWedge
+      );
 
-      //convertimos el ángulo de cada gajo a radianes para usar trigonometría
-      const angleRad = (degreesPerWedge * Math.PI) / 180;
-
-      //alto del triángulo (gajo):
-      // usamos casi todo el radio (0.95 para dejar un aro bonito alrededor)
-      const sliceHeight = radius * 0.95;
-
-      /*
-      ancho del triángulo:
-      fórmula: 2 * altura * tan(ángulo/2)
-      */
-      const sliceWidth = 2 * sliceHeight * Math.tan(angleRad / 2);
-
-      // Guardamos los tamaños en el estado
-      setSliceSize({ width: sliceWidth, height: sliceHeight });
+      // Guardamos el resultado para usarlo en los estilos de cada gajo
+      setSliceSize({ width, height });
     };
 
     //Llamamos una primera vez para calcular tamaños cuando el componente se monta
@@ -188,95 +60,59 @@ const Roulette = ({ rouletteDisabled, spinEnd, startSpin}) => {
     //Si cambia el tamaño de la ventana, recalculamos tamaños
     window.addEventListener("resize", updateSizes);
 
-    /*
-    Cleanup del efecto:
-    cuando el componente se desmonte, quitamos el listener de resize
-    */
+    // Limpieza: quitamos el listener al desmontar
     return () => window.removeEventListener("resize", updateSizes);
   }, [degreesPerWedge]);
 
-  /*
-  Dependencias del efecto:
-  Solo depende de degreesPerWedge, que viene de wedges.length.
-  Como wedges no cambia, en la práctica se ejecuta una vez al montar
-  y luego solo cuando cambie el tamaño de la ventana (por el listener).
-*/
-
-  // Mandamos los datos del gajo
+  // Cuando ya tenemos winnerIndex, le mandamos a GamePage  el gajo ganador
   useEffect(() => {
     if (winnerIndex === null) return;
+
     const winner = wedges[winnerIndex];
     spinEnd(winner);
-  }, [winnerIndex]);
+  }, [winnerIndex, spinEnd]);
 
   // Función para girar la ruleta
   const handleSpin = () => {
     // Si ya está girando, ignoramos el click
-    if (isSpinning  || rouletteDisabled) return;
+    if (isSpinning || rouletteDisabled) return;
 
+    // Reseteos previos al giro (mensaje / wedge / etc en GamePage)
     startSpin();
+
+    // Marcamos que empieza el giro y desactivamos el indicador
     setIsSpinning(true);
     setIndicatorActive(false);
 
-    // Vueltas aleatorias entre 1 y 3
-    const minTurns = 1;
-    const maxTurns = 3;
-    const randomTurns =
-      Math.floor(Math.random() * (maxTurns - minTurns + 1)) + minTurns;
+    // Llamamos a la funcion para obtener un nº aleatorio para la rotacion
+    const extraDegrees = getRandomSpinDegrees(1, 3);
 
-    // offset aleatorio
-    const randomOffset = Math.random() * 360;
-
-    // Le añadimos aleatoriedad al giro
-    const extraDegrees = randomTurns * 360 + randomOffset;
-
-    // actualizamos el ángulo acumulado en el ref
+    // Sumamos al acumulado para no "volver atrás" en la animación
     rotationRef.current += extraDegrees;
 
-    // actualizamos la rotación acumulada
+    // Pintamos la rotación en el DOM
     setRotation(rotationRef.current);
 
-    // ⏱️ cuando termine la animación, marcamos que ya no está girando
+    // Cuando termine la animación, marcamos que ya no está girando
     setTimeout(() => {
       setIsSpinning(false);
       setIndicatorActive(true);
 
-      // calculamos qué gajo ha salido
-      const index = getWinnerIndexFromRotation(rotationRef.current);
+      // Llamamos a la funcion que calcula el índice del gajo según la rotación final
+      const index = getWinnerIndexFromRotation(
+        rotationRef.current,
+        degreesPerWedge,
+        wedges.length
+      );
+
+      // Guardamos ganador (dispara el useEffect de arriba -> spinEnd(winner))
       setWinnerIndex(index);
 
+      // Apagamos el indicador visual tras 2s
       setTimeout(() => {
         setIndicatorActive(false);
       }, 2000);
     }, 4500); // debe coincidir con la duración de la transición de CSS
-  };
-
-  // Dado un ángulo total, calcula qué gajo ha quedado bajo el indicador
-  const getWinnerIndexFromRotation = (totalRotation) => {
-    // 1. Normalizamos a 0–360
-    const normalized = ((totalRotation % 360) + 360) % 360;
-
-    /*
-    2. Pensamos así:
-
-    - La rueda gira clockwise (rotate positivo).
-    - El indicador está fijo arriba.
-    - Si la rueda gira R grados, es como si el indicador mirara
-      R grados hacia atrás.
-
-    Por eso usamos (360 - normalized).
-
-    Además sumamos degreesPerWedge / 2 para “centrar” en el
-    medio del gajo, no en la línea que separa dos gajos.
-  */
-
-    const angleFromTop = (360 - normalized + degreesPerWedge / 2) % 360;
-
-    // 3. Ese ángulo lo convertimos en índice de gajo
-    const index = Math.floor(angleFromTop / degreesPerWedge);
-
-    // 4. Lo dejamos entre 0 y wedges.length - 1 por seguridad
-    return (index + wedges.length) % wedges.length;
   };
 
   return (

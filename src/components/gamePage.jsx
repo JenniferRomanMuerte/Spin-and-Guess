@@ -7,38 +7,7 @@ import Roulette from "./sectionsGame/Roulette";
 import ActionModal from "./sectionsGame/Modal/ActionModal";
 import { countLetterInPhrase } from "../utils/gameUtils";
 
-const initialVowels = [
-  { letter: "A", enabled: true },
-  { letter: "E", enabled: true },
-  { letter: "I", enabled: true },
-  { letter: "O", enabled: true },
-  { letter: "U", enabled: true },
-];
-
-const initialConsonants = [
-  { letter: "B", enabled: true },
-  { letter: "C", enabled: true },
-  { letter: "D", enabled: true },
-  { letter: "F", enabled: true },
-  { letter: "G", enabled: true },
-  { letter: "H", enabled: true },
-  { letter: "J", enabled: true },
-  { letter: "K", enabled: true },
-  { letter: "L", enabled: true },
-  { letter: "M", enabled: true },
-  { letter: "N", enabled: true },
-  { letter: "Ñ", enabled: true },
-  { letter: "P", enabled: true },
-  { letter: "Q", enabled: true },
-  { letter: "R", enabled: true },
-  { letter: "S", enabled: true },
-  { letter: "T", enabled: true },
-  { letter: "V", enabled: true },
-  { letter: "W", enabled: true },
-  { letter: "X", enabled: true },
-  { letter: "Y", enabled: true },
-  { letter: "Z", enabled: true },
-];
+import { initialVowels, initialConsonants } from "../data/letters";
 
 const GamePage = ({ namePlayer, turn, changeTurn }) => {
   // Para almacenar la frase
