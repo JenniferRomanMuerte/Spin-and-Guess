@@ -8,6 +8,9 @@ export const useRoundInfoMessages = (setMessage) => {
   // Cola para encadenar mensajes sin que se pisen
   const queueRef = useRef(Promise.resolve());
 
+  // Guarda el resolve del enqueue que esté “en curso”
+  const pendingResolveRef = useRef(null);
+
   // Cancela el timeout actual (si existe)
   const cancelTimeout = useCallback(() => {
     if (timeoutRef.current) {
@@ -22,15 +25,18 @@ export const useRoundInfoMessages = (setMessage) => {
     setMessage("");
   }, [cancelTimeout, setMessage]);
 
-
-    // Resetea la cola de mensajes (corta todo lo pendiente)
+  // Resetea la cola de mensajes (corta todo lo pendiente)
   const resetQueue = useCallback(() => {
     cancelTimeout();
     setMessage("");
+
+    if (pendingResolveRef.current) {
+      pendingResolveRef.current();
+      pendingResolveRef.current = null;
+    }
+
     queueRef.current = Promise.resolve();
   }, [cancelTimeout, setMessage]);
-
-
 
   // Muestra un mensaje fijo (no se borra solo)
   const show = useCallback(
@@ -62,10 +68,12 @@ export const useRoundInfoMessages = (setMessage) => {
       queueRef.current = queueRef.current.then(
         () =>
           new Promise((resolve) => {
+            pendingResolveRef.current = resolve;
             cancelTimeout();
             setMessage(text);
 
             timeoutRef.current = setTimeout(() => {
+              pendingResolveRef.current = null;
               timeoutRef.current = null;
               if (autoClear) setMessage("");
               resolve();
@@ -82,8 +90,13 @@ export const useRoundInfoMessages = (setMessage) => {
   useEffect(() => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+      if (pendingResolveRef.current) {
+        pendingResolveRef.current();
+        pendingResolveRef.current = null;
+      }
     };
   }, []);
 
-  return { show, showTemp, enqueue, clear,  resetQueue, cancelTimeout};
+  return { show, showTemp, enqueue, clear, resetQueue, cancelTimeout };
 };
