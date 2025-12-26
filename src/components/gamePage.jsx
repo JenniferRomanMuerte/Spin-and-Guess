@@ -43,8 +43,7 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
   // Info en pantalla (RoundInfo)
   const [messageRoundInfo, setMessageRoundInfo] = useState("");
 
-  // Hook de mensajes (ahora usas show/showTemp/clear/cancelTimeout)
-  // enqueue está bien tenerlo aunque aún no lo uses (te servirá para encadenar mensajes)
+  // Hook de mensajes
   const { show, showTemp, enqueue, clear, resetQueue, cancelTimeout } =
     useRoundInfoMessages(setMessageRoundInfo);
 
@@ -60,6 +59,15 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
 
   // Si el jugador tiene comodín
   const [hasJocker, setHasJocker] = useState(false);
+
+  // Valor de las vocales
+  const VOWEL_COST = 50;
+
+  // Para activar o desactivar el comprar vocales
+  const canBuyVowel =
+    turn !== "computer" &&
+    isScoringWedge(currentWedge) &&
+    playerScore >= VOWEL_COST;
 
   /******************************************************************
    * ESTADO DE UI (control de botones/modales)
@@ -220,11 +228,14 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
     // 2) Luego elige consonante
     const letter = computerChooseRandomConsonant();
 
-     if (!letter) {
-    await enqueue("La computadora no tiene consonantes disponibles 😵, TE TOCA!", 2000);
-    goToPlayerTurn();
-    return;
-  }
+    if (!letter) {
+      await enqueue(
+        "La computadora no tiene consonantes disponibles 😵, TE TOCA!",
+        2000
+      );
+      goToPlayerTurn();
+      return;
+    }
 
     const hits = countLetterInPhrase(phrase, letter);
 
@@ -278,7 +289,7 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
       setModalMode("joker");
       return;
     }
-    if (text === "Vocal") {
+    if (text === "Comprar Vocal") {
       setModalMode("vowel");
       return;
     }
@@ -302,46 +313,84 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
     // Guarda letra seleccionada para pintar en Panel
     setSelectedLetters((prev) => [...prev, letter]);
 
-    // Desactiva la letra en su lista
+    /***********************
+     * CASO VOCAL (compra)
+     ***********************/
     if (mode === "vowel") {
+      // Desactiva vocal elegida
       setVowels((prev) =>
         prev.map((item) =>
           item.letter === letter ? { ...item, enabled: false } : item
         )
       );
+
+      // Seguridad (aunque el botón ya esté bloqueado)
+      if (playerScore < VOWEL_COST) {
+        showTemp(
+          `Necesitas ${VOWEL_COST} puntos para comprar una vocal 😬`,
+          2000
+        );
+        return;
+      }
+
+      // Pagas la vocal (precio fijo, NO por apariciones)
+      setPlayerScore((prev) => prev - VOWEL_COST);
+
+      const hits = countLetterInPhrase(phrase, letter);
+      const timesText = pluralize(hits, "vez", "veces");
+
+      if (hits > 0) {
+        show(
+          `Compras ${letter} por ${VOWEL_COST}. Aparece ${hits} ${timesText}.`
+        );
+        return;
+      }
+
+      // Si no está, pierde turno
+      const ms = 2500;
+      showTemp(`Compras ${letter} por ${VOWEL_COST}… pero no está 😬`, ms);
+      goToComputerTurnAfter(ms);
+      return;
     }
 
+    /*************************
+     * CASO CONSONANTE (puntos)
+     *************************/
     if (mode === "consonant") {
+      // Desactiva consonante elegida
       setConsonants((prev) =>
         prev.map((item) =>
           item.letter === letter ? { ...item, enabled: false } : item
         )
       );
-    }
 
-    // Si el gajo actual no suma puntos, salimos
-    if (!isScoringWedge(currentWedge)) return;
+      // Si el gajo actual no suma puntos, no se puede jugar consonante
+      if (!isScoringWedge(currentWedge)) return;
 
-    // Cuenta cuántas veces aparece la letra
-    const hits = countLetterInPhrase(phrase, letter);
-
-    if (hits > 0) {
-      const earned = hits * currentWedge.value;
-      setPlayerScore((prev) => prev + earned);
-
+      const hits = countLetterInPhrase(phrase, letter);
       const timesText = pluralize(hits, "vez", "veces");
-      show(
-        `La letra ${letter} aparece ${hits}  ${timesText}. Ganas ${earned}, sigue tirando!).`
-      );
-      return;
-    } else {
-      // Fallo: mensaje + pasar turno tras delay (mismo ms)
+
+      if (hits > 0) {
+        const earned = hits * currentWedge.value;
+        setPlayerScore((prev) => prev + earned);
+
+        show(
+          `La letra ${letter} aparece ${hits} ${timesText}. Ganas ${earned}. Sigue jugando!`
+        );
+
+        // Si acierta, sigue jugando
+        setRouletteDisabled(false);
+        setControlsDisabled(true);
+        return;
+      }
+
       const ms = 2500;
       showTemp(
         `La letra ${letter} no está en la frase 😬, pierdes el turno`,
         ms
       );
       goToComputerTurnAfter(ms);
+      return;
     }
   };
 
@@ -429,6 +478,7 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
         controlsDisabled={controlsDisabled}
         hasJocker={hasJocker}
         updateControlsGame={updateControlsGame}
+        canBuyVowel={canBuyVowel}
       />
     </main>
   );

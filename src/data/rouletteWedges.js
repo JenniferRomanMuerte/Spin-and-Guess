@@ -30,11 +30,11 @@ export const wedges = [
     value: 0,
   },
   {
-    label: "1000",
+    label: "500",
     theme: "purple",
     color: "var(--color-wedge-purple)",
     action: "sumar",
-    value: 1000,
+    value: 500,
   },
   {
     label: "50",

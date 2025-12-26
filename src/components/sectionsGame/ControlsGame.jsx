@@ -6,6 +6,7 @@ const ControlsGame = ({
   hasJocker,
   updateControlsGame,
   selectedAction,
+  canBuyVowel
 }) => {
   return (
     <article className="controls">
@@ -16,8 +17,8 @@ const ControlsGame = ({
         selectedAction={selectedAction}
       />
       <Button
-        disabled={controlsDisabled}
-        text="Vocal"
+        disabled={controlsDisabled || !canBuyVowel}
+        text="Comprar Vocal"
         updateControlsGame={updateControlsGame}
         selectedAction={selectedAction}
       />
