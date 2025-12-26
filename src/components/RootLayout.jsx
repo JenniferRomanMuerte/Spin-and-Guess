@@ -27,7 +27,7 @@ const RootLayout = () => {
         <Route
           path="/game"
           element={
-            <GamePage namePlayer={namePlayer} turn={turn} changeTurn={changeTurn} />
+            <GamePage namePlayer={namePlayer} turn={turn} changeTurn={changeTurn} changeNamePlayer={changeNamePlayer}/>
           }
         />
       </Routes>

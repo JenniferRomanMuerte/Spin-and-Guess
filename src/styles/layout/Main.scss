@@ -136,6 +136,7 @@
     display: flex;
     flex-direction: column;
     padding-block: 4rem;
+    gap:1rem;
 
     @media (min-width: var.$media_desktop) {
       width: 35%;
@@ -143,43 +144,19 @@
     }
 
     &-inputName {
-      padding: 1rem;
-      border-radius: 5px;
-      border: 3px solid var.$color-primary;
-      box-shadow: var.$shadow-default;
-      background-color: var.$color-text-light;
-
+      @include mix.input();
     }
 
     &-btnBegin {
-      display: inline-block;
-      text-align: center;
-      text-decoration: none;
-      padding: 1rem;
-      margin-top: 2rem;
-      border-radius: 5px;
-      border: 2px solid var.$color-accent-1;
-      font-size: 2rem;
-      font-weight: var.$font_weight_bold;
-      box-shadow: var.$shadow-default;
-      background-color: var.$color-primary;
-      color: var.$color-accent-1;
-
-      &.is-disabled {
-        cursor: not-allowed;
-        opacity: 0.6;
-        filter: grayscale(60%);
-      }
-
-      &:not(.is-disabled):hover {
-        background-color: var.$color-accent-1;
-        color: var.$color-accent-2;
-      }
+      @include mix.btnPrimary();
     }
-    &-error{
-      padding-top: 0.8rem;
-      color:var.$color-accent-1;
-      text-shadow: 1px 1px 2px var.$color-text;
+    &-error {
+      padding-bottom: 0.8rem;
+      color: var.$color-accent-2;
+      text-shadow: 2px 2px 5px var.$color-text-light;
+      font-size: 1.4rem;
+      font-family: var.$font-family_orbitron;
+      font-weight: var.$font_weight_bold;
     }
   }
 }

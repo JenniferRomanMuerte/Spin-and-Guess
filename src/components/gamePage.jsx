@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/layout/GameMain.scss";
 
 import ControlsGame from "./sectionsGame/ControlsGame";
@@ -16,7 +17,10 @@ import {
 import { useRoundInfoMessages } from "../hooks/useRoundInfoMessages";
 import { initialVowels, initialConsonants } from "../data/letters";
 
-const GamePage = ({ namePlayer, turn, changeTurn }) => {
+const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
+
+  const navigate = useNavigate();
+
   /******************************************************************
    * REFS (no provocan re-render)
    ******************************************************************/
@@ -61,6 +65,9 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
 
   // Si el jugador tiene comodín
   const [hasJocker, setHasJocker] = useState(false);
+
+  // Para saber si ha acertado o fallado cuando resuelve
+  const [solveResult, setSolveResult] = useState(null);
 
   // Valor de las vocales
   const VOWEL_COST = 50;
@@ -136,12 +143,42 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
     show("Turno de la computadora 🤖... girando la ruleta 🎛️");
   }, [turn, show]);
 
+    /******************************************************************
+   * EFECTO: cuando acierta io falla la resolucion del panel
+   ******************************************************************/
+  useEffect(() => {
+  // Mientras esté null, todavía estamos en el input (no hacemos nada)
+  if (solveResult === null) return;
+
+  // Cancelamos cualquier timeout anterior (por si acaso)
+  cancelTurnTimeout();
+
+  if (solveResult === true) {
+    // GANA: mostrar modal 5s y luego reset + ir a Inicio
+    turnTimeoutRef.current = setTimeout(() => {
+      resetGame();
+      navigate("/");
+    }, 3000);
+
+    return;
+  }
+
+  if (solveResult === false) {
+    // FALLA: mostrar modal 3s y luego pasar turno a computer
+    turnTimeoutRef.current = setTimeout(() => {
+      setModalMode(null);   // cerramos  modal
+      setSolveResult(null); // reseteamos para la proxima
+      goToComputerTurn();   // cambiamos turno a computer
+    }, 2000);
+  }
+}, [solveResult]);
+
   /******************************************************************
    * CALLBACK: la ruleta terminó de girar
    * (cosas comunes + delega a jugador o computer)
    ******************************************************************/
   const spinEnd = (wedge) => {
-    
+
     // Cosas comunes (siempre)
     setCurrentWedge(wedge);
     setRouletteDisabled(true);
@@ -550,6 +587,40 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
     setRouletteDisabled(false);
   };
 
+
+    /******************************************************************
+   * COMPROBAMOS SI LA FRASE DEL PLAYER COINCIDICE CON LA FRASE A ADIVINAR
+   ******************************************************************/
+  const onSubmitSolve = (phrasePlayer) =>{
+       setSolveResult(null);
+       setSolveResult(phrasePlayer.toLowerCase() === phrase.toLowerCase());
+  }
+
+ /******************************************************************
+   * RESETEO cuando gana la partida
+   ******************************************************************/
+  const resetGame = () => {
+  setPlayerScore(0);
+  setComputerScore(0);
+  setSelectedLetters([]);
+  setCurrentWedge(null);
+  setHasJocker(false);
+
+  setVowels(initialVowels.map(vowel => ({ ...vowel })));
+  setConsonants(initialConsonants.map(consonant => ({ ...consonant })));
+
+  setModalMode(null);
+  setSolveResult(null);
+
+  setControlsDisabled(true);
+  setRouletteDisabled(false);
+  setHandoverToComputer(false);
+
+  changeNamePlayer("");
+
+  changeTurn("player");
+};
+
   /******************************************************************
    * RENDER
    ******************************************************************/
@@ -578,8 +649,10 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
             modalMode={modalMode}
             vowels={vowels}
             consonants={consonants}
-            handleletterSelected={handleLetterSelected} // ✅ nombre consistente
+            handleletterSelected={handleLetterSelected}
             closeModal={closeModal}
+            onSubmitSolve = {onSubmitSolve}
+            solveResult = {solveResult}
           />
         )}
       </article>

@@ -1,5 +1,6 @@
 import "../../../styles/layout/sectionGame/Modal.scss";
 import LetterPicker from "./LetterPicker";
+import SolveForm  from "./SolveForm";
 
 const ActionModal = ({
   modalMode,
@@ -7,6 +8,8 @@ const ActionModal = ({
   consonants,
   handleletterSelected,
   closeModal,
+  onSubmitSolve,
+  solveResult
 }) => {
   return (
     <section className="modal">
@@ -22,7 +25,7 @@ const ActionModal = ({
             />
           )}
 
-          {modalMode === "solve" && <SolveForm closeModal={closeModal} />}
+          {modalMode === "solve" && <SolveForm onSubmitSolve= {onSubmitSolve} solveResult={solveResult}/>}
 
           {modalMode === "joker" && <JokerPanel closeModal={closeModal} />}
         </div>
