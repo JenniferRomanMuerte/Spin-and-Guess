@@ -44,8 +44,10 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
   const [messageRoundInfo, setMessageRoundInfo] = useState("");
 
   // Hook de mensajes
-  const { show, showTemp, enqueue, clear, resetQueue, cancelTimeout } =
+  const { show, showTemp, enqueue, resetQueue } =
     useRoundInfoMessages(setMessageRoundInfo);
+
+  const [handoverToComputer, setHandoverToComputer] = useState(false);
 
   // Letras disponibles (enabled true/false)
   const [vowels, setVowels] = useState(initialVowels);
@@ -95,18 +97,20 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
   // Cambia al turno computer DESPUÉS de ms (para que el mensaje no se borre enseguida)
   const goToComputerTurnAfter = (ms) => {
     cancelTurnTimeout();
+
+    //  Bloquea inmediatamente cualquier intento del jugador
+    setHandoverToComputer(true);
+    setRouletteDisabled(true);
+    setControlsDisabled(true);
+    setModalMode(null);
+
     turnTimeoutRef.current = setTimeout(() => {
+      setHandoverToComputer(false);
       goToComputerTurn();
     }, ms);
   };
 
-  // Cambia al turno a jugador DESPUÉS de ms (para que el mensaje no se borre enseguida)
-  const goToPlayerTurnAfter = (ms) => {
-    cancelTurnTimeout();
-    turnTimeoutRef.current = setTimeout(() => {
-      goToPlayerTurn();
-    }, ms);
-  };
+
   /******************************************************************
    * EFECTO: cuando entra el turno de la computadora, gira solo
    ******************************************************************/
@@ -137,7 +141,7 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
    * (cosas comunes + delega a jugador o computer)
    ******************************************************************/
   const spinEnd = (wedge) => {
-    console.log("[spinEnd winner]", wedge);
+    
     // Cosas comunes (siempre)
     setCurrentWedge(wedge);
     setRouletteDisabled(true);
@@ -396,10 +400,10 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
     }
   };
 
-/******************************************************************
- * JUGADOR ELIGE LETRA (desde ActionModal)
- * Dispatcher: guarda la letra (para Panel) y delega según la accion elegida
- ******************************************************************/
+  /******************************************************************
+   * JUGADOR ELIGE LETRA (desde ActionModal)
+   * Dispatcher: guarda la letra (para Panel) y delega según la accion elegida
+   ******************************************************************/
   const handleLetterSelected = (letter, mode) => {
     // Siempre: guardar para pintar en el Panel
     setSelectedLetters((prev) => [...prev, letter]);
@@ -409,13 +413,13 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
   };
 
   /******************************************************************
- * JUGADOR COMPRA VOCAL
- * Reglas:
- * - cuesta VOWEL_COST (precio fijo, NO depende de apariciones)
- * - si no tiene puntos suficientes, se cancela
- * - si la vocal NO está en la frase, pierde el turno (delay + pasa a computer)
- * - si está, muestra las voicales en el panel, informa y sigue tirando
- ******************************************************************/
+   * JUGADOR COMPRA VOCAL
+   * Reglas:
+   * - cuesta VOWEL_COST (precio fijo, NO depende de apariciones)
+   * - si no tiene puntos suficientes, se cancela
+   * - si la vocal NO está en la frase, pierde el turno (delay + pasa a computer)
+   * - si está, muestra las voicales en el panel, informa y sigue tirando
+   ******************************************************************/
   const handlePlayerVowel = (letter) => {
     // Desactiva vocal elegida
     setVowels((prev) =>
@@ -453,12 +457,12 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
   };
 
   /******************************************************************
- * JUGADOR ELIGE CONSONANTE
- * Reglas:
- * - solo se permite si el gajo actual es de puntos (sumar / superPremio)
- * - si acierta: suma earned = hits * currentWedge.value y sigue jugando
- * - si falla: pierde turno (delay + pasa a computer)
- ******************************************************************/
+   * JUGADOR ELIGE CONSONANTE
+   * Reglas:
+   * - solo se permite si el gajo actual es de puntos (sumar / superPremio)
+   * - si acierta: suma earned = hits * currentWedge.value y sigue jugando
+   * - si falla: pierde turno (delay + pasa a computer)
+   ******************************************************************/
 
   const handlePlayerConsonant = (letter) => {
     // Desactiva consonante elegida
@@ -497,10 +501,15 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
    * MODAL: cerrar (vuelve a permitir girar)
    ******************************************************************/
   const closeModal = () => {
-    setModalMode(null);
+  setModalMode(null);
+  setControlsDisabled(true);
+
+  // Solo re-habilita si NO estamos entregando turno y NO es la compu
+  if (turn !== "computer" && !handoverToComputer) {
     setRouletteDisabled(false);
-    setControlsDisabled(true);
-  };
+  }
+};
+
 
   /******************************************************************
    * CUANDO EMPIEZA UN GIRO (desde Roulette)
@@ -524,6 +533,7 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
    * (el delay lo controla goToComputerTurnAfter)
    ******************************************************************/
   const goToComputerTurn = () => {
+    setHandoverToComputer(false);
     changeTurn("computer");
     setControlsDisabled(true);
     setRouletteDisabled(true);
@@ -534,6 +544,7 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
    * (el delay lo controla goToPlayerTurnAfter)
    ******************************************************************/
   const goToPlayerTurn = () => {
+    setHandoverToComputer(false);
     changeTurn("player");
     setControlsDisabled(true);
     setRouletteDisabled(false);
@@ -559,7 +570,7 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
           rouletteDisabled={rouletteDisabled}
           spinEnd={spinEnd}
           startSpin={startSpin}
-          blockUserSpin={turn === "computer"} // bloquea el botón TIRAR cuando juega la computer
+          blockUserSpin={turn === "computer" || handoverToComputer}
         />
 
         {modalMode && (
