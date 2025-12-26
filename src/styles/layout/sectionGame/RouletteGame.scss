@@ -71,7 +71,6 @@
 
       border: 3px solid var.$color-accent-1; // aro amarillo
       color: var.$color-accent-1;
-      // o si quieres usar variable: color: var.$color-bg-light;
       font-size: clamp(0.95rem, 3vw, 1.2rem);
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -82,14 +81,49 @@
         inset 0 4px 5px rgba(255, 255, 255, 0.85),
         inset 0 -4px 5px rgba(0, 0, 0, 0.45);
 
-      & :active {
+      animation: none;
+
+      &::after {
+        content: "";
+        position: absolute;
+        inset: -6px;
+        background: rgba(255, 255, 255, 0.25);
+        border-radius: 50%;
+        pointer-events: none;
+
+        // ✅ máscara para que sea un anillo (no un disco)
+        -webkit-mask: radial-gradient(
+          farthest-side,
+          transparent calc(100% - 10px),
+          #000 calc(100% - 9px)
+        );
+        mask: radial-gradient(
+          farthest-side,
+          transparent calc(100% - 10px),
+          #000 calc(100% - 9px)
+        );
+        transform: scale(1);
+        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.9));
+      }
+
+      // Animación SOLO cuando está habilitado (turno jugador)
+      &:not(:disabled)::after {
+        animation: roulette-btn-pulse 1.1s ease-in-out infinite;
+      }
+
+      // Cuando está disabled, se para
+      &:disabled::after {
+        animation: none;
+        filter: none;
+      }
+
+      &:active {
         box-shadow: 0 3px 4px rgba(0, 0, 0, 0.5),
           inset 0 2px 3px rgba(255, 255, 255, 0.7),
           inset 0 -2px 3px rgba(0, 0, 0, 0.5);
       }
 
       &:disabled {
-
         cursor: not-allowed;
         filter: grayscale(85%);
         box-shadow: none;
@@ -320,6 +354,22 @@
   }
   100% {
     transform: scale(1) translateY(0);
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.9));
+  }
+}
+
+// Animacion de botón Tirar para el turno del jugador
+@keyframes roulette-btn-pulse {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.9));
+  }
+  50% {
+    transform: scale(1.18);
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 1));
+  }
+  100% {
+    transform: scale(1);
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.9));
   }
 }
