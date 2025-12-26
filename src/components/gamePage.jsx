@@ -63,7 +63,7 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
   // Valor de las vocales
   const VOWEL_COST = 50;
 
-  // Para activar o desactivar el comprar vocales
+  // Para activar o desactivar el comprar vocales del jugador
   const canBuyVowel =
     turn !== "computer" &&
     isScoringWedge(currentWedge) &&
@@ -221,11 +221,69 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
       return;
     }
 
-    // Gajo de puntos: elige consonante y calcula
-    //1) Primero informamos del gajo (y esperamos)
+    // GAJO DE PUNTOS
+    // Informamos del gajo (y esperamos)
     await enqueue(`La computadora juega por: ${wedge.value}`, 2000);
 
-    // 2) Luego elige consonante
+    // Decide si compra vocal
+    // Obtenemos cuantas vocales y cuantas consonantes quedan disponibles
+    const enabledVowelsCount = vowels.filter((v) => v.enabled).length;
+    const enabledConsonantsCount = consonants.filter((c) => c.enabled).length;
+
+    // Ibtenemos un nº aleatorio entre 0 y 1
+    const roll = Math.random();
+
+    /*
+    Si la computadora tiene puntos,
+    hay vocales disponibles,
+    tiene más puntos que 300
+    o hay menos de 5 consonantes disponibles
+    o la probabilidad es menor de 0.25
+    entonces es true ( eligirá vocal)
+    */
+    const shouldBuyVowel =
+      computerScore >= VOWEL_COST &&
+      enabledVowelsCount > 0 &&
+      (computerScore >= 300 || enabledConsonantsCount <= 5 || roll < 0.25);
+
+    if (shouldBuyVowel) {
+      await enqueue(
+        `La computadora decide comprar una vocal por ${VOWEL_COST}...`,
+        1500
+      );
+
+      // Paga
+      setComputerScore((prev) => prev - VOWEL_COST);
+
+      const letter = computerChooseRandomVowel();
+
+      if (!letter) {
+        await enqueue("Ups, no quedan vocales disponibles 😵", 2000);
+        goToPlayerTurn();
+        return;
+      }
+
+      const hits = countLetterInPhrase(phrase, letter);
+      const timesText = pluralize(hits, "vez", "veces");
+
+      if (hits > 0) {
+        await enqueue(
+          `La computadora compra ${letter}. Aparece ${hits} ${timesText}.`,
+          2500
+        );
+
+        await enqueue("✅ Acierta y sigue jugando 🎛️", 1200);
+        rouletteRef.current?.spin();
+        return;
+      }
+
+      await enqueue(`La computadora compra ${letter}… pero no está 😬`, 2500);
+      await enqueue("Te toca a ti 👇", 1200);
+      goToPlayerTurn();
+      return;
+    }
+
+    // Si no compra vocal elige consonante
     const letter = computerChooseRandomConsonant();
 
     if (!letter) {
@@ -270,6 +328,22 @@ const GamePage = ({ namePlayer, turn, changeTurn }) => {
     setSelectedLetters((prev) => [...prev, letter]);
 
     setConsonants((prev) =>
+      prev.map((item) =>
+        item.letter === letter ? { ...item, enabled: false } : item
+      )
+    );
+
+    return letter;
+  };
+
+  // Funcion para que computer elija vocal aleatoria
+  const computerChooseRandomVowel = () => {
+    const letter = getRandomEnabledLetter(vowels);
+    if (!letter) return null;
+
+    setSelectedLetters((prev) => [...prev, letter]);
+
+    setVowels((prev) =>
       prev.map((item) =>
         item.letter === letter ? { ...item, enabled: false } : item
       )
