@@ -1,9 +1,9 @@
 @use "../core/variables" as var;
 @use "../core/mixins" as mix;
 
-.footer{
+.footer {
   position: relative;
-  color:var.$color-primary;
+  color: var.$color-primary;
   padding-block: 3rem;
   font-size: 1.8rem;
   text-align: center;
@@ -14,7 +14,7 @@
 }
 .gameMain + .footer {
   /* Estilos distintos para la página de juego */
-  color:var.$color-bgPanel-2;
+  color: var.$color-bgPanel-2;
   text-align: end;
   padding-right: 2rem;
 }

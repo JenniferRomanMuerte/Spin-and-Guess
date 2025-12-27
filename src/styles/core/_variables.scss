@@ -1,11 +1,9 @@
-
-
 // Colores de la web
 $color-primary: #1a46a0;
 $color-accent-1: #eed442;
-$color-accent-2:  #ff4d6d;
-$color-bgPanel-1:#a5c2a7;
-$color-bgPanel-2:  #4e824a;
+$color-accent-2: #ff4d6d;
+$color-bgPanel-1: #a5c2a7;
+$color-bgPanel-2: #4e824a;
 $color-text: #000;
 $color-text-light: #cccccc;
 $color-bg-light: #f8f8f8;
@@ -20,7 +18,6 @@ $font-family_orbitron: "Orbitron", sans-serif;
 $font_weight_regular: 400;
 $font_weight_bold: 700;
 
-
 // Media querie
 $media_desktop: 768px;
 $media_desktop_lg: 1068px;
@@ -28,18 +25,18 @@ $media_desktop_lg: 1068px;
 // 🎨 Paleta principal de la ruleta con variables globales css para poder usarlas en js
 :root {
   /* 💵 Gajos normales */
-  --color-wedge-yellow: #ffd60a;   /* Amarillo brillante */
-  --color-wedge-green: #90be6d;    /* Verde lima */
-  --color-wedge-blue: #4cc9f0;     /* Azul eléctrico */
-  --color-wedge-orange: #f9844a;   /* Naranja vibrante */
-  --color-wedge-pink: #ff4d6d;     /* Rosa energético */
-  --color-wedge-purple: #9d4edd;   /* Morado creativo */
+  --color-wedge-yellow: #ffd60a; /* Amarillo brillante */
+  --color-wedge-green: #90be6d; /* Verde lima */
+  --color-wedge-blue: #4cc9f0; /* Azul eléctrico */
+  --color-wedge-orange: #f9844a; /* Naranja vibrante */
+  --color-wedge-pink: #ff4d6d; /* Rosa energético */
+  --color-wedge-purple: #9d4edd; /* Morado creativo */
 
   /* ⚡ Gajos especiales */
-  --color-wedge-black: #212529;    /* QUIEBRA */
-  --color-wedge-gold: #ffb703;     /* MISTERIO / SUPERPREMIO */
-  --color-wedge-silver: #adb5bd;   /* PIERDE TURNO */
+  --color-wedge-black: #212529; /* QUIEBRA */
+  --color-wedge-gold: #ffb703; /* MISTERIO / SUPERPREMIO */
+  --color-wedge-silver: #adb5bd; /* PIERDE TURNO */
 
- /* Variable del tamaño de la ruleta para hacer los calculos*/
- --scale: 300px;
+  /* Variable del tamaño de la ruleta para hacer los calculos*/
+  --scale: 300px;
 }

@@ -1,4 +1,3 @@
-
 // Cuenta cuántas veces aparece una letra en una frase (ignorando mayúsculas/minúsculas)
 export const countLetterInPhrase = (phrase, letter) => {
   const target = letter.toUpperCase();
@@ -7,6 +6,5 @@ export const countLetterInPhrase = (phrase, letter) => {
     .split("")
     .filter((ch) => ch === target).length;
 };
-
 
 export const pluralize = (n, singular, plural) => (n === 1 ? singular : plural);

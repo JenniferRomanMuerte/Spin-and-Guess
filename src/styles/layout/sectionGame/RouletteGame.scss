@@ -13,6 +13,10 @@
   margin-inline: auto;
   --scale: clamp(240px, 80vw, 340px);
 
+  @media (min-width: var.$media_desktop) {
+    margin-bottom: 1rem;
+  }
+
   &__indicator {
     width: clamp(6rem, 15vw, 10rem);
     height: clamp(48px, 15vw, 72px);

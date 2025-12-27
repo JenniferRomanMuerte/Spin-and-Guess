@@ -37,8 +37,8 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
    * ESTADO DEL JUEGO (datos)
    ******************************************************************/
   // Frase y pista (luego vendrán de API o de un generador)
-  const [phrase] = useState("La ruleta de la suerte");
-  const [clue] = useState("Esta es la pista de la frase");
+  const [phrase] = useState("Pues ya estaria Os mando un happy");
+  const [clue] = useState("Muletilla de final de clase");
 
   // Marcadores
   const [playerScore, setPlayerScore] = useState(0);

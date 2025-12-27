@@ -2,9 +2,43 @@
 .markers {
   grid-area: markers;
   display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
   margin-block: 3rem;
-  justify-content: space-around;
-  align-items: center;
+  justify-content: center;
+  align-items: normal;
+
+  /* Mobile + desktop: RoundInfo arriba, marcadores debajo */
+  .roundInfo {
+    order: 0;
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  /* Fuerza que ambos marcadores queden en la segunda línea */
+  &__section {
+    order: 1;
+    flex: 1 1 11rem;
+  }
+
+  /* Desktop grande: en 1 línea  */
+  @media (min-width: var.$media_desktop_lg) {
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    gap: 0;
+    align-items: center;
+
+    .roundInfo {
+      order: 0;
+      flex: 0 1 40%;
+      max-width: 40%;
+    }
+
+    &__section {
+      order: 0;
+      flex: 0 0 auto;
+    }
+  }
   &__section {
     display: flex;
     flex-direction: column;

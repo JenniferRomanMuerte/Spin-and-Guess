@@ -10,7 +10,11 @@ export const calcSliceSize = (wheelWidth, degreesPerWedge) => {
 };
 
 // Dado un ángulo total, devuelve el índice del gajo ganador
-export const getWinnerIndexFromRotation = (totalRotation, degreesPerWedge, wedgesLength) => {
+export const getWinnerIndexFromRotation = (
+  totalRotation,
+  degreesPerWedge,
+  wedgesLength
+) => {
   const normalized = ((totalRotation % 360) + 360) % 360;
   const angleFromTop = (360 - normalized + degreesPerWedge / 2) % 360;
   const index = Math.floor(angleFromTop / degreesPerWedge);
@@ -19,7 +23,8 @@ export const getWinnerIndexFromRotation = (totalRotation, degreesPerWedge, wedge
 
 // Genera el extraDegrees aleatorio (vueltas + offset)
 export const getRandomSpinDegrees = (minTurns = 1, maxTurns = 3) => {
-  const randomTurns = Math.floor(Math.random() * (maxTurns - minTurns + 1)) + minTurns;
+  const randomTurns =
+    Math.floor(Math.random() * (maxTurns - minTurns + 1)) + minTurns;
   const randomOffset = Math.random() * 360;
   return randomTurns * 360 + randomOffset;
 };

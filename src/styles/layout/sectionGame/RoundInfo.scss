@@ -1,6 +1,6 @@
 @use "../../core/variables" as var;
 
-.roundInfo{
+.roundInfo {
   display: flex;
   flex-wrap: wrap;
   max-width: 40%;
@@ -13,7 +13,7 @@
   text-shadow: 1px 1px 2px var.$color-bgPanel-1;
   letter-spacing: 1px;
   padding-bottom: 1rem;
-  &__text{
+  &__text {
     text-align: center;
   }
 }

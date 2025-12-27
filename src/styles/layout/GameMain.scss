@@ -5,20 +5,36 @@
   @include mix.bgMain();
   min-height: 0;
   display: grid;
+  align-content: start;
+  gap: 1.5rem;
   grid-template-areas:
     "panel"
     "roulette"
     "controls"
     "markers";
+  grid-template-rows: auto auto auto auto;
+
+  /* Tablet (>= 768): todo visible, la ruleta absorbe el sobrante */
   @media (min-width: var.$media_desktop) {
+    grid-template-columns: minmax(320px, 1fr) minmax(320px, 1fr);
+    grid-template-rows: auto 1fr auto;
     grid-template-areas:
-      "panel roulette"
-      "controls roulette"
-      "markers markers";
+      "markers roulette"
+      "panel controls";
     padding-inline: 2rem;
   }
 
-  &__rouletteArea{
+  /* Desktop grande (>= 1068): composición amplia */
+  @media (min-width: var.$media_desktop_lg) {
+    grid-template-columns: minmax(360px, 1fr) minmax(360px, 1fr);
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      "panel roulette"
+      "controls controls"
+      "markers markers";
+  }
+
+  &__rouletteArea {
     position: relative;
   }
 }
