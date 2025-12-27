@@ -1,13 +1,30 @@
-
 @use "../core/variables" as var;
-*{
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html{
+html {
   font-size: 62.5%;
   font-family: var.$font_family_comic;
- 
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+.appLayout {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.appLayout > main {
+  flex: 1 1 auto;
+  min-height: 0;
 }

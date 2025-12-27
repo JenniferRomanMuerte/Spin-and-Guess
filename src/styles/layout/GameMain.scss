@@ -3,7 +3,7 @@
 
 .gameMain {
   @include mix.bgMain();
-
+  min-height: 0;
   display: grid;
   grid-template-areas:
     "panel"

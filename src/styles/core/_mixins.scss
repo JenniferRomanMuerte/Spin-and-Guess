@@ -33,26 +33,34 @@
   color: var.$color-primary;
 }
 
-@mixin btnPrimary{
-   display: inline-block;
-      text-align: center;
-      text-decoration: none;
-      padding: 1rem;
-      border-radius: 5px;
-      border: 2px solid var.$color-accent-1;
-      font-size: 2rem;
-      font-weight: var.$font_weight_bold;
-      box-shadow: var.$shadow-default;
-      background-color: var.$color-primary;
-      color: var.$color-accent-1;
-       &.is-disabled {
-        cursor: not-allowed;
-        opacity: 0.6;
-        filter: grayscale(60%);
-      }
+@mixin btnPrimary {
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  padding: 1rem;
+  border-radius: 5px;
+  border: 2px solid var.$color-accent-1;
+  font-size: 2rem;
+  font-weight: var.$font_weight_bold;
+  box-shadow: var.$shadow-default;
+  background-color: var.$color-primary;
+  color: var.$color-accent-1;
+  &.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    filter: grayscale(60%);
+  }
 
-      &:not(.is-disabled):hover {
-        background-color: var.$color-accent-1;
-        color: var.$color-accent-2;
-      }
+  &:not(.is-disabled):hover {
+    background-color: var.$color-accent-1;
+    color: var.$color-accent-2;
+  }
+}
+
+@mixin imgHeader {
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: clamp(110px, 24vw, 170px);
+  height: clamp(60px, 12vw, 120px);
 }

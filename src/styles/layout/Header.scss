@@ -4,16 +4,19 @@
 .header {
   position: relative;
   display: flex;
-  padding-top: 2rem;
-  padding-bottom: 0.5rem;
   padding-inline: 1.5rem;
-  text-align: center;
+  padding-block: 0.5rem;
+  align-items: center;
   justify-content: space-around;
   @include mix.bg;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.9);
 
+  /* Evita que el contenido fuerce alturas enormes */
+  min-height: 0;
+
   &__title {
     font-size: 2.5rem;
+    text-align: center;
     background: linear-gradient(
       90deg,
       #b30059 0%,
@@ -35,20 +38,13 @@
   }
 
   &__presenter {
-    width: 40rem;
+    @include mix.imgHeader();
 
     background-image: url("../../images/presenter.webp");
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
   }
   &__conestants {
-    width: 40rem;
-
+    @include mix.imgHeader();
     background-image: url("../../images/contestants.webp");
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
   }
 }
 

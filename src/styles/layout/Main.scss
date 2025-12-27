@@ -7,15 +7,19 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  min-height: 0;
+  padding: 1rem;
   @include mix.bgMain();
-  min-height: 78dvh;
+
 
   @media (min-width: var.$media_desktop) {
     flex-direction: row;
     align-items: center;
+    justify-content: space-around;
     gap: 2rem;
-    min-height: 78dvh;
+
   }
+
 
   &__article {
     position: relative;
@@ -29,11 +33,11 @@
     align-items: center;
     gap: clamp(0.5rem, 2vw, 1rem);
     padding: clamp(1.25rem, 4vw, 2.25rem) clamp(1rem, 3vw, 2rem);
-    margin: 4rem;
+    margin: 1rem 0;
     overflow: hidden;
     box-shadow: 5px 15px 15px rgba(0, 0, 0, 1.9);
-    width: 90%;
-    max-width: 400px;
+    width: min(90vw, 400px);
+    max-width: none;
 
     /* pantalla gris */
     &::before {
@@ -132,10 +136,10 @@
   }
 
   &__form {
-    width: 65%;
+    width: min(92vw, 420px);
     display: flex;
     flex-direction: column;
-    padding-block: 4rem;
+    padding-block: 1.5rem;
     gap:1rem;
 
     @media (min-width: var.$media_desktop) {

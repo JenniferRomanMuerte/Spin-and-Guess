@@ -6,6 +6,8 @@ import Footer from "./Footer.jsx";
 import App from "./App.jsx";
 import GamePage from "./gamePage.jsx";
 
+import "../styles/core/_reset.scss";
+
 const RootLayout = () => {
   const location = useLocation();
 
@@ -19,7 +21,7 @@ const RootLayout = () => {
   const  changeTurn = (turnValue) => setTurn(turnValue);
 
   return (
-    <>
+    <div className="appLayout">
       <Header isGame={isGame} namePlayer={namePlayer} turn={turn} />
 
       <Routes>
@@ -33,7 +35,7 @@ const RootLayout = () => {
       </Routes>
 
       <Footer />
-    </>
+    </div>
   );
 };
 
