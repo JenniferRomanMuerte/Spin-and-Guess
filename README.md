@@ -2,8 +2,12 @@
 
 Juego tipo “Ruleta de la suerte”: gira la ruleta, compra vocales, elige consonantes y resuelve la frase. Incluye turnos jugador/computadora, bloqueos de UI para evitar acciones inválidas y un sistema de mensajes (RoundInfo) para guiar cada ronda.
 
-## Capturas
+## Web
 
+Se puede probar el juego en:
+https://jenniferromanmuerte.github.io/Spin-and-Guess/
+
+## Capturas
 
 - Página Inicio:
 ![Landing](public/screenshots/landingPage.png)
