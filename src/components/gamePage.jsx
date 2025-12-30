@@ -18,7 +18,6 @@ import { useRoundInfoMessages } from "../hooks/useRoundInfoMessages";
 import { initialVowels, initialConsonants } from "../data/letters";
 
 const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
-
   const navigate = useNavigate();
 
   /******************************************************************
@@ -117,7 +116,6 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     }, ms);
   };
 
-
   /******************************************************************
    * EFECTO: cuando entra el turno de la computadora, gira solo
    ******************************************************************/
@@ -143,42 +141,41 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     show("Turno de la computadora 🤖... girando la ruleta 🎛️");
   }, [turn, show]);
 
-    /******************************************************************
-   * EFECTO: cuando acierta io falla la resolucion del panel
+  /******************************************************************
+   * EFECTO: cuando acierta o falla la resolucion del panel
    ******************************************************************/
   useEffect(() => {
-  // Mientras esté null, todavía estamos en el input (no hacemos nada)
-  if (solveResult === null) return;
+    // Mientras esté null, todavía estamos en el input (no hacemos nada)
+    if (solveResult === null) return;
 
-  // Cancelamos cualquier timeout anterior (por si acaso)
-  cancelTurnTimeout();
+    // Cancelamos cualquier timeout anterior (por si acaso)
+    cancelTurnTimeout();
 
-  if (solveResult === true) {
-    // GANA: mostrar modal 5s y luego reset + ir a Inicio
-    turnTimeoutRef.current = setTimeout(() => {
-      resetGame();
-      navigate("/");
-    }, 3000);
+    if (solveResult === true) {
+      // GANA: mostrar modal 5s y luego reset + ir a Inicio
+      turnTimeoutRef.current = setTimeout(() => {
+        resetGame();
+        navigate("/");
+      }, 3000);
 
-    return;
-  }
+      return;
+    }
 
-  if (solveResult === false) {
-    // FALLA: mostrar modal 3s y luego pasar turno a computer
-    turnTimeoutRef.current = setTimeout(() => {
-      setModalMode(null);   // cerramos  modal
-      setSolveResult(null); // reseteamos para la proxima
-      goToComputerTurn();   // cambiamos turno a computer
-    }, 2000);
-  }
-}, [solveResult]);
+    if (solveResult === false) {
+      // FALLA: mostrar modal 3s y luego pasar turno a computer
+      turnTimeoutRef.current = setTimeout(() => {
+        setModalMode(null); // cerramos  modal
+        setSolveResult(null); // reseteamos para la proxima
+        goToComputerTurn(); // cambiamos turno a computer
+      }, 2000);
+    }
+  }, [solveResult]);
 
   /******************************************************************
    * CALLBACK: la ruleta terminó de girar
    * (cosas comunes + delega a jugador o computer)
    ******************************************************************/
   const spinEnd = (wedge) => {
-
     // Cosas comunes (siempre)
     setCurrentWedge(wedge);
     setRouletteDisabled(true);
@@ -293,13 +290,18 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   const computeShouldBuyVowel = () => {
     const enabledVowelsCount = vowels.filter((v) => v.enabled).length;
     const enabledConsonantsCount = consonants.filter((c) => c.enabled).length;
-    const roll = Math.random();
+    //Si no puede pagar o no quedan vocales, no compra
+    if (computerScore < VOWEL_COST || enabledVowelsCount === 0) return false;
 
-    return (
-      computerScore >= VOWEL_COST &&
-      enabledVowelsCount > 0 &&
-      (computerScore >= 300 || enabledConsonantsCount <= 5 || roll < 0.25)
-    );
+    // Si quedan pocas consonantes, sí o sí conviene vocal
+    if (enabledConsonantsCount <= 5) return true;
+
+    // Probabilidad base
+    let p = 0.25;
+
+    // Si va sobrada de dinero, subimos probabilidad
+    if (computerScore >= 300) p = 0.4;
+    return Math.random() < p;
   };
 
   /******************************************************************
@@ -538,15 +540,14 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
    * MODAL: cerrar (vuelve a permitir girar)
    ******************************************************************/
   const closeModal = () => {
-  setModalMode(null);
-  setControlsDisabled(true);
+    setModalMode(null);
+    setControlsDisabled(true);
 
-  // Solo re-habilita si NO estamos entregando turno y NO es la compu
-  if (turn !== "computer" && !handoverToComputer) {
-    setRouletteDisabled(false);
-  }
-};
-
+    // Solo re-habilita si NO estamos entregando turno y NO es la compu
+    if (turn !== "computer" && !handoverToComputer) {
+      setRouletteDisabled(false);
+    }
+  };
 
   /******************************************************************
    * CUANDO EMPIEZA UN GIRO (desde Roulette)
@@ -587,39 +588,38 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     setRouletteDisabled(false);
   };
 
-
-    /******************************************************************
+  /******************************************************************
    * COMPROBAMOS SI LA FRASE DEL PLAYER COINCIDICE CON LA FRASE A ADIVINAR
    ******************************************************************/
-  const onSubmitSolve = (phrasePlayer) =>{
-       setSolveResult(null);
-       setSolveResult(phrasePlayer.toLowerCase() === phrase.toLowerCase());
-  }
+  const onSubmitSolve = (phrasePlayer) => {
+    setSolveResult(null);
+    setSolveResult(phrasePlayer.toLowerCase() === phrase.toLowerCase());
+  };
 
- /******************************************************************
+  /******************************************************************
    * RESETEO cuando gana la partida
    ******************************************************************/
   const resetGame = () => {
-  setPlayerScore(0);
-  setComputerScore(0);
-  setSelectedLetters([]);
-  setCurrentWedge(null);
-  setHasJocker(false);
+    setPlayerScore(0);
+    setComputerScore(0);
+    setSelectedLetters([]);
+    setCurrentWedge(null);
+    setHasJocker(false);
 
-  setVowels(initialVowels.map(vowel => ({ ...vowel })));
-  setConsonants(initialConsonants.map(consonant => ({ ...consonant })));
+    setVowels(initialVowels.map((vowel) => ({ ...vowel })));
+    setConsonants(initialConsonants.map((consonant) => ({ ...consonant })));
 
-  setModalMode(null);
-  setSolveResult(null);
+    setModalMode(null);
+    setSolveResult(null);
 
-  setControlsDisabled(true);
-  setRouletteDisabled(false);
-  setHandoverToComputer(false);
+    setControlsDisabled(true);
+    setRouletteDisabled(false);
+    setHandoverToComputer(false);
 
-  changeNamePlayer("");
+    changeNamePlayer("");
 
-  changeTurn("player");
-};
+    changeTurn("player");
+  };
 
   /******************************************************************
    * RENDER
@@ -651,8 +651,8 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
             consonants={consonants}
             handleletterSelected={handleLetterSelected}
             closeModal={closeModal}
-            onSubmitSolve = {onSubmitSolve}
-            solveResult = {solveResult}
+            onSubmitSolve={onSubmitSolve}
+            solveResult={solveResult}
           />
         )}
       </article>
