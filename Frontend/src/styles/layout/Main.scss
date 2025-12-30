@@ -1,0 +1,185 @@
+@use "../core/variables" as var;
+@use "../core/mixins" as mix;
+
+.main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 0;
+  padding: 1rem;
+  @include mix.bgMain();
+
+  @media (min-width: var.$media_desktop) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    gap: 2rem;
+  }
+
+  &__article {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: url("../../images/roulette_frame.webp") center/cover no-repeat,
+      #1e1d1c;
+    border-radius: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(0.5rem, 2vw, 1rem);
+    padding: clamp(1.25rem, 4vw, 2.25rem) clamp(1rem, 3vw, 2rem);
+    margin: 1rem 0;
+    overflow: hidden;
+    box-shadow: 5px 15px 15px rgba(0, 0, 0, 1.9);
+    width: min(90vw, 400px);
+    max-width: none;
+
+    /* pantalla gris */
+    &::before {
+      content: "";
+      position: absolute;
+      inset: clamp(12px, 8vw, 30px);
+      z-index: 1;
+      background: radial-gradient(circle at center, #1f2022, #828282);
+      border-radius: 25px;
+      border: 3px solid rgba(0, 0, 0, 0.9);
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.9),
+        inset 0 0 20px rgba(0, 0, 0, 0.6);
+    }
+
+    /* sección de la ruleta / imagen */
+    &--section {
+      width: 98%;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-top: clamp(2rem, 8vw, 6rem);
+
+      &-img {
+        width: 100%;
+        max-height: clamp(200px, 80vw, 320px);
+        filter: drop-shadow(var.$shadow-default);
+        animation: zoomRoulette 3s ease-in-out infinite;
+        object-fit: contain;
+      }
+    }
+
+    /* botones */
+    &--tv-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      width: 90%;
+      max-width: 240px;
+      min-width: 0;
+      gap: clamp(0.25rem, 2vw, 0.9rem);
+      padding: clamp(0.25rem, 3.5vw, 5.6rem) clamp(0.75rem, 1.5vw, 1.1rem)
+        clamp(0.75rem, 2.5vw, 1.1rem);
+      z-index: 4;
+
+      &-tv-btn {
+        background: radial-gradient(
+          circle at 30% 20%,
+          lighten(var.$color-accent-2, 8%),
+          var.$color-primary 80%
+        );
+        color: var.$color-text;
+        border: 2px solid var.$color-text;
+        border-radius: 8px;
+        flex: 0 1 auto;
+        max-width: 7rem;
+        min-width: 0;
+        padding: clamp(0.25rem, 1.2vw, 0.4rem) clamp(0.35rem, 2vw, 0.7rem);
+        font-size: clamp(0.6rem, 2vw, 0.75rem);
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.25),
+          0 2px 8px rgba(0, 0, 0, 0.7);
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: radial-gradient(
+            circle at 30% 20%,
+            lighten(var.$color-accent-1, 10%),
+            lighten(var.$color-primary, 5%) 75%
+          );
+
+          color: var.$color-accent-2;
+          transform: scale(1.05);
+          animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        &:active {
+          transform: scale(0.95) translateY(2px);
+          box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
+        }
+
+        &.power {
+          background: radial-gradient(circle at center, #b30000, #4d0000);
+          color: #fff;
+          border: 2px solid #220000;
+
+          &:hover {
+            background: radial-gradient(circle at center, #ff0000, #660000);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+          }
+        }
+      }
+    }
+  }
+
+  &__form {
+    width: min(92vw, 420px);
+    display: flex;
+    flex-direction: column;
+    padding-block: 1.5rem;
+    gap: 1rem;
+
+    @media (min-width: var.$media_desktop) {
+      width: 35%;
+      padding-right: 3rem;
+    }
+
+    &-inputName {
+      @include mix.input();
+    }
+
+    &-btnBegin {
+      @include mix.btnPrimary();
+    }
+    &-error {
+      padding-bottom: 0.8rem;
+      color: var.$color-accent-2;
+      text-shadow: 2px 2px 5px var.$color-text-light;
+      font-size: 1.4rem;
+      font-family: var.$font-family_orbitron;
+      font-weight: var.$font_weight_bold;
+    }
+  }
+}
+
+/* animaciones */
+@keyframes zoomRoulette {
+  0%,
+  100% {
+    transform: scale(0.95);
+  }
+  50% {
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 20px #00d4ff66;
+  }
+  50% {
+    box-shadow: 0 0 0px #00d4ffcc;
+    transform: translateY(-1px);
+  }
+}

@@ -1,0 +1,91 @@
+@use "../../core/variables" as var;
+
+.sectionPanel {
+  grid-area: panel;
+  width: 100%;
+  margin: 3rem auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  @media (min-width: var.$media_desktop) {
+    margin: 1rem auto;
+  }
+  @media (min-width: var.$media_desktop_lg) {
+    justify-content: center;
+    padding: clamp(1rem, 8vw, 5.75rem) clamp(1rem, 8vw, 5.5rem) 0;
+  }
+  &__title {
+    text-align: center;
+    font-size: clamp(1.5rem, 4vw, 2.75rem);
+    color: var.$color-bgPanel-2;
+    font-family: "Orbitron", sans-serif;
+    //text-shadow:  0px 5px 10px black;
+  }
+  &__panel {
+    width: 100%;
+    max-width: 46rem;
+    min-width: none;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(0.43rem, 2.3vw, 1rem);
+    padding: clamp(0.75rem, 3vw, 1.25rem) clamp(0.5rem, 3vw, 1rem);
+    background: radial-gradient(
+      circle at center,
+      var.$color-bgPanel-1,
+      var.$color-bgPanel-2
+    );
+    border-radius: 20px;
+    //border: 2px solid var.$color-bg-light;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.9);
+    min-height: 12rem;
+
+    &--word {
+      display: flex;
+      gap: clamp(0.45rem, 2.3vw, 1rem);
+    }
+    &--letter {
+      width: clamp(1.7rem, 10vw, 3.8rem);
+      height: clamp(2rem, 12vw, 4.2rem);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: var.$font_family_comic;
+      font-size: clamp(1rem, 6vw, 2.4rem);
+      color: var.$color-primary;
+      background: var.$color-bg-light;
+      border: 3px solid var.$color-primary;
+      border-radius: 8px;
+      box-shadow: var.$shadow-glow;
+      text-transform: uppercase;
+
+      transform: rotateY(0deg);
+      transform-style: preserve-3d;
+
+      transition: transform 0.6s ease, background 0.2s ease,
+        border-color 0.2s ease, color 0.2s ease;
+    }
+    &--letter--hidden {
+      width: clamp(1.7rem, 10vw, 3.8rem);
+      height: clamp(2rem, 12vw, 4.2rem);
+      background: var.$color-text-light;
+      border: 2px solid var.$color-bgPanel-2;
+      color: transparent;
+      text-shadow: none;
+      box-shadow: var.$shadow-default;
+
+      transform: rotateY(180deg);
+    }
+
+    &--gap {
+      width: clamp(0.8rem, 5vw, 1.2rem);
+      height: clamp(2rem, 12vw, 4rem);
+      border-radius: 8px;
+      background: #c2dfc4;
+      border: none;
+    }
+  }
+}
