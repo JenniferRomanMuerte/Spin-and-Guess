@@ -1,66 +1,61 @@
-// ----------  SECCION DE IMPORTS  ----------
+// ===============================
+// CARGA DE DEPENDENCIAS Y CONFIG
+// ===============================
 
-// Importar la biblioteca de Express
-
+// Express: servidor HTTP
 const express = require("express");
 
-// Importar la biblioteca de CORS
-
+// CORS: permitir peticiones desde otros orígenes
 const cors = require("cors");
 
-// Importamos path para poder crear rutas a carpetas (de fich. estáticos)
-
+// Path: rutas a carpetas (estáticos)
 const path = require("node:path");
 
-// Importar la biblioteca de Postgree
-
-const { Pool } = require("pg");
-
-// Importamos la biblioteca de variables de entorno
-
+// Variables de entorno (.env)
 require("dotenv").config();
 
-// Importamos la biblioteca de contraseñas
+// ===============================
+// IMPORTS DE LÓGICA DE LA APP
+// ===============================
 
-const bcrypt = require("bcrypt");
-const saltRounds = 10;
+// Rutas de autenticación (/register, /login)
+const authRoutes = require("./routes/auth.routes");
 
-// Importamos la biblioteca de tokens
-const jwt = require("jsonwebtoken");
-const jwtSecret = "secret_key";
+// ===============================
+// CREACIÓN Y CONFIGURACIÓN DEL SERVER
+// ===============================
 
-// ----------  SECCION DE CONFIGURACIÓN DE EXPRESS  ----------
-
-// Crear una variable con todo lo que puede hacer el servidor:
-
+// Instancia de Express
 const server = express();
 
-// Configuramos Express para que funcione bien como API
-
+// Middlewares globales
 server.use(cors());
 server.use(express.json({ limit: "25Mb" }));
 
-// ----------  SECCION DE CONFIGURACIÓN DE POSTGREE  ----------
+// ===============================
+// REGISTRO DE RUTAS
+// ===============================
 
-// Configuración de Postgree
+// Rutas de usuarios y autenticación
+server.use("/api/user", authRoutes);
 
-const pool = new Pool({
-  host: process.env.PG_HOST || "localhost",
-  port: process.env.PG_PORT || 5432,
-  user: process.env.PG_USER || "postgres",
-  password: process.env.PG_PASSWORD || "my_password",
-  database: process.env.PG_DATABASE || "roulette_game",
-});
-
-module.exports = pool;
-
-// ----------  INICIAMOS EXPRESS  ----------
-// Arrancar el servidor en el puerto 3000:
+// ===============================
+// ARRANQUE DEL SERVIDOR
+// ===============================
 
 const port = 3000;
 server.listen(port, () => {
-  console.log(`Uh! El servidor ya está arrancado: <http://localhost:${port}/>`);
+  console.log(`Servidor escuchando en http://localhost:${port}`);
 });
+
+// ===============================
+// SERVIDO DE ARCHIVOS ESTÁTICOS (FRONTEND)
+// ===============================
+
+server.use(
+  express.static(path.join(__dirname, "..", "Frontend", "docs"))
+);
+
 
 // ----------  SECCIÓN DE ENDPOINTS  ----------
 
@@ -114,142 +109,4 @@ server.post("/api/animes", async (req, res) => {
 
 */
 
-// ENDPOINTS PARA REGISTRO Y LOGIN
 
-server.post("/api/user/register", async (req, res) => {
-  try {
-    if (!req.body.email) {
-      return res.status(401).json({
-        success: false,
-        error: "Falta el email",
-      });
-    }
-    if (!req.body.pass) {
-      return res.status(401).json({
-        success: false,
-        error: "Falta el pass",
-      });
-    }
-
-    // 2.a Comprobamos si ya existe una usuaria con ese email
-    const queryIsEmail = `
-    SELECT * FROM users WHERE email =  $1
-  `;
-    const { rows: existingUsers } = await pool.query(queryIsEmail, [
-      req.body.email,
-    ]);
-
-    if (existingUsers.length > 0) {
-      return res.status(401).json({
-        success: false,
-        error: "La usuaria ya existe",
-      });
-    }
-
-    // 2. Preparar INSERT
-    const insertOneUser = `
-    INSERT INTO users (username, email, password_hash)
-      VALUES  ($1, $2, $3)
-    RETURNING id;`;
-
-    // 3. Lanzar INSERT
-
-    const encryptedPass = await bcrypt.hash(req.body.pass, saltRounds);
-
-    const { rows } = await pool.query(insertOneUser, [
-      req.body.username,
-      req.body.email,
-      encryptedPass,
-    ]);
-
-    // 3. Respuesta de éxito
-    res.json({
-      success: true,
-      user_id: rows[0].id,
-    });
-  } catch (error) {
-    console.error("Error en REGISTER:", error);
-
-    res.status(500).json({
-      success: false,
-      error: "Error interno del servidor",
-    });
-  }
-});
-
-server.post("/api/user/login", async (req, res) => {
-  try {
-    // Compobar los datos que me envían
-    if (!req.body.email) {
-      return res.status(401).json({
-        success: false,
-        error: "Falta el email",
-      });
-    }
-    if (!req.body.pass) {
-      return res.status(401).json({
-        success: false,
-        error: "Falta el pass",
-      });
-    }
-
-    // Buscar usuario por email
-    const queryFindUserWithEmail = `
-    SELECT *
-      FROM users
-      WHERE email = $1;`;
-
-    const { rows } = await pool.query(queryFindUserWithEmail, [req.body.email]);
-
-    if (rows.length !== 1) {
-      // No existe usuaria con el email que nos envían en el body
-      return res.status(401).json({
-        success: false,
-        error: "Email o contraseña incorrectas",
-      });
-    }
-
-    const userFound = rows[0];
-
-    // Comparar contraseñas
-    const isPasswordOk = await bcrypt.compare(
-      req.body.pass,
-      userFound.password_hash
-    );
-
-    if (!isPasswordOk) {
-      return res.status(401).json({
-        success: false,
-        error: "Email o contraseña incorrectas",
-      });
-    }
-
-    // Generar token
-    const dataToken = {
-      id: userFound.id,
-      username: userFound.username,
-      email: userFound.email,
-    };
-
-    const tokenJWT = jwt.sign(dataToken, jwtSecret);
-
-    // Respuesta OK
-    return res.json({
-      success: true,
-      token: tokenJWT,
-    });
-  } catch (error) {
-    console.error("Error en LOGIN:", error);
-
-    return res.status(500).json({
-      success: false,
-      error: "Error interno del servidor",
-    });
-  }
-});
-
-server.post("/api/user/verify", async (req, res) => {});
-
-// SERVIDOR DE ESTÁTICOS PARA REACT
-
-server.use(express.static(path.join(__dirname, "..", "Frontend", "docs")));
