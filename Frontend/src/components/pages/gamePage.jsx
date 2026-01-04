@@ -1,21 +1,21 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/layout/GameMain.scss";
+import "../../styles/layout/GameMain.scss";
 
-import ControlsGame from "./sectionsGame/ControlsGame";
-import Markers from "./sectionsGame/Markers";
-import Panel from "./sectionsGame/Panel";
-import Roulette from "./sectionsGame/Roulette";
-import ActionModal from "./sectionsGame/Modal/ActionModal";
+import ControlsGame from "../sectionsGame/ControlsGame";
+import Markers from "../sectionsGame/Markers";
+import Panel from "../sectionsGame/Panel";
+import Roulette from "../sectionsGame/Roulette";
+import ActionModal from "../sectionsGame/modal/ActionModal";
 
 import {
   countLetterInPhrase,
   isScoringWedge,
   getRandomEnabledLetter,
   pluralize,
-} from "../utils/gameUtils";
-import { useRoundInfoMessages } from "../hooks/useRoundInfoMessages";
-import { initialVowels, initialConsonants } from "../data/letters";
+} from "../../utils/gameUtils";
+import { useRoundInfoMessages } from "../../hooks/useRoundInfoMessages";
+import { initialVowels, initialConsonants } from "../../data/letters";
 
 const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   const navigate = useNavigate();

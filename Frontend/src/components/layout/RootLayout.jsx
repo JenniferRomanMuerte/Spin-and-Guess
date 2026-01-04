@@ -3,10 +3,10 @@ import { Route, Routes, useLocation } from "react-router-dom";
 
 import Header from "./Header.jsx";
 import Footer from "./Footer.jsx";
-import App from "./App.jsx";
-import GamePage from "./gamePage.jsx";
+import App from "../pages/App.jsx";
+import GamePage from "../pages/gamePage.jsx";
 
-import "../styles/core/_reset.scss";
+import "../../styles/core/_reset.scss";
 
 const RootLayout = () => {
   const location = useLocation();

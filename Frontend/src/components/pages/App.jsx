@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/layout/Main.scss";
-import rouletteImg from "../images/roulette.webp";
+import "../../styles/layout/Main.scss";
+import rouletteImg from "../../images/roulette.webp";
 
 function App({ namePlayer, changeNamePlayer }) {
   const navigate = useNavigate();

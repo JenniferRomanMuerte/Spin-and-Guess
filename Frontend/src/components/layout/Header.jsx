@@ -1,5 +1,5 @@
 
-import "../styles/layout/Header.scss";
+import "../../styles/layout/Header.scss";
 
 const Header = ({isGame, namePlayer, turn}) => {
 
