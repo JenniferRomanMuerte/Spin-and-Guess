@@ -2,7 +2,7 @@ const pool = require("../config/db");
 const { hashPassword, comparePassword } = require("../utils/password");
 const { generateToken } = require("../utils/jwt");
 
-const register =  async (req, res) => {
+const register = async (req, res) => {
   try {
     if (!req.body.email) {
       return res.status(401).json({
@@ -40,7 +40,7 @@ const register =  async (req, res) => {
 
     // 3. Lanzar INSERT
 
-    const encryptedPass =  await hashPassword(req.body.pass);
+    const encryptedPass = await hashPassword(req.body.pass);
 
     const { rows } = await pool.query(insertOneUser, [
       req.body.username,
@@ -62,7 +62,6 @@ const register =  async (req, res) => {
     });
   }
 };
-
 
 const login = async (req, res) => {
   try {
@@ -124,6 +123,11 @@ const login = async (req, res) => {
     return res.json({
       success: true,
       token: tokenJWT,
+      user: {
+        id: userFound.id,
+        username: userFound.username,
+        email: userFound.email,
+      },
     });
   } catch (error) {
     console.error("Error en LOGIN:", error);

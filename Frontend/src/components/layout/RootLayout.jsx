@@ -25,7 +25,7 @@ const RootLayout = () => {
       <Header isGame={isGame} namePlayer={namePlayer} turn={turn} />
 
       <Routes>
-        <Route path="/" element={<App namePlayer={namePlayer} changeNamePlayer={changeNamePlayer}/>} />
+        <Route path="/" element={<App  changeNamePlayer={changeNamePlayer}/>} />
         <Route
           path="/game"
           element={
