@@ -27,3 +27,17 @@ export const login = (credentials) => {
     body: JSON.stringify(credentials),
   });
 };
+
+
+// ----------------------------
+// COMPROBAR SESIÓN
+// ----------------------------
+
+// Comprueba si el token es válido y devuelve el usuario
+export const me = (token) => {
+  return request("/api/user/me", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
