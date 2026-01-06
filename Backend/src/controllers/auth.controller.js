@@ -5,28 +5,36 @@ const { generateToken } = require("../utils/jwt");
 const register = async (req, res) => {
   try {
     if (!req.body.email) {
-      return res.status(401).json({
+      return res.status(400).json({
         success: false,
         error: "Falta el email",
       });
     }
     if (!req.body.pass) {
-      return res.status(401).json({
+      return res.status(400).json({
         success: false,
         error: "Falta el pass",
       });
     }
 
+    if (!req.body.username) {
+      return res.status(400).json({
+        success: false,
+        error: "Falta el nombre de usuaria",
+      });
+    }
+
+    // Normalizamos el email para evitar conflictos
+    const email = req.body.email.toLowerCase().trim();
+
     // 2.a Comprobamos si ya existe una usuaria con ese email
     const queryIsEmail = `
     SELECT * FROM users WHERE email =  $1
   `;
-    const { rows: existingUsers } = await pool.query(queryIsEmail, [
-      req.body.email,
-    ]);
+    const { rows: existingUsers } = await pool.query(queryIsEmail, [email]);
 
     if (existingUsers.length > 0) {
-      return res.status(401).json({
+      return res.status(409).json({
         success: false,
         error: "La usuaria ya existe",
       });
@@ -44,14 +52,19 @@ const register = async (req, res) => {
 
     const { rows } = await pool.query(insertOneUser, [
       req.body.username,
-      req.body.email,
+      email,
       encryptedPass,
     ]);
 
     // 3. Respuesta de éxito
-    res.json({
+    res.status(201).json({
       success: true,
-      user_id: rows[0].id,
+      message: "Registro completado correctamente",
+      user: {
+        id: rows[0].id,
+        username: req.body.username,
+        email,
+      },
     });
   } catch (error) {
     console.error("Error en REGISTER:", error);
