@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../../styles/layout/Main.scss";
 import rouletteImg from "../../images/roulette.webp";
 import LoginForm from "../auth/LoginForm";
@@ -8,7 +9,9 @@ import storage from "../../services/localStorage";
 function App({ changeNamePlayer }) {
   const [checkingSession, setCheckingSession] = useState(true);
   const [user, setUser] = useState(null);
-  const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
+
 
   // Comprobamos si existe Token en localStorage
   useEffect(() => {
@@ -35,6 +38,18 @@ function App({ changeNamePlayer }) {
       setCheckingSession(false);
     }
   };
+
+  // Si el token es valido se redirige a game
+  useEffect(() => {
+  if (user) {
+    const timeoutId = setTimeout(() => {
+      navigate("/game");
+    }, 3000);
+
+    return () => clearTimeout(timeoutId);
+  }
+}, [user, navigate]);
+
 
   return (
     <main className="main landing">
@@ -76,7 +91,7 @@ function App({ changeNamePlayer }) {
       )}
       {!checkingSession && user && (
         <p className="main__isSession">
-          Bienvenida de nuevo, {user.username} 👋
+          Bienvenida de nuevo, {user.username}
         </p>
       )}
     </main>

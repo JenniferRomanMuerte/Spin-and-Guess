@@ -16,24 +16,31 @@
 
   &__title {
     font-size: 2.5rem;
-    text-align: center;
-    background: linear-gradient(
-      90deg,
-      #b30059 0%,
-      var.$color-accent-2 20%,
-      #d699a8 40%,
-      var.$color-accent-2 60%,
-      #b30059 80%
-    );
-    background-size: 200%;
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-    animation: titleLight 10s linear infinite;
-
+    @include mix.glowingText();
     @media (min-width: var.$media_desktop) {
       font-size: 3.5rem;
+    }
+  }
+  &__logout {
+    background: none;
+    border: none;
+    cursor: pointer;
+    img {
+      width: 42px;
+      height: 42px;
+      @media (min-width: var.$media_desktop) {
+        width: 82px;
+        height: 82px;
+      }
+    }
+
+    &:hover img {
+      transform: scale(1.1);
+      filter: drop-shadow(0 0 10px var.$color-primary);
+    }
+
+    &:active img {
+      transform: scale(0.95);
     }
   }
 
@@ -45,14 +52,5 @@
   &__conestants {
     @include mix.imgHeader();
     background-image: url("../../images/contestants.webp");
-  }
-}
-
-@keyframes titleLight {
-  0% {
-    background-position: 200% center;
-  }
-  100% {
-    background-position: -200% center;
   }
 }

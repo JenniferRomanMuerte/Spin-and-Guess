@@ -9,13 +9,15 @@
   align-items: center;
   min-height: 0;
   padding: 1rem;
+  gap: 10rem;
   @include mix.bgMain();
 
   @media (min-width: var.$media_desktop) {
     flex-direction: row;
     align-items: center;
     justify-content: space-around;
-    gap: 2rem;
+    padding: 5rem;
+
   }
 
   &__article {
@@ -130,10 +132,16 @@
         }
       }
     }
-    &__isSession{
-      font-size: 2rem;
-    }
   }
+
+  &__isSession{
+      font-size: 3rem;
+      @include mix.glowingText();
+       @media (min-width: var.$media_desktop) {
+        font-size: 4rem;
+    }
+
+    }
 
   &__form {
     width: min(92vw, 420px);

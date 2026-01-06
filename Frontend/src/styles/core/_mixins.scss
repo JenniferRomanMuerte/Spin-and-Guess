@@ -23,6 +23,23 @@
   text-align: center;
 }
 
+@mixin titleAnimation{
+   text-align: center;
+    background: linear-gradient(
+      90deg,
+      #b30059 0%,
+      var.$color-primary 20%,
+      #d699a8 40%,
+      var.$color-primary 60%,
+      #b30059 80%
+    );
+    background-size: 200%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
 @mixin input {
   padding: 1rem;
   border-radius: 5px;
@@ -63,4 +80,39 @@
   background-repeat: no-repeat;
   width: clamp(110px, 24vw, 170px);
   height: clamp(60px, 10vw, 120px);
+}
+
+
+@mixin glowingText(
+  $duration: 10s,
+  $delay: 0s,
+  $timing: linear,
+  $iteration: infinite
+) {
+  background: linear-gradient(
+    90deg,
+    #b30059 0%,
+    var.$color-primary 20%,
+    #d699a8 40%,
+    var.$color-primary 60%,
+    #b30059 80%
+  );
+  background-size: 200%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+
+  animation: titleLight $duration $timing $delay $iteration;
+}
+
+
+@keyframes titleLight {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
 }
