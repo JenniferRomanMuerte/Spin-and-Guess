@@ -1,0 +1,35 @@
+@use "../../core/variables" as var;
+@use "../../core/mixins" as mix;
+
+.form {
+    width: min(92vw, 420px);
+    display: flex;
+    flex-direction: column;
+    padding-block: 1.5rem;
+    gap: 1rem;
+
+    @media (min-width: var.$media_desktop) {
+      width: 35%;
+      padding-right: 3rem;
+    }
+
+    &__input {
+      @include mix.input();
+      &.is-error {
+        border: 2px solid var.$color-accent-2;
+        box-shadow: 0 0 6px var.$color-primary;
+      }
+    }
+
+    &__btn {
+      @include mix.btnPrimary();
+    }
+    &__error {
+      padding-bottom: 0.8rem;
+      color: var.$color-primary;
+      text-shadow: 1px 1px 2px var.$color-accent-2;
+      font-size: 1.4rem;
+      font-family: var.$font-family_orbitron;
+      font-weight: var.$font_weight_bold;
+    }
+  }

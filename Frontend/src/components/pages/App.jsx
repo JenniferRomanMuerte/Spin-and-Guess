@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../../styles/layout/Main.scss";
 import rouletteImg from "../../images/roulette.webp";
 import LoginForm from "../auth/LoginForm";
+import RegisterForm from "../auth/RegisterForm";
 import { me } from "../../services/auth.service";
 import storage from "../../services/localStorage";
 
@@ -10,8 +11,10 @@ function App({ changeNamePlayer }) {
   const [checkingSession, setCheckingSession] = useState(true);
   const [user, setUser] = useState(null);
 
-  const navigate = useNavigate();
+  const [authMode, setAuthMode] = useState("login");
+  const [registerSuccessMsg, setRegisterSuccessMsg] = useState("");
 
+  const navigate = useNavigate();
 
   // Comprobamos si existe Token en localStorage
   useEffect(() => {
@@ -41,15 +44,26 @@ function App({ changeNamePlayer }) {
 
   // Si el token es valido se redirige a game
   useEffect(() => {
-  if (user) {
-    const timeoutId = setTimeout(() => {
-      navigate("/game");
-    }, 3000);
+    if (user) {
+      const timeoutId = setTimeout(() => {
+        navigate("/game");
+      }, 2000);
 
-    return () => clearTimeout(timeoutId);
-  }
-}, [user, navigate]);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [user, navigate]);
 
+  // Si se registra correctamente muestra el mensaje
+  useEffect(() => {
+    if (authMode === "success") {
+      const timeout = setTimeout(() => {
+        setRegisterSuccessMsg("");
+        setAuthMode("login");
+      }, 3000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [authMode]);
 
   return (
     <main className="main landing">
@@ -86,13 +100,41 @@ function App({ changeNamePlayer }) {
       {checkingSession && (
         <p className="main__isSession">Comprobando sesión...</p>
       )}
-      {!checkingSession && !user && (
-        <LoginForm changeNamePlayer={changeNamePlayer} />
+      {!checkingSession && !user && authMode === "success" && (
+        <p className="main__success">Registro completado correctamente</p>
+      )}
+      {!checkingSession && !user && authMode === "login" && (
+        <div className="main__auth">
+          <LoginForm changeNamePlayer={changeNamePlayer} />
+          <p
+            className="main__auth--message"
+            onClick={() => setAuthMode("register")}
+          >
+            ¿No tienes cuenta? Regístrate
+          </p>
+        </div>
+      )}
+
+      {!checkingSession && !user && authMode === "register" && (
+        <div className="main__auth">
+          <RegisterForm
+            onRegisterSuccess={() => {
+              setRegisterSuccessMsg(
+                "Registro completado. Ahora puedes iniciar sesión."
+              );
+              setAuthMode("success");
+            }}
+          />
+          <p
+            className="main__auth--message"
+            onClick={() => setAuthMode("login")}
+          >
+            ¿Ya tienes cuenta? Inicia sesión
+          </p>
+        </div>
       )}
       {!checkingSession && user && (
-        <p className="main__isSession">
-          Bienvenida de nuevo, {user.username}
-        </p>
+        <p className="main__isSession">Bienvenida de nuevo, {user.username}</p>
       )}
     </main>
   );

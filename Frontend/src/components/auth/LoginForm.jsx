@@ -1,8 +1,9 @@
-import { useState} from "react";
-import {useNavigate} from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { isValidEmail } from "../../utils/validators";
 import { login } from "../../services/auth.service";
 import storage from "../../services/localStorage";
+import "../../styles/layout/auth/AuthForm.scss";
 
 const LoginForm = ({ changeNamePlayer }) => {
   const [errorEmail, setErrorEmail] = useState("");
@@ -18,6 +19,7 @@ const LoginForm = ({ changeNamePlayer }) => {
     const value = e.target.value;
     setUserEmail(value);
 
+    if (formError) setFormError("");
     if (errorEmail && isValidEmail(value)) {
       setErrorEmail("");
     }
@@ -26,7 +28,8 @@ const LoginForm = ({ changeNamePlayer }) => {
   const handlePassChange = (e) => {
     const value = e.target.value;
     setUserPass(value);
-
+    
+    if (formError) setFormError("");
     if (value !== "") {
       setErrorPass("");
     }
@@ -64,7 +67,6 @@ const LoginForm = ({ changeNamePlayer }) => {
       changeNamePlayer(response.user.username);
 
       navigate("/game");
-
     } catch (error) {
       setFormError(
         error?.error || "Error al iniciar sesión. Inténtalo de nuevo."
@@ -73,10 +75,10 @@ const LoginForm = ({ changeNamePlayer }) => {
   };
 
   return (
-    <form className="main__form" onSubmit={handleSubmit} noValidate>
+    <form className="form" onSubmit={handleSubmit} noValidate>
       <input
         type="email"
-        className={`main__form-input ${errorEmail ? "is-error" : ""}`}
+        className={`form__input ${errorEmail ? "is-error" : ""}`}
         placeholder="Introduce tu email"
         value={userEmail}
         onChange={handleEmailChange}
@@ -84,13 +86,13 @@ const LoginForm = ({ changeNamePlayer }) => {
         aria-describedby="email-error"
       />
       {errorEmail && (
-        <p id="email-error" className="main__form-error" role="alert">
+        <p id="email-error" className="form__error" role="alert">
           {errorEmail}
         </p>
       )}
       <input
         type="password"
-        className={`main__form-input ${errorPass ? "is-error" : ""}`}
+        className={`form__input ${errorPass ? "is-error" : ""}`}
         placeholder="Introduce tu contraseña"
         value={userPass}
         aria-invalid={!!errorPass}
@@ -98,15 +100,15 @@ const LoginForm = ({ changeNamePlayer }) => {
         aria-describedby="pass-error"
       />
       {errorPass && (
-        <p id="pass-error" className="main__form-error" role="alert">
+        <p id="pass-error" className="form__error" role="alert">
           {errorPass}
         </p>
       )}
-      <button type="submit" className="main__form-btnBegin">
+      <button type="submit" className="form__btn">
         A jugar!
       </button>
       {formError && (
-        <p className="main__form-error main__form-error--general" role="alert">
+        <p className="form__error login__error--general" role="alert">
           {formError}
         </p>
       )}
