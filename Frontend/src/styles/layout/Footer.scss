@@ -5,16 +5,42 @@
   position: relative;
   color: var.$color-primary;
   padding-block: 3rem;
-  font-size: 1.8rem;
+  font-size: clamp(1.4rem, 2.2vw, 1.8rem);
   text-align: center;
   font-family: var.$font-family_orbitron;
   font-weight: var.$font_weight_bold;
   @include mix.bg;
   box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.9);
+
+  &__logout {
+    background: none;
+    border: none;
+    cursor: pointer;
+    img {
+      width: 52px;
+      height: 52px;
+      @media (min-width: var.$media_desktop) {
+        width: 82px;
+        height: 82px;
+      }
+    }
+
+    &:hover img {
+      transform: scale(1.1);
+      filter: drop-shadow(0 0 10px var.$color-primary);
+    }
+
+    &:active img {
+      transform: scale(0.95);
+    }
+  }
 }
 .gameMain + .footer {
   /* Estilos distintos para la página de juego */
   color: var.$color-bgPanel-2;
-  text-align: end;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 2rem;
   padding-right: 2rem;
 }

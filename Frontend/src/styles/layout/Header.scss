@@ -21,29 +21,7 @@
       font-size: 3.5rem;
     }
   }
-  &__logout {
-    background: none;
-    border: none;
-    cursor: pointer;
-    img {
-      width: 42px;
-      height: 42px;
-      @media (min-width: var.$media_desktop) {
-        width: 82px;
-        height: 82px;
-      }
-    }
-
-    &:hover img {
-      transform: scale(1.1);
-      filter: drop-shadow(0 0 10px var.$color-primary);
-    }
-
-    &:active img {
-      transform: scale(0.95);
-    }
-  }
-
+ 
   &__presenter {
     @include mix.imgHeader();
 

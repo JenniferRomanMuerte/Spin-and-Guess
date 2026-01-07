@@ -32,6 +32,7 @@ function App({ changeNamePlayer }) {
     try {
       const data = await me(token);
       setUser(data.user);
+      changeNamePlayer(data.user.username); 
     } catch (error) {
       // Token inválido o caducado
       storage.remove("token");

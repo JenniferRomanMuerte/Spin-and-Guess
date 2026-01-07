@@ -5,6 +5,10 @@ import { request } from "./http";
 // OBTENER LA FRASE
 // ----------------------------
 
-export const getPhrase = () => {
-  return request("/api/phrase/random");
+export const getPhrase = (token) => {
+  return request("/api/phrases",{
+     headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };

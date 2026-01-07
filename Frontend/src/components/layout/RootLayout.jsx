@@ -38,7 +38,7 @@ const RootLayout = () => {
 
   return (
     <div className="appLayout">
-      <Header isGame={isGame} namePlayer={namePlayer} turn={turn} onLogout={handleLogout}/>
+      <Header isGame={isGame} namePlayer={namePlayer} turn={turn}/>
 
       <Routes>
         <Route path="/" element={<App changeNamePlayer={changeNamePlayer} />} />
@@ -55,7 +55,7 @@ const RootLayout = () => {
         />
       </Routes>
 
-      <Footer />
+      <Footer isGame={isGame} namePlayer={namePlayer} onLogout={handleLogout}/>
     </div>
   );
 };

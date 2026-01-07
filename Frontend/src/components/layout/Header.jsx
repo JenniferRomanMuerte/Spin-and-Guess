@@ -1,7 +1,7 @@
 import "../../styles/layout/Header.scss";
-import logoutIcon from "../../images/logout.png";
 
-const Header = ({ isGame, namePlayer, turn, onLogout }) => {
+
+const Header = ({ isGame, namePlayer, turn }) => {
   return (
     <header className="header">
       <div className="header__presenter"></div>
@@ -14,16 +14,6 @@ const Header = ({ isGame, namePlayer, turn, onLogout }) => {
             : "Gira y adivina"}
         </h1>
       <div className="header__conestants"></div>
-       {isGame && (
-          <button
-            onClick={onLogout}
-            className="header__logout"
-            aria-label="Cerrar sesión"
-            title="Cerrar sesión"
-          >
-             <img src={logoutIcon} alt="" />
-          </button>
-        )}
     </header>
   );
 };
