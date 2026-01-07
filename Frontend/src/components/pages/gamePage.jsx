@@ -16,6 +16,8 @@ import {
 } from "../../utils/gameUtils";
 import { useRoundInfoMessages } from "../../hooks/useRoundInfoMessages";
 import { initialVowels, initialConsonants } from "../../data/letters";
+import storage from "../../services/localStorage";
+import { getPhrase } from "../../services/phrases.service";
 
 const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   const navigate = useNavigate();
@@ -35,9 +37,10 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   /******************************************************************
    * ESTADO DEL JUEGO (datos)
    ******************************************************************/
-  // Frase y pista (luego vendrán de API o de un generador)
-  const [phrase] = useState("Pues ya estaria Os mando un happy");
-  const [clue] = useState("Muletilla de final de clase");
+  // Frase, pista y categoria
+  const [phrase, setPhrase] = useState("");
+  const [clue, setClue] = useState("");
+  const [category, setCategory] = useState("");
 
   // Marcadores
   const [playerScore, setPlayerScore] = useState(0);
@@ -115,6 +118,33 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
       goToComputerTurn();
     }, ms);
   };
+
+  /******************************************************************
+   * EFECTO: hacemos la petición para la frase
+   ******************************************************************/
+
+  useEffect(() => {
+    const fetchPhrase = async () => {
+      try {
+        const token = storage.get("token");
+
+        if (!token) {
+          console.error("No hay token");
+          return;
+        }
+
+        const response = await getPhrase(token);
+
+        setPhrase(response.phrase.phrase);
+        setClue(response.phrase.clue);
+        setCategory(response.phrase.category);
+      } catch (error) {
+        console.error("Error obteniendo la frase:", error);
+      }
+    };
+
+    fetchPhrase();
+  }, []);
 
   /******************************************************************
    * EFECTO: cuando entra el turno de la computadora, gira solo
@@ -626,7 +656,12 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
    ******************************************************************/
   return (
     <main className="gameMain">
-      <Panel phrase={phrase} clue={clue} selectedLetters={selectedLetters} />
+      <Panel
+        phrase={phrase}
+        clue={clue}
+        category={category}
+        selectedLetters={selectedLetters}
+      />
 
       <Markers
         namePlayer={namePlayer}

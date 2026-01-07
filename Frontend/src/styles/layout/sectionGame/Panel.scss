@@ -15,12 +15,18 @@
     justify-content: center;
     padding: clamp(1rem, 8vw, 5.75rem) clamp(1rem, 8vw, 5.5rem) 0;
   }
-  &__title {
+  &__category{
+     font-size: clamp(1.8rem, 6vw, 3.5rem);
+    color: var.$color-primary;
+    text-shadow:  0px 5px 10px var.$color-accent-2;
+
+  }
+  &__clue {
     text-align: center;
     font-size: clamp(1.5rem, 4vw, 2.75rem);
     color: var.$color-bgPanel-2;
     font-family: "Orbitron", sans-serif;
-    //text-shadow:  0px 5px 10px black;
+
   }
   &__panel {
     width: 100%;
