@@ -1,5 +1,7 @@
-import { useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+
+import ProtectedRoute from "./PotectedRoute.jsx";
 
 import storage from "../../services/localStorage";
 import { me } from "../../services/auth.service";
@@ -13,8 +15,8 @@ import "../../styles/core/_reset.scss";
 
 const RootLayout = () => {
   const location = useLocation();
-
   const navigate = useNavigate();
+
 
   // Estado global del juego
   const [namePlayer, setNamePlayer] = useState("");
@@ -22,6 +24,8 @@ const RootLayout = () => {
 
   const isGame = location.pathname === "/game";
 
+  const isAuthenticated = Boolean(namePlayer);
+  
   const changeNamePlayer = (nameiNput) => setNamePlayer(nameiNput);
   const changeTurn = (turnValue) => setTurn(turnValue);
 
@@ -44,8 +48,6 @@ const RootLayout = () => {
     restoreSession();
   }, []);
 
-  
-
   // Funcion para cerra sesión
   const handleLogout = () => {
     storage.remove("token");
@@ -62,16 +64,23 @@ const RootLayout = () => {
       <Header isGame={isGame} namePlayer={namePlayer} turn={turn} />
 
       <Routes>
-        <Route path="/" element={<App namePlayer={namePlayer} changeNamePlayer={changeNamePlayer} />} />
+        <Route
+          path="/"
+          element={
+            <App namePlayer={namePlayer} changeNamePlayer={changeNamePlayer} />
+          }
+        />
         <Route
           path="/game"
           element={
-            <GamePage
-              namePlayer={namePlayer}
-              turn={turn}
-              changeTurn={changeTurn}
-              changeNamePlayer={changeNamePlayer}
-            />
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <GamePage
+                namePlayer={namePlayer}
+                turn={turn}
+                changeTurn={changeTurn}
+                changeNamePlayer={changeNamePlayer}
+              />
+            </ProtectedRoute>
           }
         />
       </Routes>
