@@ -138,6 +138,9 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
         setPhrase(response.phrase.phrase);
         setClue(response.phrase.clue);
         setCategory(response.phrase.category);
+
+       
+
       } catch (error) {
         console.error("Error obteniendo la frase:", error);
       }

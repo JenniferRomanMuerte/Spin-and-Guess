@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { useState, useEffect} from "react";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
 import storage from "../../services/localStorage";
-import { useNavigate } from "react-router-dom";
+import { me } from "../../services/auth.service";
 
 import Header from "./Header.jsx";
 import Footer from "./Footer.jsx";
@@ -25,6 +25,27 @@ const RootLayout = () => {
   const changeNamePlayer = (nameiNput) => setNamePlayer(nameiNput);
   const changeTurn = (turnValue) => setTurn(turnValue);
 
+  useEffect(() => {
+    const token = storage.get("token");
+
+    if (!token) return;
+
+    const restoreSession = async () => {
+      try {
+        const data = await me(token);
+        setNamePlayer(data.user.username);
+      } catch (error) {
+        storage.remove("token");
+        storage.remove("user");
+        setNamePlayer("");
+      }
+    };
+
+    restoreSession();
+  }, []);
+
+  
+
   // Funcion para cerra sesión
   const handleLogout = () => {
     storage.remove("token");
@@ -38,10 +59,10 @@ const RootLayout = () => {
 
   return (
     <div className="appLayout">
-      <Header isGame={isGame} namePlayer={namePlayer} turn={turn}/>
+      <Header isGame={isGame} namePlayer={namePlayer} turn={turn} />
 
       <Routes>
-        <Route path="/" element={<App changeNamePlayer={changeNamePlayer} />} />
+        <Route path="/" element={<App namePlayer={namePlayer} changeNamePlayer={changeNamePlayer} />} />
         <Route
           path="/game"
           element={
@@ -55,7 +76,7 @@ const RootLayout = () => {
         />
       </Routes>
 
-      <Footer isGame={isGame} namePlayer={namePlayer} onLogout={handleLogout}/>
+      <Footer isGame={isGame} namePlayer={namePlayer} onLogout={handleLogout} />
     </div>
   );
 };
