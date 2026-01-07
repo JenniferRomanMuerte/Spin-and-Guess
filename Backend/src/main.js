@@ -21,6 +21,9 @@ require("dotenv").config();
 // Rutas de autenticación (/register, /login)
 const authRoutes = require("./routes/auth.routes");
 
+// Rutas de frases
+const phrasesRoutes = require("./routes/phrases.routes");
+
 // ===============================
 // CREACIÓN Y CONFIGURACIÓN DEL SERVER
 // ===============================
@@ -38,6 +41,9 @@ server.use(express.json({ limit: "25Mb" }));
 
 // Rutas de usuarios y autenticación
 server.use("/api/user", authRoutes);
+
+// Rutas para las frases
+server.use("/api/phrases", phrasesRoutes);
 
 // ===============================
 // ARRANQUE DEL SERVIDOR

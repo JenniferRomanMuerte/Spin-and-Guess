@@ -3,6 +3,8 @@ const { verifyToken } = require("../utils/jwt");
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
+  console.log("AUTH HEADER:", req.headers.authorization);
+
   if (!authHeader) {
     return res.status(401).json({ message: "Token no proporcionado" });
   }
