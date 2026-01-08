@@ -11,7 +11,7 @@ import {
   calcSliceSize,
   getWinnerIndexFromRotation,
   getRandomSpinDegrees,
-} from "../../utils/rouletteUtils";
+} from "../pages/GamePage/utils/rouletteUtils";
 
 const Roulette = forwardRef(
   ({ rouletteDisabled, spinEnd, startSpin, blockUserSpin }, ref) => {

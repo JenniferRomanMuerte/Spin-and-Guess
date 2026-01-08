@@ -9,7 +9,7 @@ import { me } from "../../services/auth.service";
 import Header from "./Header.jsx";
 import Footer from "./Footer.jsx";
 import App from "../pages/App.jsx";
-import GamePage from "../pages/gamePage.jsx";
+import GamePage from "../pages/GamePage/gamePage.jsx";
 
 import "../../styles/core/_reset.scss";
 
@@ -25,7 +25,7 @@ const RootLayout = () => {
   const isGame = location.pathname === "/game";
 
   const isAuthenticated = Boolean(namePlayer);
-  
+
   const changeNamePlayer = (nameiNput) => setNamePlayer(nameiNput);
   const changeTurn = (turnValue) => setTurn(turnValue);
 

@@ -1,21 +1,21 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../../styles/layout/GameMain.scss";
+import "../../../styles/layout/GameMain.scss";
 
-import ControlsGame from "../sectionsGame/ControlsGame";
-import Markers from "../sectionsGame/Markers";
-import Panel from "../sectionsGame/Panel";
-import Roulette from "../sectionsGame/Roulette";
-import ActionModal from "../sectionsGame/modal/ActionModal";
+import ControlsGame from "../../sectionsGame/ControlsGame";
+import Markers from "../../sectionsGame/Markers";
+import Panel from "../../sectionsGame/Panel";
+import Roulette from "../../sectionsGame/Roulette";
+import ActionModal from "../../sectionsGame/modal/ActionModal";
 
-import { isScoringWedge, pluralize } from "../../utils/gameUtils";
-import { useRoundInfoMessages } from "../../hooks/useRoundInfoMessages";
-import { initialVowels, initialConsonants } from "../../data/letters";
-import storage from "../../services/localStorage";
-import { getPhrase } from "../../services/phrases.service";
+import { isScoringWedge, pluralize } from "./utils/gameUtils";
+import { useRoundInfoMessages } from "../../../hooks/useRoundInfoMessages";
+import { initialVowels, initialConsonants } from "../../../data/letters";
+import storage from "../../../services/localStorage";
+import { getPhrase } from "../../../services/phrases.service";
 
-import useComputerTurn from "../../hooks/useComputerTurn";
-import usePlayerTurn from "../../hooks/usePlayerTurn";
+import useComputerTurn from "./hooks/useComputerTurn";
+import usePlayerTurn from "./hooks/usePlayerTurn";
 
 const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   const navigate = useNavigate();
