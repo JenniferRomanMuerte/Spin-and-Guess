@@ -18,6 +18,7 @@ import useComputerTurn from "./hooks/useComputerTurn";
 import usePlayerTurn from "./hooks/usePlayerTurn";
 import useTurnManager from "./hooks/useTurnManager";
 import useGameUI from "./hooks/useGameUI";
+import useGameFlow from "./hooks/useGameFlow";
 
 const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   const navigate = useNavigate();
@@ -92,6 +93,92 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     rouletteRef.current?.spin();
   };
 
+   /******************************************************************
+   * PLAYER TURN RESULT INTERPRETER
+   * Traduce reglas puras a:
+   * - mensajes
+   * - UI
+   * - cambios de turno
+   ******************************************************************/
+  const handlePlayerResult = (result, wedge) => {
+    switch (result.type) {
+      case "SCORING_WEDGE":
+        show(
+          `${
+            wedge.action === "superPremio" ? "SUPERPREMIO!!! " : ""
+          }Juegas por: ${wedge.value}`
+        );
+        enableActions();
+        break;
+
+      case "JOKER":
+        show("Enhorabuena! Has conseguido un comodín");
+        setHasJocker(true);
+        enableSpinOnly();
+        break;
+
+      case "CONSONANT_HIT": {
+        const { letter, hits, earned } = result;
+        const timesText = pluralize(hits, "vez", "veces");
+
+        show(
+          `La letra ${letter} aparece ${hits} ${timesText}. Ganas ${earned}. ¡Sigue jugando!`
+        );
+
+        enableSpinOnly();
+        break;
+      }
+
+      case "CONSONANT_MISS": {
+        const ms = 2500;
+        showTemp(
+          `La letra ${result.letter} no está en la frase 😬, pierdes el turno`,
+          ms
+        );
+        lockUI();
+        goToComputerTurnAfter(ms);
+        break;
+      }
+
+      case "VOWEL_HIT": {
+        const { letter, hits } = result;
+        const timesText = pluralize(hits, "vez", "veces");
+
+        show(`Compras ${letter}. Aparece ${hits} ${timesText}.`);
+        break;
+      }
+
+      case "VOWEL_MISS": {
+        const ms = 2500;
+        showTemp(`Compras ${result.letter}… pero no está 😬`, ms);
+        goToComputerTurnAfter(ms);
+        break;
+      }
+
+      case "NOT_ENOUGH_MONEY":
+        showTemp("No tienes puntos suficientes 😬", 2000);
+        break;
+
+      case "LOSE_TURN": {
+        const ms = 2500;
+        showTemp("Lo siento, has perdido el turno", ms);
+        goToComputerTurnAfter(ms);
+        break;
+      }
+
+      case "BANKRUPT": {
+        const ms = 2500;
+        showTemp("Ohhh, lo has perdido todo", ms);
+        goToComputerTurnAfter(ms);
+        break;
+      }
+
+      default:
+        break;
+    }
+  };
+
+
   /******************************************************************
    * HOOK encargado de gestionar los turnos del juego
    * - cambio de turno inmediato
@@ -155,6 +242,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     startSpin,
     lockUI,
     enableSpinOnly,
+    enableActions,
   } = useGameUI({
     resetQueue,
     cancelTurnTimeout,
@@ -162,136 +250,35 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     handoverToComputer,
   });
 
+
   /******************************************************************
-   * PLAYER TURN RESULT INTERPRETER
-   * Traduce reglas puras a:
-   * - mensajes
+   * HOOK encargado de conectar:
+   * - reglas
    * - UI
-   * - cambios de turno
+   * - turnos
    ******************************************************************/
-  const handlePlayerResult = (result, wedge) => {
-    switch (result.type) {
-      case "SCORING_WEDGE":
-        show(
-          `${
-            wedge.action === "superPremio" ? "SUPERPREMIO!!! " : ""
-          }Juegas por: ${wedge.value}`
-        );
-        enableSpinOnly();
-        break;
+  const {
+  spinEnd,
+  onLetterSelected,
+  onSubmitSolve,
+} = useGameFlow({
+  turn,
+  phrase,
+  currentWedge,
 
-      case "JOKER":
-        show("Enhorabuena! Has conseguido un comodín");
-        setHasJocker(true);
-        enableSpinOnly();
-        break;
+  handlePlayerSpinEnd,
+  handleComputerSpinEnd,
+  handleLetterSelected,
+  handlePlayerResult,
 
-      case "CONSONANT_HIT": {
-        const { letter, hits, earned } = result;
-        const timesText = pluralize(hits, "vez", "veces");
+  lockUI,
+  setCurrentWedge,
+  setSolveResult,
+});
 
-        show(
-          `La letra ${letter} aparece ${hits} ${timesText}. Ganas ${earned}. ¡Sigue jugando!`
-        );
 
-        enableSpinOnly();
-        break;
-      }
 
-      case "CONSONANT_MISS": {
-        const ms = 2500;
-        showTemp(
-          `La letra ${result.letter} no está en la frase 😬, pierdes el turno`,
-          ms
-        );
-        goToComputerTurnAfter(ms);
-        break;
-      }
 
-      case "VOWEL_HIT": {
-        const { letter, hits } = result;
-        const timesText = pluralize(hits, "vez", "veces");
-
-        show(`Compras ${letter}. Aparece ${hits} ${timesText}.`);
-        break;
-      }
-
-      case "VOWEL_MISS": {
-        const ms = 2500;
-        showTemp(`Compras ${result.letter}… pero no está 😬`, ms);
-        goToComputerTurnAfter(ms);
-        break;
-      }
-
-      case "NOT_ENOUGH_MONEY":
-        showTemp("No tienes puntos suficientes 😬", 2000);
-        break;
-
-      case "LOSE_TURN": {
-        const ms = 2500;
-        showTemp("Lo siento, has perdido el turno", ms);
-        goToComputerTurnAfter(ms);
-        break;
-      }
-
-      case "BANKRUPT": {
-        const ms = 2500;
-        showTemp("Ohhh, lo has perdido todo", ms);
-        goToComputerTurnAfter(ms);
-        break;
-      }
-
-      default:
-        break;
-    }
-  };
-
-  /******************************************************************
-   * CALLBACK: el jugador elige una letra desde el modal
-   ******************************************************************/
-  const onLetterSelected = (letter, mode) => {
-    const result = handleLetterSelected(letter, mode);
-    handlePlayerResult(result, currentWedge);
-  };
-
-  /******************************************************************
-   * CALLBACK: la ruleta termina de girar
-   * Punto central del flujo del juego:
-   * - decide si actúa la IA o el jugador
-   ******************************************************************/
-  const spinEnd = (wedge) => {
-    setCurrentWedge(wedge);
-    lockUI();
-
-    if (turn === "computer") {
-      handleComputerSpinEnd(wedge);
-      return;
-    }
-
-    const result = handlePlayerSpinEnd(wedge);
-
-    handlePlayerResult(result, wedge);
-  };
-
-  /******************************************************************
-   * UI CALLBACKS
-   * Funciones que responden a acciones del usuario en la interfaz:
-   * - botones
-   * - modales
-   * - inicio de giro
-   * - resolución de la frase
-   ******************************************************************/
-
-  /******************************************************************
-   * CALLBACK: el jugador intenta resolver la frase completa
-   * Compara la frase introducida con la frase real
-   ******************************************************************/
-  const onSubmitSolve = (phrasePlayer) => {
-    setSolveResult(null);
-
-    // Normalizamos ambas frases para evitar falsos negativos
-    setSolveResult(phrasePlayer.toLowerCase() === phrase.toLowerCase());
-  };
 
   /******************************************************************
    * RESET TOTAL DE PARTIDA

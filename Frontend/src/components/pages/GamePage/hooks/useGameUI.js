@@ -1,4 +1,10 @@
-import { useState } from "react";
+import {useEffect, useState } from "react";
+
+const UI_PHASES = {
+    LOCKED: "LOCKED", // nada se puede usar
+    SPIN_ONLY: "SPIN_ONLY", // solo ruleta
+    ACTIONS: "ACTIONS", // solo botones
+  };
 
 const useGameUI = ({
   resetQueue,
@@ -7,11 +13,28 @@ const useGameUI = ({
   handoverToComputer,
 }) => {
   /******************************************************************
-   * ESTADO DE UI
+   * ESTADO ÚNICO DE UI
    ******************************************************************/
-  const [controlsDisabled, setControlsDisabled] = useState(true);
-  const [rouletteDisabled, setRouletteDisabled] = useState(false);
+  const [uiPhase, setUiPhase] = useState(UI_PHASES.LOCKED);
   const [modalMode, setModalMode] = useState(null);
+
+  /******************************************************************
+   * ESTADO DERIVADO (NO se setea a mano)
+   ******************************************************************/
+  const rouletteDisabled = uiPhase !== UI_PHASES.SPIN_ONLY;
+  const controlsDisabled = uiPhase !== UI_PHASES.ACTIONS;
+
+  useEffect(() => {
+  if (turn === "computer" || handoverToComputer) {
+      setUiPhase(UI_PHASES.LOCKED);
+      return;
+    }
+
+    if (turn === "player") {
+      setUiPhase(UI_PHASES.SPIN_ONLY);
+    }
+}, [turn, handoverToComputer]);
+
 
   /******************************************************************
    * HELPERS DE UI
@@ -19,22 +42,25 @@ const useGameUI = ({
 
   // Bloquea toda interacción
   const lockUI = () => {
-    setControlsDisabled(true);
-    setRouletteDisabled(true);
+    setUiPhase(UI_PHASES.LOCKED);
   };
 
- // Permite girar la ruleta (pero no usar controles)
-  const enableSpinOnly  = () => {
-    setControlsDisabled(false);
-    setRouletteDisabled(true);
+  // Turno jugador: puede girar
+  const enableSpinOnly = () => {
+    setUiPhase(UI_PHASES.SPIN_ONLY);
+  };
+
+  // Jugador ha caído en gajo puntuable: puede elegir acción
+  const enableActions = () => {
+    setUiPhase(UI_PHASES.ACTIONS);
   };
 
   /******************************************************************
    * BOTONES DE ControlsGame
    ******************************************************************/
   const updateControlsGame = ({ text }) => {
-    // Al pulsar cualquier botón, bloqueamos controles
-    setControlsDisabled(true);
+    // Al pulsar un botón, cerramos interacción hasta resolver acción
+    lockUI();
 
     if (text === "Comodin") {
       setModalMode("joker");
@@ -59,48 +85,46 @@ const useGameUI = ({
 
   /******************************************************************
    * MODAL: cerrar
-   * - Cierra el modal activo
-   * - Decide si el jugador puede volver a girar la ruleta
    ******************************************************************/
   const closeModal = () => {
     setModalMode(null);
-    setControlsDisabled(true);
 
-    // Solo permitimos girar si:
-    // - no es turno de la computer
-    // - no estamos en transición de turno
-    if (turn !== "computer" && !handoverToComputer) {
-      setRouletteDisabled(false);
+    // Si sigue siendo turno del jugador, puede volver a girar
+    if (turn === "player" && !handoverToComputer) {
+      enableSpinOnly();
+    } else {
+      lockUI();
     }
   };
 
   /******************************************************************
    * INICIO DE GIRO DE RULETA
-   * Se ejecuta justo cuando la ruleta empieza a girar
    ******************************************************************/
   const startSpin = () => {
-    // Cancelamos cualquier cambio de turno pendiente
     cancelTurnTimeout();
-
-    // Bloqueamos toda interacción durante el giro
+    resetQueue();
     lockUI();
     setModalMode(null);
-
-    // Limpiamos mensajes
-    resetQueue();
-
   };
+
+  /******************************************************************
+   * API pública del hook
+   ******************************************************************/
   return {
+    // estado derivado
     controlsDisabled,
     rouletteDisabled,
     modalMode,
 
+    // acciones UI
     updateControlsGame,
     closeModal,
     startSpin,
 
+    // helpers usados desde GamePage
     lockUI,
-    enableSpinOnly ,
+    enableSpinOnly,
+    enableActions,
     setModalMode,
   };
 };
