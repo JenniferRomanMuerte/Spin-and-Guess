@@ -100,93 +100,6 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   };
 
   /******************************************************************
-   * PLAYER TURN RESULT INTERPRETER
-   * Traduce reglas puras a:
-   * - mensajes
-   * - UI
-   * - cambios de turno
-   ******************************************************************/
-  const handlePlayerResult = (result, wedge) => {
-    switch (result.type) {
-      case "SCORING_WEDGE":
-        show(
-          `${
-            wedge.action === "superPremio" ? "SUPERPREMIO!!! " : ""
-          }Juegas por: ${wedge.value}`
-        );
-        enableActions();
-        break;
-
-      case "JOKER":
-        show("Enhorabuena! Has conseguido un comodín");
-        setHasJocker(true);
-        enableSpinOnly();
-        break;
-
-      case "CONSONANT_HIT": {
-        const { letter, hits, earned } = result;
-        const timesText = pluralize(hits, "vez", "veces");
-
-        show(
-          `La letra ${letter} aparece ${hits} ${timesText}. Ganas ${earned}. ¡Sigue jugando!`
-        );
-
-        enableSpinOnly();
-        break;
-      }
-
-      case "CONSONANT_MISS": {
-        const ms = 2500;
-        showTemp(
-          `La letra ${result.letter} no está en la frase 😬, pierdes el turno`,
-          ms
-        );
-        lockUI();
-        goToComputerTurnAfter(ms);
-        break;
-      }
-
-      case "VOWEL_HIT": {
-        const { letter, hits } = result;
-        const timesText = pluralize(hits, "vez", "veces");
-
-        show(`Compras ${letter}. Aparece ${hits} ${timesText}.`);
-        enableSpinOnly();
-        break;
-      }
-
-      case "VOWEL_MISS": {
-        const ms = 2500;
-        showTemp(`Compras ${result.letter}… pero no está 😬`, ms);
-        goToComputerTurnAfter(ms);
-        break;
-      }
-
-      case "NOT_ENOUGH_MONEY":
-        showTemp("No tienes puntos suficientes 😬", 2000);
-        enableActions();
-        break;
-
-      case "LOSE_TURN": {
-        const ms = 2500;
-        showTemp("Lo siento, has perdido el turno", ms);
-        goToComputerTurnAfter(ms);
-        break;
-      }
-
-      case "BANKRUPT": {
-        const ms = 2500;
-        showTemp("Ohhh, lo has perdido todo", ms);
-        goToComputerTurnAfter(ms);
-        break;
-      }
-
-      default:
-        break;
-    }
-  };
-
-  /******************************************************************
    * HOOK encargado de gestionar los turnos del juego
    * - cambio de turno inmediato
    * - cambio de turno con delay
@@ -266,6 +179,98 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   });
 
   /******************************************************************
+   * PLAYER TURN RESULT INTERPRETER
+   * Traduce reglas puras a:
+   * - mensajes
+   * - UI
+   * - cambios de turno
+   ******************************************************************/
+  const handlePlayerResult = (result, wedge) => {
+    switch (result.type) {
+      case "SCORING_WEDGE":
+        show(
+          `${
+            wedge.action === "superPremio" ? "SUPERPREMIO!!! " : ""
+          }Juegas por: ${wedge.value}`
+        );
+        enableActions();
+        break;
+
+      case "RISK_WEDGE":
+        show("🎲 Has caído en un gajo misterioso…");
+        setModalMode("risk");
+        break;
+
+      case "JOKER":
+        show("Enhorabuena! Has conseguido un comodín");
+        setHasJocker(true);
+        enableSpinOnly();
+        break;
+
+      case "CONSONANT_HIT": {
+        const { letter, hits, earned } = result;
+        const timesText = pluralize(hits, "vez", "veces");
+
+        show(
+          `La letra ${letter} aparece ${hits} ${timesText}. Ganas ${earned}. ¡Sigue jugando!`
+        );
+
+        enableSpinOnly();
+        break;
+      }
+
+      case "CONSONANT_MISS": {
+        const ms = 2500;
+        showTemp(
+          `La letra ${result.letter} no está en la frase 😬, pierdes el turno`,
+          ms
+        );
+        lockUI();
+        goToComputerTurnAfter(ms);
+        break;
+      }
+
+      case "VOWEL_HIT": {
+        const { letter, hits } = result;
+        const timesText = pluralize(hits, "vez", "veces");
+
+        show(`Compras ${letter}. Aparece ${hits} ${timesText}.`);
+        enableSpinOnly();
+        break;
+      }
+
+      case "VOWEL_MISS": {
+        const ms = 2500;
+        showTemp(`Compras ${result.letter}… pero no está 😬`, ms);
+        goToComputerTurnAfter(ms);
+        break;
+      }
+
+      case "NOT_ENOUGH_MONEY":
+        showTemp("No tienes puntos suficientes 😬", 2000);
+        enableActions();
+        break;
+
+      case "LOSE_TURN": {
+        const ms = 2500;
+        showTemp("Lo siento, has perdido el turno", ms);
+        goToComputerTurnAfter(ms);
+        break;
+      }
+
+      case "BANKRUPT": {
+        const ms = 2500;
+        showTemp("Ohhh, lo has perdido todo", ms);
+        goToComputerTurnAfter(ms);
+        break;
+      }
+
+      default:
+        break;
+    }
+  };
+
+  /******************************************************************
    * HOOK encargado de conectar:
    * - reglas
    * - UI
@@ -285,6 +290,37 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     setCurrentWedge,
     setSolveResult,
   });
+
+  /******************************************************************
+   * RISK WEDGE: el jugador decide si arriesga o no
+   ******************************************************************/
+  const resolveRisk = (accept) => {
+    closeModal();
+
+    // El jugador decide NO arriesgar
+    if (!accept) {
+      show("Decides no arriesgar. Sigues jugando 🎛️");
+      enableSpinOnly();
+      return;
+    }
+
+    // Decide suerte o desgracia
+    const lucky = Math.random() < 0.5;
+
+    setPlayerScore((prev) => {
+      const newScore = lucky ? prev * 2 : Math.floor(prev / 2);
+
+      show(
+        lucky
+          ? `🍀 ¡Suerte! Tus puntos se duplican (${newScore})`
+          : `💥 Mala suerte… tus puntos se dividen (${newScore})`
+      );
+
+      return newScore;
+    });
+
+    enableSpinOnly();
+  };
 
   /******************************************************************
    * Revela todas las letras de la frase en el panel
@@ -469,6 +505,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
             closeModal={closeModal}
             onSubmitSolve={onSubmitSolve}
             solveResult={solveResult}
+            resolveRisk={resolveRisk}
           />
         )}
       </article>

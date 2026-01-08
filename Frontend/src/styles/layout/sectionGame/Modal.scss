@@ -122,3 +122,37 @@
     font-size: 3.5rem;
   }
 }
+
+.riskPanel{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  gap: 3rem;
+  &__title{
+      @include mix.titleModal();
+  }
+  &__info{
+    font-size: 1.5rem;
+    color: var.$color-bgPanel-2;
+    text-align: center;
+    &--strong{
+      color: var.$color-accent-1;
+      letter-spacing: 2px;
+      text-shadow: 1px 1px 5px var.$color-bgPanel-2;
+    }
+  }
+  &__question{
+    font-size: 1.5rem;
+    color: var.$color-primary;
+  }
+  &__actions{
+    display:flex;
+    gap: 6rem;
+    &--btn{
+       @include mix.btnPrimary();
+       font-size: 1.3rem;
+    }
+  }
+
+}

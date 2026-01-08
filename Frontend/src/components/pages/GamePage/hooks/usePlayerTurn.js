@@ -49,6 +49,13 @@ const userPlayerTurn = ({
       };
     }
 
+    // Riesgo
+    if (wedge.action === "riesgo") {
+      return {
+        type: "RISK_WEDGE",
+      };
+    }
+
     return { type: "NONE" };
   };
 

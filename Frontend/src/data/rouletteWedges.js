@@ -94,13 +94,13 @@ export const wedges = [
     action: "pierdeTurno",
     value: 0,
   },
-  /*{
+  {
     label: "????",
     theme: "green",
     color: "var(--color-wedge-green)",
-    action: "sumar",
-    value: 125,
-  },*/
+    action: "riesgo",
+    value: 0,
+  },
   {
     label: "125",
     theme: "purple",
