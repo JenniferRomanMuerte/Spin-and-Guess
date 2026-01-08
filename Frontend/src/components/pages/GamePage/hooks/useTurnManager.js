@@ -1,12 +1,6 @@
 import { useRef, useState } from "react";
 
-const useTurnManager = ({
-  changeTurn,
-    setControlsDisabled,
-    setRouletteDisabled,
-    setModalMode,
-}) => {
-
+const useTurnManager = ({ changeTurn }) => {
   // Timeout para retrasar el cambio de turno (para que se vea el mensaje)
   const turnTimeoutRef = useRef(null);
 
@@ -30,8 +24,7 @@ const useTurnManager = ({
   const goToComputerTurn = () => {
     setHandoverToComputer(false);
     changeTurn("computer");
-    setControlsDisabled(true);
-    setRouletteDisabled(true);
+
   };
 
   /******************************************************************
@@ -40,8 +33,7 @@ const useTurnManager = ({
   const goToPlayerTurn = () => {
     setHandoverToComputer(false);
     changeTurn("player");
-    setControlsDisabled(true);
-    setRouletteDisabled(false);
+
   };
 
   /******************************************************************
@@ -50,11 +42,8 @@ const useTurnManager = ({
    ******************************************************************/
   const goToComputerTurnAfter = (ms) => {
     cancelTurnTimeout();
-
     setHandoverToComputer(true);
-    setControlsDisabled(true);
-    setRouletteDisabled(true);
-    setModalMode(null);
+
 
     turnTimeoutRef.current = setTimeout(() => {
       setHandoverToComputer(false);

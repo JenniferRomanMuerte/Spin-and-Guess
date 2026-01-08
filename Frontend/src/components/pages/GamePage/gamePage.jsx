@@ -17,6 +17,7 @@ import { getPhrase } from "../../../services/phrases.service";
 import useComputerTurn from "./hooks/useComputerTurn";
 import usePlayerTurn from "./hooks/usePlayerTurn";
 import useTurnManager from "./hooks/useTurnManager";
+import useGameUI from "./hooks/useGameUI";
 
 const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   const navigate = useNavigate();
@@ -68,13 +69,6 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     useRoundInfoMessages(setMessageRoundInfo);
 
   /******************************************************************
-   * ESTADO DE UI (control de botones/modales)
-   ******************************************************************/
-  const [controlsDisabled, setControlsDisabled] = useState(true);
-  const [rouletteDisabled, setRouletteDisabled] = useState(false);
-  const [modalMode, setModalMode] = useState(null);
-
-  /******************************************************************
    * ESTADO DERIVADO / REGLAS
    ******************************************************************/
   const VOWEL_COST = 50;
@@ -98,8 +92,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     rouletteRef.current?.spin();
   };
 
-
-    /******************************************************************
+  /******************************************************************
    * HOOK encargado de gestionar los turnos del juego
    * - cambio de turno inmediato
    * - cambio de turno con delay
@@ -113,11 +106,8 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     cancelTurnTimeout,
   } = useTurnManager({
     changeTurn,
-    setControlsDisabled,
-    setRouletteDisabled,
-    setModalMode,
   });
-  
+
   /******************************************************************
    * HOOK DE TURNO COMPUTER (IA)
    ******************************************************************/
@@ -150,7 +140,27 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     VOWEL_COST,
   });
 
-
+  /******************************************************************
+   * HOOK encargado de la UI del juego
+   * - modales
+   * - bloqueo de controles
+   * - inicio de giro
+   ******************************************************************/
+  const {
+    controlsDisabled,
+    rouletteDisabled,
+    modalMode,
+    updateControlsGame,
+    closeModal,
+    startSpin,
+    lockUI,
+    enableSpinOnly,
+  } = useGameUI({
+    resetQueue,
+    cancelTurnTimeout,
+    turn,
+    handoverToComputer,
+  });
 
   /******************************************************************
    * PLAYER TURN RESULT INTERPRETER
@@ -167,13 +177,13 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
             wedge.action === "superPremio" ? "SUPERPREMIO!!! " : ""
           }Juegas por: ${wedge.value}`
         );
-        setControlsDisabled(false);
+        enableSpinOnly();
         break;
 
       case "JOKER":
         show("Enhorabuena! Has conseguido un comodín");
         setHasJocker(true);
-        setControlsDisabled(false);
+        enableSpinOnly();
         break;
 
       case "CONSONANT_HIT": {
@@ -184,8 +194,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
           `La letra ${letter} aparece ${hits} ${timesText}. Ganas ${earned}. ¡Sigue jugando!`
         );
 
-        setControlsDisabled(true);
-        setRouletteDisabled(false);
+        enableSpinOnly();
         break;
       }
 
@@ -252,8 +261,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
    ******************************************************************/
   const spinEnd = (wedge) => {
     setCurrentWedge(wedge);
-    setRouletteDisabled(true);
-    setControlsDisabled(true);
+    lockUI();
 
     if (turn === "computer") {
       handleComputerSpinEnd(wedge);
@@ -273,71 +281,6 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
    * - inicio de giro
    * - resolución de la frase
    ******************************************************************/
-
-  /******************************************************************
-   * UI: botones de ControlsGame
-   * Decide qué modal se abre según la acción elegida por el jugador
-   ******************************************************************/
-  const updateControlsGame = ({ text }) => {
-    // Al pulsar cualquier botón, bloqueamos controles
-    setControlsDisabled(true);
-
-    if (text === "Comodin") {
-      setHasJocker(false);
-      setModalMode("joker");
-      return;
-    }
-
-    if (text === "Comprar Vocal") {
-      setModalMode("vowel");
-      return;
-    }
-
-    if (text === "Consonante") {
-      setModalMode("consonant");
-      return;
-    }
-
-    if (text === "Resolver") {
-      setModalMode("solve");
-      return;
-    }
-  };
-
-  /******************************************************************
-   * MODAL: cerrar
-   * - Cierra el modal activo
-   * - Decide si el jugador puede volver a girar la ruleta
-   ******************************************************************/
-  const closeModal = () => {
-    setModalMode(null);
-    setControlsDisabled(true);
-
-    // Solo permitimos girar si:
-    // - no es turno de la computer
-    // - no estamos en transición de turno
-    if (turn !== "computer" && !handoverToComputer) {
-      setRouletteDisabled(false);
-    }
-  };
-
-  /******************************************************************
-   * CALLBACK: inicio de giro de ruleta
-   * Se ejecuta justo cuando la ruleta empieza a girar
-   ******************************************************************/
-  const startSpin = () => {
-    // Cancelamos cualquier cambio de turno pendiente
-    cancelTurnTimeout();
-
-    // Bloqueamos toda interacción durante el giro
-    setRouletteDisabled(true);
-    setControlsDisabled(true);
-    setModalMode(null);
-
-    // Limpiamos mensajes y gajo anterior
-    resetQueue();
-    setCurrentWedge(null);
-  };
 
   /******************************************************************
    * CALLBACK: el jugador intenta resolver la frase completa
@@ -369,11 +312,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     setConsonants(initialConsonants.map((c) => ({ ...c })));
 
     // UI
-    setModalMode(null);
     setSolveResult(null);
-    setControlsDisabled(true);
-    setRouletteDisabled(false);
-    setHandoverToComputer(false);
 
     // Sesión
     changeNamePlayer("");
@@ -414,8 +353,9 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     if (didComputerSpinRef.current) return;
     didComputerSpinRef.current = true;
 
-    setControlsDisabled(true);
-    setModalMode(null);
+    // Bloqueamos UI y cerramos cualquier modal
+    lockUI();
+    closeModal();
 
     rouletteRef.current?.spin();
     show("Turno de la computadora 🤖... girando la ruleta 🎛️");
@@ -437,7 +377,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
 
     if (solveResult === false) {
       turnTimeoutRef.current = setTimeout(() => {
-        setModalMode(null);
+        closeModal();
         setSolveResult(null);
         goToComputerTurn();
       }, 2000);
