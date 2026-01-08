@@ -78,7 +78,7 @@ const useGameUI = ({
     }
 
     if (text === "Resolver") {
-      setModalMode("solve");
+      setModalMode({ type: "solve", solver: "player" });
       return;
     }
   };

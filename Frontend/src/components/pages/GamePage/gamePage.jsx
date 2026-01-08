@@ -32,6 +32,9 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   // Evita doble giro automático en desarrollo (StrictMode)
   const didComputerSpinRef = useRef(false);
 
+  const turnTimeoutRef = useRef(null);
+
+
   /******************************************************************
    * ESTADO DEL JUEGO (datos)
    ******************************************************************/
@@ -93,7 +96,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     rouletteRef.current?.spin();
   };
 
-   /******************************************************************
+  /******************************************************************
    * PLAYER TURN RESULT INTERPRETER
    * Traduce reglas puras a:
    * - mensajes
@@ -145,6 +148,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
         const timesText = pluralize(hits, "vez", "veces");
 
         show(`Compras ${letter}. Aparece ${hits} ${timesText}.`);
+        enableSpinOnly();
         break;
       }
 
@@ -157,6 +161,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
 
       case "NOT_ENOUGH_MONEY":
         showTemp("No tienes puntos suficientes 😬", 2000);
+        enableActions();
         break;
 
       case "LOSE_TURN": {
@@ -179,6 +184,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   };
 
 
+
   /******************************************************************
    * HOOK encargado de gestionar los turnos del juego
    * - cambio de turno inmediato
@@ -195,14 +201,44 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     changeTurn,
   });
 
+    /******************************************************************
+   * HOOK encargado de la UI del juego
+   * - modales
+   * - bloqueo de controles
+   * - inicio de giro
+   ******************************************************************/
+  const {
+    controlsDisabled,
+    rouletteDisabled,
+    modalMode,
+    updateControlsGame,
+    closeModal,
+    startSpin,
+    lockUI,
+    enableSpinOnly,
+    enableActions,
+    setModalMode,
+  } = useGameUI({
+    resetQueue,
+    cancelTurnTimeout,
+    turn,
+    handoverToComputer,
+  });
+
   /******************************************************************
    * HOOK DE TURNO COMPUTER (IA)
    ******************************************************************/
+  const onComputerSolve = (solved) => {
+    setSolveResult(solved);
+    setModalMode({ type: "solve", solver: "computer" });
+  };
+
   const { handleComputerSpinEnd } = useComputerTurn({
     phrase,
     computerScore,
     vowels,
     consonants,
+    selectedLetters,
     setComputerScore,
     setVowels,
     setConsonants,
@@ -211,6 +247,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     goToPlayerTurn,
     requestSpinAgain,
     VOWEL_COST,
+    onComputerSolve,
   });
 
   /******************************************************************
@@ -227,29 +264,6 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     VOWEL_COST,
   });
 
-  /******************************************************************
-   * HOOK encargado de la UI del juego
-   * - modales
-   * - bloqueo de controles
-   * - inicio de giro
-   ******************************************************************/
-  const {
-    controlsDisabled,
-    rouletteDisabled,
-    modalMode,
-    updateControlsGame,
-    closeModal,
-    startSpin,
-    lockUI,
-    enableSpinOnly,
-    enableActions,
-  } = useGameUI({
-    resetQueue,
-    cancelTurnTimeout,
-    turn,
-    handoverToComputer,
-  });
-
 
   /******************************************************************
    * HOOK encargado de conectar:
@@ -257,28 +271,20 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
    * - UI
    * - turnos
    ******************************************************************/
-  const {
-  spinEnd,
-  onLetterSelected,
-  onSubmitSolve,
-} = useGameFlow({
-  turn,
-  phrase,
-  currentWedge,
+  const { spinEnd, onLetterSelected, onSubmitSolve } = useGameFlow({
+    turn,
+    phrase,
+    currentWedge,
 
-  handlePlayerSpinEnd,
-  handleComputerSpinEnd,
-  handleLetterSelected,
-  handlePlayerResult,
+    handlePlayerSpinEnd,
+    handleComputerSpinEnd,
+    handleLetterSelected,
+    handlePlayerResult,
 
-  lockUI,
-  setCurrentWedge,
-  setSolveResult,
-});
-
-
-
-
+    lockUI,
+    setCurrentWedge,
+    setSolveResult,
+  });
 
   /******************************************************************
    * RESET TOTAL DE PARTIDA
@@ -312,8 +318,12 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
 
   // Limpieza de timeouts al desmontar
   useEffect(() => {
-    return cancelTurnTimeout;
-  }, []);
+  return () => {
+    if (turnTimeoutRef.current) {
+      clearTimeout(turnTimeoutRef.current);
+    }
+  };
+}, []);
 
   // Obtener frase al iniciar partida
   useEffect(() => {

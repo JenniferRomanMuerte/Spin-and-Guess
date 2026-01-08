@@ -10,6 +10,7 @@ const useComputerTurn = ({
   computerScore,
   vowels,
   consonants,
+  selectedLetters,
   setComputerScore,
   setVowels,
   setConsonants,
@@ -18,6 +19,7 @@ const useComputerTurn = ({
   goToPlayerTurn,
   requestSpinAgain,
   VOWEL_COST,
+  onComputerSolve,
 }) => {
   /******************************************************************
    * LÓGICA TURNO COMPUTER (dispatcher)
@@ -72,7 +74,34 @@ const useComputerTurn = ({
     // 1) Informamos valor del gajo
     await enqueue(`La computadora juega por: ${wedge.value}`, 2000);
 
-    // 2) Decide vocal vs consonante
+    // No quedan consonantes por salir y hay >= 2 vocales acertadas
+    if (!hasRemainingConsonantInPhrase() && hasEnoughSolvedVowels()) {
+      const solved = await computerTrySolve();
+
+      onComputerSolve?.(solved);
+
+      if (!solved) {
+        goToPlayerTurn();
+      }
+
+      return;
+    }
+
+    // Decide si resuelve (Probabilidad)
+    if (computerShouldTrySolve()) {
+      const solved = await computerTrySolve();
+
+      // Abrimos modal y mostramos resultado
+      onComputerSolve?.(solved);
+
+      // SI FALLA: pierde turno y pasa al jugador
+      if (!solved) {
+        goToPlayerTurn();
+      }
+
+      return;
+    }
+    // Decide vocal vs consonante
     const shouldBuyVowel = computeShouldBuyVowel();
 
     if (shouldBuyVowel) {
@@ -81,6 +110,63 @@ const useComputerTurn = ({
     }
 
     await playComputerConsonant(wedge);
+  };
+
+  /******************************************************************
+   * Regla: comprueba si queda alguna consonante por salir en la frase
+   ******************************************************************/
+  const hasRemainingConsonantInPhrase = () => {
+    return consonants.some(
+      (c) => c.enabled && phrase.toLowerCase().includes(c.letter.toLowerCase())
+    );
+  };
+
+  /******************************************************************
+   * Regla: comprueba si hay 2 vocales acertdaas en la frase
+   ******************************************************************/
+  const hasEnoughSolvedVowels = () => {
+    const vowelsSet = ["a", "e", "i", "o", "u"];
+
+    const solvedVowels = selectedLetters.filter(
+      (letter) =>
+        vowelsSet.includes(letter.toLowerCase()) &&
+        phrase.toLowerCase().includes(letter.toLowerCase())
+    );
+
+    return solvedVowels.length >= 2;
+  };
+
+  /******************************************************************
+   * Regla: decide si resuelve
+   ******************************************************************/
+  const computerShouldTrySolve = () => {
+    const revealedLettersRatio =
+      selectedLetters.length / phrase.replace(/\s/g, "").length;
+
+    // Cuantas más letras conocidas, más probable resolver
+    if (revealedLettersRatio > 0.6) return true;
+
+    // Si va muy sobrada de puntos, arriesga
+    if (computerScore >= 1200) return Math.random() < 0.4;
+
+    return false;
+  };
+
+  /******************************************************************
+   * COMPUTER: intenta resolver
+   ******************************************************************/
+  const computerTrySolve = async () => {
+    await enqueue("La computadora va a intentar resolver la frase… 🤖", 2000);
+
+    const solved = Math.random() < 0.5;
+
+    if (solved) {
+      await enqueue("😱 ¡La computadora ha acertado!", 2000);
+    } else {
+      await enqueue("😬 La computadora ha fallado al resolver", 2000);
+    }
+
+    return solved;
   };
 
   /******************************************************************

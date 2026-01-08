@@ -25,7 +25,7 @@ const ActionModal = ({
             />
           )}
 
-          {modalMode === "solve" && <SolveForm onSubmitSolve= {onSubmitSolve} solveResult={solveResult}/>}
+          {modalMode.type === "solve" && <SolveForm onSubmitSolve= {onSubmitSolve} solveResult={solveResult}  solver={modalMode.solver}/>}
 
           {modalMode === "joker" && <JokerPanel closeModal={closeModal} />}
         </div>

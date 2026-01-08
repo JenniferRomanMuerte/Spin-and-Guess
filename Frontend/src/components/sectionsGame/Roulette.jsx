@@ -18,59 +18,66 @@ const Roulette = forwardRef(
     /******************************************************************
      * REFS (no provocan re-render)
      ******************************************************************/
-    // Referencia al DOM real de la ruleta (para medir tamaño y calcular gajos)
+
+    // Referencia al DOM real de la ruleta.
+    // Se usa para medir su tamaño y calcular correctamente los gajos.
     const wheelRef = useRef(null);
 
-    // Guardamos SIEMPRE el último spinEnd en un ref
-    // Esto evita problemas de closures si spinEnd cambia entre renders
+    // Guardamos SIEMPRE la última versión de spinEnd en un ref.
+    // Esto evita problemas de closures si la función cambia entre renders.
     const spinEndRef = useRef(spinEnd);
 
-    // Rotación acumulada (no queremos que se reinicie cuando el componente re-renderiza)
+    // Rotación acumulada de la ruleta.
+    // Usamos un ref para que NO se resetee en cada render.
     const rotationRef = useRef(0);
 
-    // Opcional: si quisieras limpiar timeouts en unmount
-    // (ahora mismo no es estrictamente necesario, pero lo dejo preparado)
+    // Referencia opcional para almacenar timeouts activos.
+    // Permite limpiar animaciones si el componente se desmonta.
     const timeoutsRef = useRef([]);
 
     /******************************************************************
      * ESTADO DE UI (sí provoca re-render)
      ******************************************************************/
+
     // Tamaño calculado de cada gajo (triángulo)
     const [sliceSize, setSliceSize] = useState({ width: 0, height: 0 });
 
-    // Rotación actual aplicada al contenedor que gira (para pintar en pantalla)
+    // Rotación actual aplicada al DOM (solo para render)
     const [rotation, setRotation] = useState(0);
 
-    // Índice del gajo ganador (cuando termina el giro)
+    // Índice del gajo ganador al finalizar el giro
     const [winnerIndex, setWinnerIndex] = useState(null);
 
-    // Bloqueo: “está girando ahora mismo”
+    // Flag de estado: indica si la ruleta está girando ahora mismo
     const [isSpinning, setIsSpinning] = useState(false);
 
-    // Animación visual del indicador (flecha)
+    // Control visual del indicador (flecha superior)
     const [indicatorActive, setIndicatorActive] = useState(false);
 
     /******************************************************************
-     * DERIVADOS (no estado, solo cálculos)
+     * DERIVADOS (no son estado, solo cálculos)
      ******************************************************************/
-    // Grados que ocupa cada gajo
+
+    // Grados que ocupa cada gajo según el total
     const degreesPerWedge = 360 / wedges.length;
 
-    // Busy significa: aunque NO esté girando, el botón debe estar bloqueado
-    // (porque está deshabilitada por el padre o porque es turno de la compu)
-    const isBusy = rouletteDisabled || blockUserSpin;
+    // La ruleta está "ocupada" si:
+    // - está deshabilitada por la UI
+    // - está bloqueada por reglas de turno
+    const isBlockedByGame = rouletteDisabled || blockUserSpin;
 
-    // Duración de la animación (debe coincidir con el CSS)
+    // Duración de la animación de giro (debe coincidir con el CSS)
     const SPIN_DURATION_MS = 4500;
 
     /******************************************************************
-     * EFECTO: calcular tamaño de gajos en base al tamaño real de la ruleta
+     * EFECTO: calcular tamaño de los gajos en función del tamaño real
+     * del contenedor de la ruleta
      ******************************************************************/
     useEffect(() => {
       const updateSizes = () => {
         if (!wheelRef.current) return;
 
-        // Calcula width/height del triángulo según el ancho del círculo
+        // Calcula width y height del triángulo según el diámetro
         const { width, height } = calcSliceSize(
           wheelRef.current.offsetWidth,
           degreesPerWedge
@@ -79,10 +86,10 @@ const Roulette = forwardRef(
         setSliceSize({ width, height });
       };
 
-      // Primera medida al montar
+      // Primera medición al montar
       updateSizes();
 
-      // Recalcular al redimensionar ventana
+      // Recalcular si cambia el tamaño de la ventana
       window.addEventListener("resize", updateSizes);
 
       // Limpieza
@@ -97,70 +104,74 @@ const Roulette = forwardRef(
     }, [spinEnd]);
 
     /******************************************************************
-     * EFECTO: cuando tenemos winnerIndex, llamamos a spinEnd(winner)
+     * EFECTO: cuando se determina el gajo ganador,
+     * notificamos al padre mediante spinEnd(winner)
      ******************************************************************/
     useEffect(() => {
       if (winnerIndex === null) return;
 
       const winner = wedges[winnerIndex];
 
-      // Llamamos al último spinEnd guardado (evita closures viejos)
+      // Usamos la versión más reciente de spinEnd
       spinEndRef.current(winner);
     }, [winnerIndex]);
 
     /******************************************************************
-     * FUNCIÓN PRINCIPAL: girar la ruleta
-     * - force=true: permite girar aunque rouletteDisabled esté en true (para la compu)
+     * UTILIDAD: determina si la ruleta puede girar
+     ******************************************************************/
+    const canSpin = ({ force }) => {
+      if (isSpinning) return false;
+      if (!force && isBlockedByGame) return false;
+      return true;
+    };
+
+    /******************************************************************
+     * FUNCIÓN PRINCIPAL: iniciar el giro de la ruleta
+     * - force=true permite girar incluso si está deshabilitada (computer)
      ******************************************************************/
     const handleSpin = ({ force = false } = {}) => {
-      // Si ya está girando, ignoramos
-      if (isSpinning) return;
+      if (!canSpin({ force })) return;
 
-      // Si NO es forzado, bloqueamos por reglas del padre (disabled o turno compu)
-      if (!force && (rouletteDisabled || blockUserSpin)) return;
+      // Avisamos al padre solo en giros del jugador
+      if (!force) {
+        startSpin?.();
+      }
 
-      // Avisamos al padre: empieza giro (limpia mensajes y wedge)
-      startSpin?.();
-
-      // IMPORTANTE:
-      // Si sale dos veces seguidas el mismo index, React podría no disparar el efecto,
-      // así que reseteamos winnerIndex al comenzar el giro.
+      // Reseteamos el ganador para forzar el efecto aunque se repita índice
       setWinnerIndex(null);
 
-      // Marcamos giro en marcha y apagamos el indicador
+      // Marcamos estado de giro activo
       setIsSpinning(true);
       setIndicatorActive(false);
 
-      // Generamos rotación aleatoria (vueltas extra)
+      // Calculamos grados extra (vueltas completas aleatorias)
       const extraDegrees = getRandomSpinDegrees(1, 3);
 
-      // Sumamos al acumulado para que la animación no “vuelva atrás”
+      // Sumamos al acumulado para evitar que la animación "vuelva atrás"
       rotationRef.current += extraDegrees;
 
       // Pintamos la rotación en el DOM
       setRotation(rotationRef.current);
 
-      // Cuando termine la transición CSS, calculamos ganador y desbloqueamos
+      // Al finalizar la animación CSS, calculamos el ganador
       const t1 = setTimeout(() => {
         setIndicatorActive(true);
 
-        // Calculamos el índice ganador según rotación final
+        // Determinamos el índice ganador según la rotación final
         const index = getWinnerIndexFromRotation(
           rotationRef.current,
           degreesPerWedge,
           wedges.length
         );
 
-        // Guardamos ganador (dispara el useEffect -> spinEnd(winner))
         setWinnerIndex(index);
 
-        // Marcamos que deja de girar (0ms para soltarlo al final del callstack)
+        // Liberamos el estado de giro (siguiente tick)
         const t2 = setTimeout(() => setIsSpinning(false), 0);
 
-        // Apagamos indicador tras 2s (solo visual)
+        // Apagamos el indicador tras un breve tiempo (solo visual)
         const t3 = setTimeout(() => setIndicatorActive(false), 2000);
 
-        // Guardamos timeouts por si quieres limpiar en unmount (opcional)
         timeoutsRef.current.push(t2, t3);
       }, SPIN_DURATION_MS);
 
@@ -171,14 +182,12 @@ const Roulette = forwardRef(
      * EXPONER MÉTODOS AL PADRE (GamePage) MEDIANTE REF
      ******************************************************************/
     useImperativeHandle(ref, () => ({
-      // GamePage puede hacer: rouletteRef.current.spin()
-      // Aquí forzamos el giro incluso si está deshabilitada (para la computadora)
+      // Permite al padre forzar el giro (turno de la computer)
       spin: () => handleSpin({ force: true }),
     }));
 
     /******************************************************************
-     * (Opcional) Limpieza de timeouts al desmontar
-     * Evita warnings si el componente desaparece a mitad de animación.
+     * LIMPIEZA: cancelar timeouts activos si el componente se desmonta
      ******************************************************************/
     useEffect(() => {
       return () => {
@@ -192,32 +201,30 @@ const Roulette = forwardRef(
      ******************************************************************/
     return (
       <section className="roulette">
-        {/* Indicador (flecha) arriba de la ruleta */}
+        {/* Indicador visual superior */}
         <div
           className={`roulette__indicator ${
             indicatorActive ? "roulette__indicator--active" : ""
           }`}
         ></div>
 
-        {/* Círculo de la ruleta (lo medimos con wheelRef) */}
-        <div className="roulette__wheel" id="rouletteWheel" ref={wheelRef}>
-          {/* Botón central de "TIRAR" */}
+        {/* Contenedor de la ruleta (referencia para mediciones) */}
+        <div className="roulette__wheel" ref={wheelRef}>
+          {/* Botón central de acción */}
           <button
-            id="spinButton"
             className="roulette__wheel--btn"
             onClick={() => handleSpin({ force: false })}
-            // isBusy ya incluye rouletteDisabled y blockUserSpin
-            disabled={isBusy || isSpinning}
+            disabled={isBlockedByGame || isSpinning}
           >
             TIRAR
           </button>
 
-          {/* Contenedor interno que SÍ gira */}
+          {/* Contenedor interno que rota */}
           <div
             className="roulette__wheelInner"
             style={{ transform: `rotate(${rotation}deg)` }}
           >
-            {/* Solo pintamos gajos si ya calculamos tamaños */}
+            {/* Pintamos los gajos solo cuando ya conocemos sus tamaños */}
             {sliceSize.width > 0 &&
               wedges.map((wedge, index) => (
                 <div
@@ -226,13 +233,9 @@ const Roulette = forwardRef(
                   style={{
                     height: `${sliceSize.height}px`,
                     width: `${sliceSize.width}px`,
-
-                    // Posicionamos cada gajo en su ángulo
                     transform: `translateX(-50%) rotate(${
                       index * degreesPerWedge
                     }deg)`,
-
-                    // Variables CSS para el SCSS
                     "--wedge-color": wedge.color,
                     "--slice-width": `${sliceSize.width}px`,
                     "--slice-height": `${sliceSize.height}px`,
