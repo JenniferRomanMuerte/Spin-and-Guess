@@ -16,6 +16,7 @@ import { getPhrase } from "../../../services/phrases.service";
 
 import useComputerTurn from "./hooks/useComputerTurn";
 import usePlayerTurn from "./hooks/usePlayerTurn";
+import useTurnManager from "./hooks/useTurnManager";
 
 const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   const navigate = useNavigate();
@@ -25,9 +26,6 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
    ******************************************************************/
   // Permite llamar a métodos del componente Roulette (spin)
   const rouletteRef = useRef(null);
-
-  // Timeout para retrasar el cambio de turno (para que se vea el mensaje)
-  const turnTimeoutRef = useRef(null);
 
   // Evita doble giro automático en desarrollo (StrictMode)
   const didComputerSpinRef = useRef(false);
@@ -75,7 +73,6 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   const [controlsDisabled, setControlsDisabled] = useState(true);
   const [rouletteDisabled, setRouletteDisabled] = useState(false);
   const [modalMode, setModalMode] = useState(null);
-  const [handoverToComputer, setHandoverToComputer] = useState(false);
 
   /******************************************************************
    * ESTADO DERIVADO / REGLAS
@@ -94,55 +91,6 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     playerScore >= VOWEL_COST;
 
   /******************************************************************
-   * TURN HELPERS
-   ******************************************************************/
-  // Cancela cualquier cambio de turno pendiente
-  const cancelTurnTimeout = () => {
-    if (turnTimeoutRef.current) {
-      clearTimeout(turnTimeoutRef.current);
-      turnTimeoutRef.current = null;
-    }
-  };
-
-  /******************************************************************
-   * CAMBIO DE TURNO A COMPUTER (inmediato)
-   ******************************************************************/
-  const goToComputerTurn = () => {
-    setHandoverToComputer(false);
-    changeTurn("computer");
-    setControlsDisabled(true);
-    setRouletteDisabled(true);
-  };
-
-  /******************************************************************
-   * CAMBIO DE TURNO A PLAYER (inmediato)
-   ******************************************************************/
-  const goToPlayerTurn = () => {
-    setHandoverToComputer(false);
-    changeTurn("player");
-    setControlsDisabled(true);
-    setRouletteDisabled(false);
-  };
-
-  /******************************************************************
-   * CAMBIO DE TURNO A COMPUTER CON DELAY
-   * Se usa cuando hay mensaje que debe leerse antes
-   ******************************************************************/
-  const goToComputerTurnAfter = (ms) => {
-    cancelTurnTimeout();
-
-    setHandoverToComputer(true);
-    setControlsDisabled(true);
-    setRouletteDisabled(true);
-    setModalMode(null);
-
-    turnTimeoutRef.current = setTimeout(() => {
-      setHandoverToComputer(false);
-      goToComputerTurn();
-    }, ms);
-  };
-
-  /******************************************************************
    * FUERZA UN NUEVO GIRO DE RULETA
    * Usado cuando alguien acierta y sigue jugando
    ******************************************************************/
@@ -150,6 +98,26 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     rouletteRef.current?.spin();
   };
 
+
+    /******************************************************************
+   * HOOK encargado de gestionar los turnos del juego
+   * - cambio de turno inmediato
+   * - cambio de turno con delay
+   * - bloqueo de acciones durante la transición
+   ******************************************************************/
+  const {
+    handoverToComputer,
+    goToPlayerTurn,
+    goToComputerTurn,
+    goToComputerTurnAfter,
+    cancelTurnTimeout,
+  } = useTurnManager({
+    changeTurn,
+    setControlsDisabled,
+    setRouletteDisabled,
+    setModalMode,
+  });
+  
   /******************************************************************
    * HOOK DE TURNO COMPUTER (IA)
    ******************************************************************/
@@ -181,6 +149,8 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     setSelectedLetters,
     VOWEL_COST,
   });
+
+
 
   /******************************************************************
    * PLAYER TURN RESULT INTERPRETER
