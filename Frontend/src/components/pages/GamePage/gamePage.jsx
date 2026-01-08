@@ -34,7 +34,6 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
 
   const turnTimeoutRef = useRef(null);
 
-
   /******************************************************************
    * ESTADO DEL JUEGO (datos)
    ******************************************************************/
@@ -183,8 +182,6 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     }
   };
 
-
-
   /******************************************************************
    * HOOK encargado de gestionar los turnos del juego
    * - cambio de turno inmediato
@@ -201,7 +198,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     changeTurn,
   });
 
-    /******************************************************************
+  /******************************************************************
    * HOOK encargado de la UI del juego
    * - modales
    * - bloqueo de controles
@@ -264,7 +261,6 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     VOWEL_COST,
   });
 
-
   /******************************************************************
    * HOOK encargado de conectar:
    * - reglas
@@ -285,6 +281,20 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     setCurrentWedge,
     setSolveResult,
   });
+
+  /******************************************************************
+   * Revela todas las letras de la frase en el panel
+   ******************************************************************/
+  const revealFullPhrase = () => {
+    const letters = phrase
+      .toLowerCase()
+      .replace(/[^a-záéíóúüñ]/gi, "") // quitamos espacios y símbolos
+      .split("");
+
+    const uniqueLetters = [...new Set(letters)];
+
+    setSelectedLetters(uniqueLetters);
+  };
 
   /******************************************************************
    * RESET TOTAL DE PARTIDA
@@ -318,12 +328,12 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
 
   // Limpieza de timeouts al desmontar
   useEffect(() => {
-  return () => {
-    if (turnTimeoutRef.current) {
-      clearTimeout(turnTimeoutRef.current);
-    }
-  };
-}, []);
+    return () => {
+      if (turnTimeoutRef.current) {
+        clearTimeout(turnTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Obtener frase al iniciar partida
   useEffect(() => {
@@ -365,10 +375,15 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     cancelTurnTimeout();
 
     if (solveResult === true) {
+      // Revelamos toda la frase
+      revealFullPhrase();
+      // Mostramos mensaje con la frase
+      show(`🎉 ¡Correcto! La frase era: "${phrase}"`);
+
       turnTimeoutRef.current = setTimeout(() => {
         resetGame();
         navigate("/");
-      }, 3000);
+      }, 4000);
       return;
     }
 
