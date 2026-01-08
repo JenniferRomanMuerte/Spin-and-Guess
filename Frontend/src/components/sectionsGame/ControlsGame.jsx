@@ -3,10 +3,10 @@ import "../../styles/layout/sectionGame/ControlsGame.scss";
 import Button from "./ButtonsGame";
 const ControlsGame = ({
   controlsDisabled,
-  hasJocker,
+  hasJoker,
   updateControlsGame,
   selectedAction,
-  canBuyVowel
+  canBuyVowel,
 }) => {
   return (
     <article className="controls">
@@ -23,7 +23,7 @@ const ControlsGame = ({
         selectedAction={selectedAction}
       />
       <Button
-        disabled={!hasJocker}
+        disabled={!hasJoker}
         text="Comodin"
         updateControlsGame={updateControlsGame}
         selectedAction={selectedAction}
