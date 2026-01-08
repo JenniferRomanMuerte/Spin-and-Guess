@@ -7,3 +7,9 @@ export {
   getRandomEnabledItem,
 } from "./letterPoolUtils";
 export { isScoringWedge } from "./wedgeUtils";
+export {
+  hasRemainingConsonantInPhrase,
+  hasUsefulVowelsLeft,
+  hasEnoughSolvedVowels,
+  isPhraseExhausted,
+} from "./phraseStateUtils";

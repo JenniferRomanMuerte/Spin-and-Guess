@@ -3,6 +3,8 @@ import {
   countLetterInPhrase,
   pluralize,
   getRandomEnabledLetter,
+  hasRemainingConsonantInPhrase,
+  hasEnoughSolvedVowels,
 } from "../utils/gameUtils";
 
 const useComputerTurn = ({
@@ -75,7 +77,10 @@ const useComputerTurn = ({
     await enqueue(`La computadora juega por: ${wedge.value}`, 2000);
 
     // No quedan consonantes por salir y hay >= 2 vocales acertadas
-    if (!hasRemainingConsonantInPhrase() && hasEnoughSolvedVowels()) {
+    if (
+      !hasRemainingConsonantInPhrase(consonants, phrase) &&
+      hasEnoughSolvedVowels(selectedLetters, phrase)
+    ) {
       const solved = await computerTrySolve();
 
       onComputerSolve?.(solved);
@@ -110,30 +115,6 @@ const useComputerTurn = ({
     }
 
     await playComputerConsonant(wedge);
-  };
-
-  /******************************************************************
-   * Regla: comprueba si queda alguna consonante por salir en la frase
-   ******************************************************************/
-  const hasRemainingConsonantInPhrase = () => {
-    return consonants.some(
-      (c) => c.enabled && phrase.toLowerCase().includes(c.letter.toLowerCase())
-    );
-  };
-
-  /******************************************************************
-   * Regla: comprueba si hay 2 vocales acertdaas en la frase
-   ******************************************************************/
-  const hasEnoughSolvedVowels = () => {
-    const vowelsSet = ["a", "e", "i", "o", "u"];
-
-    const solvedVowels = selectedLetters.filter(
-      (letter) =>
-        vowelsSet.includes(letter.toLowerCase()) &&
-        phrase.toLowerCase().includes(letter.toLowerCase())
-    );
-
-    return solvedVowels.length >= 2;
   };
 
   /******************************************************************

@@ -8,7 +8,11 @@ import Panel from "../../sectionsGame/Panel";
 import Roulette from "../../sectionsGame/Roulette";
 import ActionModal from "../../sectionsGame/modal/ActionModal";
 
-import { isScoringWedge, pluralize } from "./utils/gameUtils";
+import {
+  isScoringWedge,
+  pluralize,
+  isPhraseExhausted,
+} from "./utils/gameUtils";
 import { useRoundInfoMessages } from "../../../hooks/useRoundInfoMessages";
 import { initialVowels, initialConsonants } from "../../../data/letters";
 import storage from "../../../services/localStorage";
@@ -326,7 +330,9 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
    * EFECTOS
    ******************************************************************/
 
-  // Limpieza de timeouts al desmontar
+  /******************************************************************
+   *  Limpieza de timeouts al desmontar
+   ******************************************************************/
   useEffect(() => {
     return () => {
       if (turnTimeoutRef.current) {
@@ -335,7 +341,9 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     };
   }, []);
 
-  // Obtener frase al iniciar partida
+  /******************************************************************
+   * Obtener frase al iniciar partida
+   ******************************************************************/
   useEffect(() => {
     const fetchPhrase = async () => {
       const token = storage.get("token");
@@ -350,7 +358,9 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     fetchPhrase();
   }, []);
 
-  // Turno automático de la computer
+  /******************************************************************
+   * Turno automático de la computer
+   ******************************************************************/
   useEffect(() => {
     if (turn !== "computer") {
       didComputerSpinRef.current = false;
@@ -368,7 +378,33 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     show("Turno de la computadora 🤖... girando la ruleta 🎛️");
   }, [turn, show]);
 
-  // Resolución de intento de resolver la frase
+  /******************************************************************
+   * Frase agotada: forzar resolución
+   ******************************************************************/
+  useEffect(() => {
+    if (!phrase) return;
+
+    if (!isPhraseExhausted(consonants, vowels, phrase)) return;
+
+    // 🔹 CASO PLAYER
+    if (turn === "player") {
+      show("⚠️ No quedan letras posibles. Debes resolver la frase.");
+      setModalMode("solve");
+      return;
+    }
+
+    // 🔹 CASO COMPUTER
+    if (turn === "computer") {
+      // No hacemos nada aquí:
+      // la computer lo gestiona en useComputerTurn
+      return;
+    }
+  }, [turn, consonants, vowels, phrase]);
+
+  /******************************************************************
+   * Resolución de intento de resolver la frase
+   ******************************************************************/
+
   useEffect(() => {
     if (solveResult === null) return;
 
