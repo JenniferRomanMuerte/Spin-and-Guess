@@ -197,7 +197,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
         break;
 
       case "RISK_WEDGE":
-        show("🎲 Has caído en un gajo misterioso…");
+        show("Has caído en un gajo misterioso… ❓");
         setModalMode("risk");
         break;
 

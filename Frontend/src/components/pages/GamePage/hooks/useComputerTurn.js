@@ -57,6 +57,12 @@ const useComputerTurn = ({
       return;
     }
 
+    // Riesgo (por decidir regla)
+    if (wedge.action === "riesgo") {
+      await handleComputerRisk();
+      return;
+    }
+
     // Comodín (por decidir regla)
     if (wedge.action === "comodin") {
       await enqueue("La computadora consigue un comodín 🎟️", 2000);
@@ -128,7 +134,7 @@ const useComputerTurn = ({
     if (revealedLettersRatio > 0.6) return true;
 
     // Si va muy sobrada de puntos, arriesga
-    if (computerScore >= 1200) return Math.random() < 0.4;
+    if (computerScore >= 1000) return Math.random() < 0.5;
 
     return false;
   };
@@ -278,6 +284,35 @@ const useComputerTurn = ({
     );
 
     return letter;
+  };
+
+  /******************************************************************
+   * COMPUTER: gajo de riesgo
+   ******************************************************************/
+  const handleComputerRisk = async () => {
+    await enqueue("La computadora cae en un gajo misterioso… ❓", 2000);
+
+    // Decide si arriesga (regla simple y ajustable)
+    const shouldRisk = Math.random() < 0.6;
+
+    if (!shouldRisk) {
+      await enqueue("🤖 La computadora decide no arriesgar.", 1500);
+      requestSpinAgain();
+      return;
+    }
+
+    const lucky = Math.random() < 0.5;
+
+    if (lucky) {
+      setComputerScore((prev) => prev * 2);
+      await enqueue("🍀 ¡Suerte! La computadora duplica sus puntos.", 2000);
+    } else {
+      setComputerScore((prev) => Math.floor(prev / 2));
+      await enqueue("💥 Mala suerte… la computadora pierde la mitad.", 2000);
+    }
+
+    // Tras el riesgo, sigue jugando
+    requestSpinAgain();
   };
 
   return {

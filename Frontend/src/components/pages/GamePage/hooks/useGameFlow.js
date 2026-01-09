@@ -1,3 +1,5 @@
+import { normalizePhrase } from "../utils/gameUtils";
+
 const useGameFlow = ({
   turn,
   phrase,
@@ -48,7 +50,11 @@ const useGameFlow = ({
     setSolveResult(null);
 
     // Normalizamos ambas frases para evitar falsos negativos
-    setSolveResult(phrasePlayer.toLowerCase() === phrase.toLowerCase());
+    const normalizedPlayer = normalizePhrase(phrasePlayer);
+    const normalizedPhrase = normalizePhrase(phrase);
+
+    // Comparamos
+     setSolveResult(normalizedPlayer === normalizedPhrase);
   };
 
   return {

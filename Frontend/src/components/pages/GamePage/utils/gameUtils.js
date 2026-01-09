@@ -1,6 +1,7 @@
 export {
   countLetterInPhrase,
   pluralize,
+  normalizePhrase,
 } from "./phraseUtils";
 export {
   getRandomEnabledLetter,

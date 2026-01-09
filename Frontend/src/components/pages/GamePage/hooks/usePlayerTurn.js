@@ -1,7 +1,6 @@
 import {
   isScoringWedge,
   countLetterInPhrase,
-  pluralize,
 } from "../utils/gameUtils";
 
 const userPlayerTurn = ({
