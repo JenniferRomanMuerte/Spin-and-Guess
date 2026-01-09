@@ -13,10 +13,12 @@ const useComputerTurn = ({
   vowels,
   consonants,
   selectedLetters,
+  jockerComputerCount,
   setComputerScore,
   setVowels,
   setConsonants,
   setSelectedLetters,
+  setJockerComputerCount,
   enqueue,
   goToPlayerTurn,
   requestSpinAgain,
@@ -41,11 +43,29 @@ const useComputerTurn = ({
   const handleComputerNonScoringWedge = async (wedge) => {
     // Quiebra
     if (wedge.action === "quiebra") {
+      // Si tiene comodín, lo usa automáticamente
+      if (jockerComputerCount > 0) {
+        setJockerComputerCount((prev) => Math.max(prev - 1, 0));
+
+        await enqueue(
+          "💥 ¡QUIEBRA! Pero la computadora usa un comodín y se salva",
+          2500
+        );
+
+        await enqueue("La computadora sigue jugando…", 1200);
+
+        requestSpinAgain();
+        return;
+      }
+
+      // Sin comodín → quiebra normal
       setComputerScore(0);
+
       await enqueue(
-        "¡QUIEBRA! La computadora pierde todos sus puntos 💸, TE TOCA!",
-        2000
+        "💥 ¡QUIEBRA! La computadora pierde todos sus puntos. TE TOCA 👇",
+        2500
       );
+
       goToPlayerTurn();
       return;
     }
@@ -57,15 +77,16 @@ const useComputerTurn = ({
       return;
     }
 
-    // Riesgo (por decidir regla)
+    // Riesgo
     if (wedge.action === "riesgo") {
       await handleComputerRisk();
       return;
     }
 
-    // Comodín (por decidir regla)
+    // Comodín
     if (wedge.action === "comodin") {
       await enqueue("La computadora consigue un comodín 🎟️", 2000);
+      setJockerComputerCount((prev) => prev + 1);
       await enqueue("La computadora vuelve a tirar…", 1000);
       requestSpinAgain();
       return;

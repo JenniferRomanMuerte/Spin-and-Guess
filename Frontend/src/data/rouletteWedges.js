@@ -2,11 +2,11 @@
 // Cada objeto es un gajo: qué texto muestra, qué color/tema tiene y qué acción haría
 export const wedges = [
   {
-    label: "75",
+    label: "25",
     theme: "pink",
     color: "var(--color-wedge-pink)",
     action: "sumar",
-    value: 75,
+    value: 25,
   },
   {
     label: "QUIEBRA",
@@ -30,28 +30,28 @@ export const wedges = [
     value: 0,
   },
   {
-    label: "25",
+    label: "75",
     theme: "purple",
     color: "var(--color-wedge-purple)",
     action: "sumar",
-    value: 25,
+    value: 75,
   },
   {
-    label: "50",
-    theme: "blue",
-    color: "var(--color-wedge-blue)",
-    action: "sumar",
-    value: 50,
-  },
-  /*
-  {
-    label: "COMODIN",
+    label: "????",
     theme: "gold",
     color: "var(--color-wedge-gold)",
+    action: "riesgo",
+    value: 0,
+  },
+
+  {
+    label: "COMODIN",
+    theme: "joker",
+    color: "var(--color-wedge-joker)",
     action: "comodin",
     value: 0,
   },
-  */
+
   {
     label: "125",
     theme: "green",
@@ -95,16 +95,17 @@ export const wedges = [
     value: 0,
   },
   {
-    label: "????",
-    theme: "green",
-    color: "var(--color-wedge-green)",
-    action: "riesgo",
-    value: 0,
+    label: "50",
+    theme: "blue",
+    color: "var(--color-wedge-blue)",
+    action: "sumar",
+    value: 50,
   },
+
   {
     label: "125",
-    theme: "purple",
-    color: "var(--color-wedge-purple)",
+    theme: "green",
+    color: "var(--color-wedge-green)",
     action: "sumar",
     value: 125,
   },

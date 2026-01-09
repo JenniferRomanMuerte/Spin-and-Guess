@@ -3,7 +3,6 @@ import "../../styles/layout/sectionGame/ControlsGame.scss";
 import Button from "./ButtonsGame";
 const ControlsGame = ({
   controlsDisabled,
-  hasJoker,
   updateControlsGame,
   selectedAction,
   canBuyVowel,
@@ -19,12 +18,6 @@ const ControlsGame = ({
       <Button
         disabled={controlsDisabled || !canBuyVowel}
         text="Comprar Vocal"
-        updateControlsGame={updateControlsGame}
-        selectedAction={selectedAction}
-      />
-      <Button
-        disabled={!hasJoker}
-        text="Comodin"
         updateControlsGame={updateControlsGame}
         selectedAction={selectedAction}
       />

@@ -14630,7 +14630,7 @@ const pi = (c) => {
     const i = ve.c(21),
       {
         controlsDisabled: r,
-        hasJoker: o,
+        jockerPlayerCount: o,
         updateControlsGame: d,
         selectedAction: m,
         canBuyVowel: p,
@@ -15918,7 +15918,7 @@ const a1 = (c) => {
         }),
         Y.jsx($y, {
           controlsDisabled: yt,
-          hasJoker: ae,
+          jockerPlayerCount: ae,
           updateControlsGame: oa,
           canBuyVowel: mt,
         }),

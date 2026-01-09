@@ -323,6 +323,20 @@
       #f5f7fa
     );
   }
+  // 🃏 Comodín (azul eléctrico especial)
+  &__slice--joker::before {
+    background-image: linear-gradient(
+      to top,
+      #1f4fd8,
+      // sombra profunda abajo
+      var(--color-wedge-joker) 45%,
+      #cfe2ff // brillo arriba
+    );
+
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.9),
+      inset 0 -3px 5px rgba(0, 0, 0, 0.4), 0 0 6px rgba(58, 134, 255, 0.6); // glow sutil
+  }
+
   &__label {
     font-weight: var.$font_weight_bold;
     position: absolute;

@@ -60,15 +60,15 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   // Último gajo obtenido al girar la ruleta
   const [currentWedge, setCurrentWedge] = useState(null);
 
-  // Estado del comodín
-  const [hasJoker, setHasJocker] = useState(false);
+  // Estado de los comodines
+  const [jockerPlayerCount, setJockerPlayerCount] = useState(0);
+  const [jockerComputerCount, setJockerComputerCount] = useState(0);
 
   // Resultado de resolver la frase (true / false / null)
   const [solveResult, setSolveResult] = useState(null);
 
   // Congelar tablero
   const [roundEnded, setRoundEnded] = useState(false);
-
 
   /******************************************************************
    * OBTENER NUEVA FRASE (reutilizable)
@@ -171,10 +171,12 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     vowels,
     consonants,
     selectedLetters,
+    jockerComputerCount,
     setComputerScore,
     setVowels,
     setConsonants,
     setSelectedLetters,
+    setJockerComputerCount,
     enqueue,
     goToPlayerTurn,
     requestSpinAgain,
@@ -220,8 +222,8 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
         break;
 
       case "JOKER":
-        show("Enhorabuena! Has conseguido un comodín");
-        setHasJocker(true);
+        show("Enhorabuena! Has conseguido un comodín, Tira de nuevo!");
+        setJockerPlayerCount((prev) => prev + 1);
         enableSpinOnly();
         break;
 
@@ -277,6 +279,15 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
       }
 
       case "BANKRUPT": {
+        // Si tiene comodín, preguntamos
+        if (jockerPlayerCount > 0) {
+          show("💥 Has caído en QUIEBRA");
+          setModalMode({ type: "joker" });
+          lockUI();
+          return;
+        }
+
+        // Sin comodín → comportamiento normal
         const ms = 2500;
         showTemp("Ohhh, lo has perdido todo", ms);
         goToComputerTurnAfter(ms);
@@ -341,6 +352,29 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   };
 
   /******************************************************************
+   * JOKER: el jugador decide si usa el comodín o no
+   ******************************************************************/
+  const resolveJoker = (useJoker) => {
+    closeModal();
+
+    if (useJoker) {
+      setJockerPlayerCount((prev) => Math.max(prev - 1, 0));
+
+      show("Usas un comodín y te salvas de la quiebra, sigue jugando!");
+
+      enableSpinOnly();
+      return;
+    }
+    const ms = 2500;
+    setPlayerScore(0);
+
+    showTemp("💥 Aceptas la quiebra. Pierdes todos los puntos", ms);
+
+    lockUI();
+    goToComputerTurnAfter(ms);
+  };
+
+  /******************************************************************
    * Revela todas las letras de la frase en el panel
    ******************************************************************/
   const revealFullPhrase = () => {
@@ -381,7 +415,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
 
     setSelectedLetters([]);
     setCurrentWedge(null);
-    setHasJocker(false);
+    setJockerPlayerCount(0);
 
     setVowels(initialVowels.map((v) => ({ ...v })));
     setConsonants(initialConsonants.map((c) => ({ ...c })));
@@ -518,6 +552,8 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
         playerScore={playerScore}
         computerScore={computerScore}
         messageRoundInfo={messageRoundInfo}
+        jockerPlayerCount={jockerPlayerCount}
+        jockerComputerCount= {jockerComputerCount}
       />
 
       <article className="gameMain__rouletteArea">
@@ -541,13 +577,14 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
             resolveRisk={resolveRisk}
             onReplay={handleReplay}
             onExit={handleExitGame}
+            jockerPlayerCount={jockerPlayerCount}
+            resolveJoker={resolveJoker}
           />
         )}
       </article>
 
       <ControlsGame
         controlsDisabled={controlsDisabled}
-        hasJoker={hasJoker}
         updateControlsGame={updateControlsGame}
         canBuyVowel={canBuyVowel}
       />
