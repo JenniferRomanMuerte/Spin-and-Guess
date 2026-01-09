@@ -1,12 +1,12 @@
 import "../../styles/layout/sectionGame/Panel.scss";
 
-const Panel = ({ phrase, clue , category, selectedLetters }) => {
+const Panel = ({ phrase, clue, category, selectedLetters, roundEnded }) => {
   // Separamos la frase en palabras usando el espacio
   const words = phrase.split(" ");
 
   return (
     <article className="sectionPanel">
-    <h2 className="sectionPanel__category">{category}</h2>
+      <h2 className="sectionPanel__category">{category}</h2>
       <h3 className="sectionPanel__clue">{clue}</h3>
       {/* Contenedor principal del panel de letras */}
       <section className="sectionPanel__panel" id="panel">
@@ -20,7 +20,8 @@ const Panel = ({ phrase, clue , category, selectedLetters }) => {
           >
             {/* Para cada palabra, recorremos sus letras y comprobamos si está la que ha elegido el usuario para ponerle una clase u otra*/}
             {word.split("").map((char, charIndex) => {
-              const isVisible = selectedLetters.includes(char.toUpperCase());
+              const isVisible =
+                roundEnded || selectedLetters.includes(char.toUpperCase());
 
               return (
                 <div

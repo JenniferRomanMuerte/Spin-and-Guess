@@ -1,6 +1,12 @@
 import { useRef } from "react";
 
-const SolveForm = ({ onSubmitSolve, solveResult, solver = "player" }) => {
+const SolveForm = ({
+  onSubmitSolve,
+  solveResult,
+  solver = "player",
+  onReplay,
+  onExit,
+}) => {
   const inputRef = useRef(null);
 
   const handleSubmit = (ev) => {
@@ -43,6 +49,20 @@ const SolveForm = ({ onSubmitSolve, solveResult, solver = "player" }) => {
               ? "✅ ¡Has ganado!"
               : "❌ Has perdido. La computadora ha acertado 🤖"}
           </p>
+          <p className="solveForm__question">¿Quieres jugar otra ronda?</p>
+
+          <div className="solveForm__actions">
+            <button className="solveForm__actions--btn" onClick={onReplay}>
+              Sigo Jugando
+            </button>
+
+            <button
+              className="solveForm__actions--btn"
+              onClick={onExit}
+            >
+              No, lo dejo.
+            </button>
+          </div>
         </div>
       )}
       {solveResult === false && (

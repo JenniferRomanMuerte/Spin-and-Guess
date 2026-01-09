@@ -66,6 +66,24 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   // Resultado de resolver la frase (true / false / null)
   const [solveResult, setSolveResult] = useState(null);
 
+  // Congelar tablero
+  const [roundEnded, setRoundEnded] = useState(false);
+
+
+  /******************************************************************
+   * OBTENER NUEVA FRASE (reutilizable)
+   ******************************************************************/
+  const fetchNewPhrase = async () => {
+    const token = storage.get("token");
+    if (!token) return;
+
+    const response = await getPhrase(token);
+
+    setPhrase(response.phrase.phrase);
+    setClue(response.phrase.clue);
+    setCategory(response.phrase.category);
+  };
+
   /******************************************************************
    * MENSAJES DE RONDA
    ******************************************************************/
@@ -337,29 +355,53 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   };
 
   /******************************************************************
-   * RESET TOTAL DE PARTIDA
-   * Se ejecuta cuando el jugador gana la partida
+   * FIN DE PARTIDA: decisiones del jugador
    ******************************************************************/
-  const resetGame = () => {
-    // Marcadores
+  const handleReplay = () => {
+    closeModal();
+    setRoundEnded(false);
+    resetRound();
+    fetchNewPhrase();
+  };
+
+  const handleExitGame = () => {
+    closeModal();
+    setRoundEnded(false);
+    resetGame();
+    navigate("/");
+  };
+
+  /******************************************************************
+   * RESET DE RONDA
+   * Se ejecuta se acierta el panel y el jugador decide seguir jugando
+   ******************************************************************/
+  const resetRound = () => {
     setPlayerScore(0);
     setComputerScore(0);
 
-    // Letras y estado del tablero
     setSelectedLetters([]);
     setCurrentWedge(null);
     setHasJocker(false);
 
-    // Reset de pools de letras
     setVowels(initialVowels.map((v) => ({ ...v })));
     setConsonants(initialConsonants.map((c) => ({ ...c })));
 
-    // UI
+    resetQueue();
+    show("🎲 ¡Nueva ronda! Empiezas tú");
+
     setSolveResult(null);
 
-    // Sesión
-    changeNamePlayer("");
     changeTurn("player");
+  };
+
+  /******************************************************************
+   * RESET TOTAL DE PARTIDA
+   * Se ejecuta cuando se acierta el panel y el jugador decide no seguir jugando
+   ******************************************************************/
+  const resetGame = () => {
+    resetRound();
+    changeNamePlayer("");
+    setMessageRoundInfo("");
   };
 
   /******************************************************************
@@ -381,17 +423,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
    * Obtener frase al iniciar partida
    ******************************************************************/
   useEffect(() => {
-    const fetchPhrase = async () => {
-      const token = storage.get("token");
-      if (!token) return;
-
-      const response = await getPhrase(token);
-      setPhrase(response.phrase.phrase);
-      setClue(response.phrase.clue);
-      setCategory(response.phrase.category);
-    };
-
-    fetchPhrase();
+    fetchNewPhrase();
   }, []);
 
   /******************************************************************
@@ -449,13 +481,13 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     if (solveResult === true) {
       // Revelamos toda la frase
       revealFullPhrase();
+
+      // Congelamos el tablero
+      setRoundEnded(true);
+
       // Mostramos mensaje con la frase
       show(`🎉 ¡Correcto! La frase era: "${phrase}"`);
 
-      turnTimeoutRef.current = setTimeout(() => {
-        resetGame();
-        navigate("/");
-      }, 4000);
       return;
     }
 
@@ -478,6 +510,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
         clue={clue}
         category={category}
         selectedLetters={selectedLetters}
+        roundEnded={roundEnded}
       />
 
       <Markers
@@ -506,6 +539,8 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
             onSubmitSolve={onSubmitSolve}
             solveResult={solveResult}
             resolveRisk={resolveRisk}
+            onReplay={handleReplay}
+            onExit={handleExitGame}
           />
         )}
       </article>
