@@ -17,6 +17,7 @@ import { useRoundInfoMessages } from "../../../hooks/useRoundInfoMessages";
 import { initialVowels, initialConsonants } from "../../../data/letters";
 import storage from "../../../services/localStorage";
 import { getPhrase } from "../../../services/phrases.service";
+import { markPhraseAsPlayed } from "../../../services/user-phrases.service";
 
 import useComputerTurn from "./hooks/useComputerTurn";
 import usePlayerTurn from "./hooks/usePlayerTurn";
@@ -42,6 +43,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
    * ESTADO DEL JUEGO (datos)
    ******************************************************************/
   // Frase, pista y categoria
+  const [phraseId, setPhraseId] = useState(null);
   const [phrase, setPhrase] = useState("");
   const [clue, setClue] = useState("");
   const [category, setCategory] = useState("");
@@ -79,6 +81,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
 
     const response = await getPhrase(token);
 
+    setPhraseId(response.phrase.id);
     setPhrase(response.phrase.phrase);
     setClue(response.phrase.clue);
     setCategory(response.phrase.category);
@@ -391,15 +394,26 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   /******************************************************************
    * FIN DE PARTIDA: decisiones del jugador
    ******************************************************************/
-  const handleReplay = () => {
+  const handleReplay = async () => {
     closeModal();
+
+    // Marcamos la frase en la BBDD como jugada
+    if (phraseId) {
+      await markPhraseAsPlayed(phraseId);
+    }
     setRoundEnded(false);
     resetRound();
     fetchNewPhrase();
   };
 
-  const handleExitGame = () => {
+  const handleExitGame = async () => {
     closeModal();
+
+    // Marcamos la frase en la BBDD como jugada
+    if (phraseId) {
+      await markPhraseAsPlayed(phraseId);
+    }
+
     setRoundEnded(false);
     resetGame();
     navigate("/");
@@ -553,7 +567,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
         computerScore={computerScore}
         messageRoundInfo={messageRoundInfo}
         jockerPlayerCount={jockerPlayerCount}
-        jockerComputerCount= {jockerComputerCount}
+        jockerComputerCount={jockerComputerCount}
       />
 
       <article className="gameMain__rouletteArea">

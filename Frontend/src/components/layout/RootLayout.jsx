@@ -36,7 +36,7 @@ const RootLayout = () => {
 
     const restoreSession = async () => {
       try {
-        const data = await me(token);
+        const data = await me();
         setNamePlayer(data.user.username);
       } catch (error) {
         storage.remove("token");
