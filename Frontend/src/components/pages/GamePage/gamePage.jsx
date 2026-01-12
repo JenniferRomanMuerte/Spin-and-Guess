@@ -29,7 +29,7 @@ import useGameUI from "./hooks/useGameUI";
 import useGameFlow from "./hooks/useGameFlow";
 import useGameEnd from "./hooks/useGameEnd";
 
-const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
+const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer, updateRoundInfo, clearRoundInfo }) => {
   const navigate = useNavigate();
 
   /******************************************************************
@@ -102,11 +102,10 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   /******************************************************************
    * MENSAJES DE RONDA
    ******************************************************************/
-  const [messageRoundInfo, setMessageRoundInfo] = useState("");
 
   // Hook que gestiona cola de mensajes y temporizados
   const { show, showTemp, enqueue, resetQueue } =
-    useRoundInfoMessages(setMessageRoundInfo);
+    useRoundInfoMessages(updateRoundInfo);
 
   /******************************************************************
    * ESTADO DERIVADO / REGLAS
@@ -473,7 +472,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   const resetGame = () => {
     resetRound();
     changeNamePlayer("");
-    setMessageRoundInfo("");
+    clearRoundInfo("");
   };
 
   /******************************************************************
@@ -598,7 +597,6 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
           namePlayer={namePlayer}
           playerScore={playerScore}
           computerScore={computerScore}
-          messageRoundInfo={messageRoundInfo}
           jockerPlayerCount={jockerPlayerCount}
           jockerComputerCount={jockerComputerCount}
         />

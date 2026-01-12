@@ -10,7 +10,7 @@ import Header from "./Header.jsx";
 
 import App from "../pages/App.jsx";
 import GamePage from "../pages/GamePage/gamePage.jsx";
-import StatsModal from "../sectionsGame/modal/StatsModal.jsx"
+import StatsModal from "../sectionsGame/modal/StatsModal.jsx";
 
 import "../../styles/core/_reset.scss";
 
@@ -21,8 +21,7 @@ const RootLayout = () => {
   // Estado global del juego
   const [namePlayer, setNamePlayer] = useState("");
   const [turn, setTurn] = useState("player"); // "player" | "computer"
-
-
+  const [messageRoundInfo, setMessageRoundInfo] = useState("");
 
   const isGame = location.pathname === "/game";
 
@@ -30,6 +29,9 @@ const RootLayout = () => {
 
   const changeNamePlayer = (nameiNput) => setNamePlayer(nameiNput);
   const changeTurn = (turnValue) => setTurn(turnValue);
+
+  const updateRoundInfo = (msg) => setMessageRoundInfo(msg);
+  const clearRoundInfo = () => setMessageRoundInfo("");
 
   useEffect(() => {
     const token = storage.get("token");
@@ -50,11 +52,14 @@ const RootLayout = () => {
     restoreSession();
   }, []);
 
-
-
   return (
     <div className="appLayout">
-      <Header isGame={isGame} namePlayer={namePlayer} turn={turn} />
+      <Header
+        isGame={isGame}
+        namePlayer={namePlayer}
+        turn={turn}
+        messageRoundInfo={messageRoundInfo}
+      />
 
       <Routes>
         <Route
@@ -72,12 +77,13 @@ const RootLayout = () => {
                 turn={turn}
                 changeTurn={changeTurn}
                 changeNamePlayer={changeNamePlayer}
+                updateRoundInfo = {updateRoundInfo}
+                clearRoundInfo = {clearRoundInfo}
               />
             </ProtectedRoute>
           }
         />
       </Routes>
-      
     </div>
   );
 };
