@@ -25,6 +25,7 @@ import usePlayerTurn from "./hooks/usePlayerTurn";
 import useTurnManager from "./hooks/useTurnManager";
 import useGameUI from "./hooks/useGameUI";
 import useGameFlow from "./hooks/useGameFlow";
+import useGameEnd from "./hooks/useGameEnd";
 
 const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   const navigate = useNavigate();
@@ -39,6 +40,8 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   const didComputerSpinRef = useRef(false);
 
   const turnTimeoutRef = useRef(null);
+
+  const solvedPhraseIdRef = useRef(null);
 
   /******************************************************************
    * ESTADO DEL JUEGO (datos)
@@ -168,6 +171,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
    * HOOK DE TURNO COMPUTER (IA)
    ******************************************************************/
   const onComputerSolve = (solved) => {
+    solvedPhraseIdRef.current = phraseId;
     setSolveBy("computer");
     setSolveResult(solved);
     setModalMode({ type: "solve", solver: "computer" });
@@ -227,7 +231,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
 
       case "RISK_WEDGE":
         show("Has caído en un gajo misterioso… ❓");
-        setModalMode({type:"risk"});
+        setModalMode({ type: "risk" });
         break;
 
       case "JOKER":
@@ -303,6 +307,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
 
         // Sin comodín → comportamiento normal
         const ms = 2500;
+        setPlayerScore(0);
         showTemp("Ohhh, lo has perdido todo", ms);
         goToComputerTurnAfter(ms);
         break;
@@ -322,7 +327,9 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   const { spinEnd, onLetterSelected, onSubmitSolve } = useGameFlow({
     turn,
     phrase,
+    phraseId,
     currentWedge,
+    solvedPhraseIdRef,
 
     handlePlayerSpinEnd,
     handleComputerSpinEnd,
@@ -532,46 +539,30 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   /******************************************************************
    * Resolución de intento de resolver la frase
    ******************************************************************/
+  useGameEnd({
+    solveResult,
+    solveBy,
 
-  useEffect(() => {
-    if (solveResult === null) return;
+    phrase,
+    phraseId: solvedPhraseIdRef.current,
+    playerScore,
 
-    cancelTurnTimeout();
+    revealFullPhrase,
+    setRoundEnded,
 
-    if (solveResult === true && solveBy === "player") {
-      // Revelamos toda la frase
-      revealFullPhrase();
+    show,
+    closeModal,
 
-      // Congelamos el tablero
-      setRoundEnded(true);
+    saveGame,
 
-      // Mostramos mensaje con la frase
-      show(`🎉 ¡Correcto! La frase era: "${phrase}"`);
+    goToComputerTurn,
+    cancelTurnTimeout,
 
-      //Guardamos la puntuación de la partida
-      saveGame(playerScore).catch((err) =>
-        console.error("Error guardando partida", err)
-      );
+    setSolveResult,
+    setSolveBy,
 
-      return;
-    }
-
-    if (solveResult === true && solveBy === "computer") {
-      revealFullPhrase();
-      setRoundEnded(true);
-      show(`🤖 La computadora ha resuelto la frase: ${phrase}`);
-      return;
-    }
-
-    if (solveResult === false) {
-      turnTimeoutRef.current = setTimeout(() => {
-        closeModal();
-        setSolveResult(null);
-        setSolveBy(null);
-        goToComputerTurn();
-      }, 2000);
-    }
-  }, [solveResult, solveBy]);
+    turnTimeoutRef,
+  });
 
   /******************************************************************
    * RENDER

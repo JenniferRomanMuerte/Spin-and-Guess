@@ -4,10 +4,10 @@ import { request } from "./http";
 /**
  * Guarda una partida ganada por el jugador
  */
-export const saveGame = (score) => {
+export const saveGame = ({score, phraseId, result}) => {
   return request("/api/game", {
     method: "POST",
-    body: JSON.stringify({ score }),
+    body: JSON.stringify({ score, phraseId, result }),
   });
 };
 

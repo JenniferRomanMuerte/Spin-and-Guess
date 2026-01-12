@@ -2,7 +2,7 @@
 import { request } from "./http";
 
 export const markPhraseAsPlayed = (phraseId) => {
-  return request("/api//user-phrases", {
+  return request("/api/user-phrases", {
     method: "POST",
     body: JSON.stringify({ phraseId }),
   });

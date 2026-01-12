@@ -22,7 +22,7 @@ export const hasEnoughSolvedVowels = (selectedLetters, phrase) => {
       phrase.toLowerCase().includes(letter.toLowerCase())
   );
 
-  return solvedVowels.length >= 2;
+  return solvedVowels.length >= 1;
 };
 
 // No quedan consonantes ni vocales por salir

@@ -3,7 +3,9 @@ import { normalizePhrase } from "../utils/gameUtils";
 const useGameFlow = ({
   turn,
   phrase,
+  phraseId,
   currentWedge,
+  solvedPhraseIdRef,
 
   handlePlayerSpinEnd,
   handleComputerSpinEnd,
@@ -50,6 +52,9 @@ const useGameFlow = ({
    ******************************************************************/
   const onSubmitSolve = (phrasePlayer) => {
     lockUI();
+
+    solvedPhraseIdRef.current = phraseId;
+
     setSolveBy("player");
     setSolveResult(null);
 
