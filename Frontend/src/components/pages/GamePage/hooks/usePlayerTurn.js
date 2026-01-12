@@ -66,7 +66,7 @@ const userPlayerTurn = ({
     setSelectedLetters((prev) => [...prev, letter]);
 
     if (mode === "vowel") return handlePlayerVowel(letter);
-    if (mode === "consonaFnt") return handlePlayerConsonant(letter);
+    if (mode === "consonant") return handlePlayerConsonant(letter);
 
     return { type: "NONE" };
   };

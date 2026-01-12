@@ -9,7 +9,6 @@ const ActionModal = ({
   vowels,
   consonants,
   handleletterSelected,
-  closeModal,
   onSubmitSolve,
   solveResult,
   resolveRisk,
@@ -22,10 +21,9 @@ const ActionModal = ({
     <section className="modal">
       <div className="modal__overlay">
         <div className="modal__content">
-          {(modalMode === "vowel" || modalMode === "consonant") && (
+          {(modalMode.type === "vowel" || modalMode.type === "consonant") && (
             <LetterPicker
-              modalMode={modalMode}
-              closeModal={closeModal}
+              mode={modalMode.type}
               vowels={vowels}
               consonants={consonants}
               handleletterSelected={handleletterSelected}
@@ -42,7 +40,7 @@ const ActionModal = ({
             />
           )}
 
-          {modalMode === "risk" && <RiskPanel resolveRisk={resolveRisk} />}
+          {modalMode.type === "risk" && <RiskPanel resolveRisk={resolveRisk} />}
 
           {modalMode.type === "joker" && (
             <JokerPanel

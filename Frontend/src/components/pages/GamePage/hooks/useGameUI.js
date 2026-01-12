@@ -63,17 +63,17 @@ const useGameUI = ({
     lockUI();
 
     if (text === "Comodin") {
-      setModalMode("joker");
+      setModalMode( { type: "joker" });
       return;
     }
 
     if (text === "Comprar Vocal") {
-      setModalMode("vowel");
+      setModalMode({ type: "vowel" });
       return;
     }
 
     if (text === "Consonante") {
-      setModalMode("consonant");
+      setModalMode({ type: "consonant" });
       return;
     }
 

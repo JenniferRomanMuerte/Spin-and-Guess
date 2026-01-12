@@ -17,7 +17,6 @@ const RootLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-
   // Estado global del juego
   const [namePlayer, setNamePlayer] = useState("");
   const [turn, setTurn] = useState("player"); // "player" | "computer"
@@ -38,6 +37,8 @@ const RootLayout = () => {
       try {
         const data = await me();
         setNamePlayer(data.user.username);
+
+      
       } catch (error) {
         storage.remove("token");
         storage.remove("user");

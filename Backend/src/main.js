@@ -27,6 +27,9 @@ const phrasesRoutes = require("./routes/phrases.routes");
 // Rutas de usuarios con frases jugadas
 const userPhrasesRoutes = require("./routes/user-phrases.routes");
 
+// Rutas para las puntuaciones del juego
+const gameRoutes = require("./routes/game.routes");
+
 // ===============================
 // CREACIÓN Y CONFIGURACIÓN DEL SERVER
 // ===============================
@@ -50,6 +53,9 @@ server.use("/api/phrases", phrasesRoutes);
 
 // Rutas para las frases
 server.use("/api/user-phrases", userPhrasesRoutes);
+
+// Rutas para las puntuaciones del juego
+server.use("/api/game",gameRoutes);
 
 // ===============================
 // ARRANQUE DEL SERVIDOR

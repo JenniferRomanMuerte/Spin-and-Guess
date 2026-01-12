@@ -12,6 +12,7 @@ const useGameFlow = ({
 
   lockUI,
   setCurrentWedge,
+  setSolveBy,
   setSolveResult,
 }) => {
   /******************************************************************
@@ -20,7 +21,9 @@ const useGameFlow = ({
   const onLetterSelected = (letter, mode) => {
     lockUI();
     const result = handleLetterSelected(letter, mode);
+
     handlePlayerResult(result, currentWedge);
+
   };
 
   /******************************************************************
@@ -47,6 +50,7 @@ const useGameFlow = ({
    ******************************************************************/
   const onSubmitSolve = (phrasePlayer) => {
     lockUI();
+    setSolveBy("player");
     setSolveResult(null);
 
     // Normalizamos ambas frases para evitar falsos negativos

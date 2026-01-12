@@ -18,6 +18,7 @@ import { initialVowels, initialConsonants } from "../../../data/letters";
 import storage from "../../../services/localStorage";
 import { getPhrase } from "../../../services/phrases.service";
 import { markPhraseAsPlayed } from "../../../services/user-phrases.service";
+import { saveGame } from "../../../services/game.service";
 
 import useComputerTurn from "./hooks/useComputerTurn";
 import usePlayerTurn from "./hooks/usePlayerTurn";
@@ -68,6 +69,9 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
 
   // Resultado de resolver la frase (true / false / null)
   const [solveResult, setSolveResult] = useState(null);
+
+  // Saber quien ha resuelto la frase
+  const [solveBy, setSolveBy] = useState(null);
 
   // Congelar tablero
   const [roundEnded, setRoundEnded] = useState(false);
@@ -164,6 +168,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
    * HOOK DE TURNO COMPUTER (IA)
    ******************************************************************/
   const onComputerSolve = (solved) => {
+    setSolveBy("computer");
     setSolveResult(solved);
     setModalMode({ type: "solve", solver: "computer" });
   };
@@ -211,6 +216,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
   const handlePlayerResult = (result, wedge) => {
     switch (result.type) {
       case "SCORING_WEDGE":
+        closeModal();
         show(
           `${
             wedge.action === "superPremio" ? "SUPERPREMIO!!! " : ""
@@ -221,7 +227,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
 
       case "RISK_WEDGE":
         show("Has caído en un gajo misterioso… ❓");
-        setModalMode("risk");
+        setModalMode({type:"risk"});
         break;
 
       case "JOKER":
@@ -233,7 +239,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
       case "CONSONANT_HIT": {
         const { letter, hits, earned } = result;
         const timesText = pluralize(hits, "vez", "veces");
-
+        closeModal();
         show(
           `La letra ${letter} aparece ${hits} ${timesText}. Ganas ${earned}. ¡Sigue jugando!`
         );
@@ -244,6 +250,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
 
       case "CONSONANT_MISS": {
         const ms = 2500;
+        closeModal();
         showTemp(
           `La letra ${result.letter} no está en la frase 😬, pierdes el turno`,
           ms
@@ -257,6 +264,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
         const { letter, hits } = result;
         const timesText = pluralize(hits, "vez", "veces");
 
+        closeModal();
         show(`Compras ${letter}. Aparece ${hits} ${timesText}.`);
         enableSpinOnly();
         break;
@@ -264,18 +272,21 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
 
       case "VOWEL_MISS": {
         const ms = 2500;
+        closeModal();
         showTemp(`Compras ${result.letter}… pero no está 😬`, ms);
         goToComputerTurnAfter(ms);
         break;
       }
 
       case "NOT_ENOUGH_MONEY":
+        closeModal();
         showTemp("No tienes puntos suficientes 😬", 2000);
         enableActions();
         break;
 
       case "LOSE_TURN": {
         const ms = 2500;
+        closeModal();
         showTemp("Lo siento, has perdido el turno", ms);
         goToComputerTurnAfter(ms);
         break;
@@ -320,6 +331,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
 
     lockUI,
     setCurrentWedge,
+    setSolveBy,
     setSolveResult,
   });
 
@@ -505,7 +517,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     // 🔹 CASO PLAYER
     if (turn === "player") {
       show("⚠️ No quedan letras posibles. Debes resolver la frase.");
-      setModalMode("solve");
+      setModalMode({ type: "solve", solver: "player" });
       return;
     }
 
@@ -526,7 +538,7 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
 
     cancelTurnTimeout();
 
-    if (solveResult === true) {
+    if (solveResult === true && solveBy === "player") {
       // Revelamos toda la frase
       revealFullPhrase();
 
@@ -536,6 +548,18 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
       // Mostramos mensaje con la frase
       show(`🎉 ¡Correcto! La frase era: "${phrase}"`);
 
+      //Guardamos la puntuación de la partida
+      saveGame(playerScore).catch((err) =>
+        console.error("Error guardando partida", err)
+      );
+
+      return;
+    }
+
+    if (solveResult === true && solveBy === "computer") {
+      revealFullPhrase();
+      setRoundEnded(true);
+      show(`🤖 La computadora ha resuelto la frase: ${phrase}`);
       return;
     }
 
@@ -543,10 +567,11 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
       turnTimeoutRef.current = setTimeout(() => {
         closeModal();
         setSolveResult(null);
+        setSolveBy(null);
         goToComputerTurn();
       }, 2000);
     }
-  }, [solveResult]);
+  }, [solveResult, solveBy]);
 
   /******************************************************************
    * RENDER
@@ -585,7 +610,6 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
             vowels={vowels}
             consonants={consonants}
             handleletterSelected={onLetterSelected}
-            closeModal={closeModal}
             onSubmitSolve={onSubmitSolve}
             solveResult={solveResult}
             resolveRisk={resolveRisk}
