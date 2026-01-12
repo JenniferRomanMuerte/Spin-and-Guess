@@ -7,9 +7,10 @@ import storage from "../../services/localStorage";
 import { me } from "../../services/auth.service";
 
 import Header from "./Header.jsx";
-import Footer from "./Footer.jsx";
+
 import App from "../pages/App.jsx";
 import GamePage from "../pages/GamePage/gamePage.jsx";
+import StatsModal from "../sectionsGame/modal/StatsModal.jsx"
 
 import "../../styles/core/_reset.scss";
 
@@ -20,6 +21,8 @@ const RootLayout = () => {
   // Estado global del juego
   const [namePlayer, setNamePlayer] = useState("");
   const [turn, setTurn] = useState("player"); // "player" | "computer"
+
+
 
   const isGame = location.pathname === "/game";
 
@@ -37,8 +40,6 @@ const RootLayout = () => {
       try {
         const data = await me();
         setNamePlayer(data.user.username);
-
-      
       } catch (error) {
         storage.remove("token");
         storage.remove("user");
@@ -49,16 +50,7 @@ const RootLayout = () => {
     restoreSession();
   }, []);
 
-  // Funcion para cerra sesión
-  const handleLogout = () => {
-    storage.remove("token");
-    storage.remove("user");
 
-    setNamePlayer("");
-    setTurn("player");
-
-    navigate("/");
-  };
 
   return (
     <div className="appLayout">
@@ -85,8 +77,7 @@ const RootLayout = () => {
           }
         />
       </Routes>
-
-      <Footer isGame={isGame} namePlayer={namePlayer} onLogout={handleLogout} />
+      
     </div>
   );
 };

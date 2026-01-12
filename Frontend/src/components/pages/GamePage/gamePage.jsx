@@ -7,6 +7,8 @@ import Markers from "../../sectionsGame/Markers";
 import Panel from "../../sectionsGame/Panel";
 import Roulette from "../../sectionsGame/Roulette";
 import ActionModal from "../../sectionsGame/modal/ActionModal";
+import Footer from "../../layout/Footer";
+import StatsModal from "../../sectionsGame/modal/StatsModal";
 
 import {
   isScoringWedge,
@@ -78,6 +80,9 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
 
   // Congelar tablero
   const [roundEnded, setRoundEnded] = useState(false);
+
+  // Estado para modales de ranking e historial
+  const [statsModal, setStatsModal] = useState(null);
 
   /******************************************************************
    * OBTENER NUEVA FRASE (reutilizable)
@@ -564,60 +569,82 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer }) => {
     turnTimeoutRef,
   });
 
+  // Funcion para cerra sesión
+  const handleLogout = () => {
+    storage.remove("token");
+    storage.remove("user");
+
+    changeNamePlayer("");
+    setTurn("player");
+
+    navigate("/");
+  };
+
   /******************************************************************
    * RENDER
    ******************************************************************/
   return (
-    <main className="gameMain">
-      <Panel
-        phrase={phrase}
-        clue={clue}
-        category={category}
-        selectedLetters={selectedLetters}
-        roundEnded={roundEnded}
-      />
-
-      <Markers
-        namePlayer={namePlayer}
-        playerScore={playerScore}
-        computerScore={computerScore}
-        messageRoundInfo={messageRoundInfo}
-        jockerPlayerCount={jockerPlayerCount}
-        jockerComputerCount={jockerComputerCount}
-      />
-
-      <article className="gameMain__rouletteArea">
-        <Roulette
-          ref={rouletteRef}
-          rouletteDisabled={rouletteDisabled}
-          spinEnd={spinEnd}
-          startSpin={startSpin}
-          blockUserSpin={turn === "computer" || handoverToComputer}
+    <>
+      <main className="gameMain">
+        <Panel
+          phrase={phrase}
+          clue={clue}
+          category={category}
+          selectedLetters={selectedLetters}
+          roundEnded={roundEnded}
         />
 
-        {modalMode && (
-          <ActionModal
-            modalMode={modalMode}
-            vowels={vowels}
-            consonants={consonants}
-            handleletterSelected={onLetterSelected}
-            onSubmitSolve={onSubmitSolve}
-            solveResult={solveResult}
-            resolveRisk={resolveRisk}
-            onReplay={handleReplay}
-            onExit={handleExitGame}
-            jockerPlayerCount={jockerPlayerCount}
-            resolveJoker={resolveJoker}
-          />
-        )}
-      </article>
+        <Markers
+          namePlayer={namePlayer}
+          playerScore={playerScore}
+          computerScore={computerScore}
+          messageRoundInfo={messageRoundInfo}
+          jockerPlayerCount={jockerPlayerCount}
+          jockerComputerCount={jockerComputerCount}
+        />
 
-      <ControlsGame
-        controlsDisabled={controlsDisabled}
-        updateControlsGame={updateControlsGame}
-        canBuyVowel={canBuyVowel}
+        <article className="gameMain__rouletteArea">
+          <Roulette
+            ref={rouletteRef}
+            rouletteDisabled={rouletteDisabled}
+            spinEnd={spinEnd}
+            startSpin={startSpin}
+            blockUserSpin={turn === "computer" || handoverToComputer}
+          />
+
+          {modalMode && (
+            <ActionModal
+              modalMode={modalMode}
+              vowels={vowels}
+              consonants={consonants}
+              handleletterSelected={onLetterSelected}
+              onSubmitSolve={onSubmitSolve}
+              solveResult={solveResult}
+              resolveRisk={resolveRisk}
+              onReplay={handleReplay}
+              onExit={handleExitGame}
+              jockerPlayerCount={jockerPlayerCount}
+              resolveJoker={resolveJoker}
+            />
+          )}
+        </article>
+
+        <ControlsGame
+          controlsDisabled={controlsDisabled}
+          updateControlsGame={updateControlsGame}
+          canBuyVowel={canBuyVowel}
+        />
+      </main>
+      <Footer
+        namePlayer={namePlayer}
+        onLogout={handleLogout}
+        onShowHistory={() => setStatsModal("history")}
+        onShowRanking={() => setStatsModal("ranking")}
       />
-    </main>
+      {statsModal && (
+        <StatsModal type={statsModal} onClose={() => setStatsModal(null)} />
+      )}
+    </>
   );
 };
 
