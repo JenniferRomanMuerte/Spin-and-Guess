@@ -7,28 +7,65 @@
   padding-inline: 1.5rem;
   padding-block: 0.5rem;
   align-items: center;
-  justify-content: space-around;
+  justify-content: center;
+  gap:3rem;
   @include mix.bg;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.9);
-
-  /* Evita que el contenido fuerce alturas enormes */
   min-height: 0;
+
+  &__center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+  }
 
   &__title {
     font-size: 2.5rem;
     @include mix.glowingText();
+
     @media (min-width: var.$media_desktop) {
       font-size: 3.5rem;
     }
-  }
- 
-  &__presenter {
-    @include mix.imgHeader();
 
-    background-image: url("../../images/presenter.webp");
+    &--intro {
+     font-size: 2.5rem;
+    @include mix.glowingText();
+    @media (min-width: var.$media_desktop) {
+      font-size: 3.5rem;
+    }
+    }
   }
-  &__conestants {
+
+  &__leftImg,
+  &__rightImg {
     @include mix.imgHeader();
-    background-image: url("../../images/contestants.webp");
+  }
+
+  /* Landing: derecha siempre contestants */
+  &--landing {
+    .header__rightImg {
+      background-image: url("../../images/contestants.webp");
+    }
+  }
+
+  /* Modos de imagen izquierda */
+  &--left-presenter {
+    .header__leftImg {
+      background-image: url("../../images/presenter.webp");
+    }
+  }
+
+  &--left-contestants {
+    .header__leftImg {
+      background-image: url("../../images/contestants.webp");
+    }
+  }
+
+  &--left-computer {
+    .header__leftImg {
+      background-image: url("../../images/computer.webp");
+    }
   }
 }
