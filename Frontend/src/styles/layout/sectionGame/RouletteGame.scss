@@ -15,6 +15,9 @@
 
   @media (min-width: var.$media_desktop) {
     margin-bottom: 1rem;
+    --scale: clamp(300px, min(56vw, 60vh), 400px);
+
+
   }
 
   &__indicator {

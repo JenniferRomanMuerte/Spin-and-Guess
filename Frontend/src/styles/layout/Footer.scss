@@ -22,15 +22,20 @@
     flex-wrap: wrap;
     gap: 2rem;
     &--link {
+      font-weight: var.$font_weight_bold;
       background: none;
       border: none;
       cursor: pointer;
       font-size: 1.6rem;
       color: var.$color-bgPanel-2;
-
+      text-shadow: 0px 2px 8px rgba(0, 0, 0, 0.25);
       &:hover {
         transform: scale(1.1);
         filter: drop-shadow(0 0 10px var.$color-primary);
+      }
+
+      @media (min-width: var.$media_desktop) {
+        font-size: clamp(1.8rem, 2.5vw, 2.8rem);
       }
     }
     &--logout {
@@ -40,6 +45,10 @@
       img {
         width: clamp(34px, 14vw, 52px);
         height: clamp(34px, 14vw, 52px);
+        @media (min-width: var.$media_desktop) {
+          width: clamp(52px, 6.1vw, 72px);
+          height: clamp(52px, 6.1vw, 72px);
+        }
       }
 
       &:hover img {

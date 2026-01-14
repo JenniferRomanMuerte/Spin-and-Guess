@@ -29,7 +29,14 @@ import useGameUI from "./hooks/useGameUI";
 import useGameFlow from "./hooks/useGameFlow";
 import useGameEnd from "./hooks/useGameEnd";
 
-const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer, updateRoundInfo, clearRoundInfo }) => {
+const GamePage = ({
+  namePlayer,
+  turn,
+  changeTurn,
+  changeNamePlayer,
+  updateRoundInfo,
+  clearRoundInfo,
+}) => {
   const navigate = useNavigate();
 
   /******************************************************************
@@ -609,22 +616,6 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer, updateRoundI
             startSpin={startSpin}
             blockUserSpin={turn === "computer" || handoverToComputer}
           />
-
-          {modalMode && (
-            <ActionModal
-              modalMode={modalMode}
-              vowels={vowels}
-              consonants={consonants}
-              handleletterSelected={onLetterSelected}
-              onSubmitSolve={onSubmitSolve}
-              solveResult={solveResult}
-              resolveRisk={resolveRisk}
-              onReplay={handleReplay}
-              onExit={handleExitGame}
-              jockerPlayerCount={jockerPlayerCount}
-              resolveJoker={resolveJoker}
-            />
-          )}
         </article>
 
         <ControlsGame
@@ -633,6 +624,21 @@ const GamePage = ({ namePlayer, turn, changeTurn, changeNamePlayer, updateRoundI
           canBuyVowel={canBuyVowel}
         />
       </main>
+      {modalMode && (
+        <ActionModal
+          modalMode={modalMode}
+          vowels={vowels}
+          consonants={consonants}
+          handleletterSelected={onLetterSelected}
+          onSubmitSolve={onSubmitSolve}
+          solveResult={solveResult}
+          resolveRisk={resolveRisk}
+          onReplay={handleReplay}
+          onExit={handleExitGame}
+          jockerPlayerCount={jockerPlayerCount}
+          resolveJoker={resolveJoker}
+        />
+      )}
       <Footer
         namePlayer={namePlayer}
         onLogout={handleLogout}
