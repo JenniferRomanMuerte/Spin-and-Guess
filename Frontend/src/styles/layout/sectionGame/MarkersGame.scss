@@ -3,17 +3,10 @@
   grid-area: markers;
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  margin-block: 3rem;
-  justify-content: center;
+  gap: 0.75rem;
+  margin-block: 3.5rem;
+  justify-content: space-around;
   align-items: normal;
-
-  /* Mobile + desktop: RoundInfo arriba, marcadores debajo */
-  .roundInfo {
-    order: 0;
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
 
   /* Fuerza que ambos marcadores queden en la segunda línea */
   &__section {
@@ -44,7 +37,7 @@
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
-    min-width: 11rem;
+
     &--players {
       font-family: var.$font_family_orbitron;
       font-size: clamp(1.4rem, 2.8vw, 2rem);
@@ -56,8 +49,12 @@
     }
     &--info {
       display: flex;
+      flex-direction: column;
+
+      justify-content: center;
+      gap: clamp(0.6rem, 2vw, 1.2rem);
       align-items: center;
-      gap: 2rem;
+
       &--score {
         display: flex;
         background-color: var.$color-text;
@@ -69,14 +66,15 @@
         font-size: clamp(1.6rem, 4vw, 2.2rem);
         font-weight: var.$font_weight_bold;
         justify-content: end;
-        min-width: 8rem;
+        width: clamp(7rem, 28vw, 9rem);
       }
       &--joker {
         display: flex;
         align-items: center;
-        &--img{
-          width: 5rem;
-          height: 5rem;
+
+        &--img {
+          width: 4rem;
+          height: 4rem;
         }
         &--count {
           font-family: var.$font_family_orbitron;
