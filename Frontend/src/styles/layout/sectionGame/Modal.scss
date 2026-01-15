@@ -1,6 +1,10 @@
 @use "../../core/variables" as var;
 @use "../../core/mixins" as mix;
 
+/* =========================
+   MODAL BASE
+========================= */
+
 .modal {
   position: fixed;
   inset: 0;
@@ -10,33 +14,41 @@
     position: absolute;
     inset: 0;
     background-color: rgba(0, 0, 0, 0.65);
-
     display: flex;
     justify-content: center;
     align-items: center;
-
   }
 
   &__content {
     display: flex;
     justify-content: center;
-
     position: relative;
     z-index: 2;
-
     background-color: var.$color-bgPanel-1;
-
     border-radius: 8px;
-    padding: 1.5rem;
-
     width: 85%;
     max-width: 420px;
-
     min-height: 200px;
-
+    padding: 1.5rem;
     box-shadow: var.$shadow-glow;
+
+    @media (min-width: var.$media_desktop) {
+      max-width: 560px;
+      padding: 2.5rem;
+      min-height: 260px;
+    }
+
+    @media (min-width: var.$media_desktop_lg) {
+      max-width: 720px;
+      padding: 3.5rem;
+      min-height: 320px;
+    }
   }
 }
+
+/* =========================
+   LETTER PICKER
+========================= */
 
 .letterPicker {
   display: flex;
@@ -73,6 +85,18 @@
     transition: transform 0.15s ease, background-color 0.15s ease;
     box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.6);
 
+    @media (min-width: var.$media_desktop) {
+      width: 4.8rem;
+      height: 4.8rem;
+      font-size: 2.6rem;
+    }
+
+    @media (min-width: var.$media_desktop_lg) {
+      width: 5.6rem;
+      height: 5.6rem;
+      font-size: 3rem;
+    }
+
     &:hover {
       background-color: #e0e0e0;
       transform: scale(1.05);
@@ -98,40 +122,56 @@
   }
 }
 
+/* =========================
+   SOLVE FORM
+========================= */
+
 .solveForm {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 3rem;
   justify-content: center;
+
   &__title {
     @include mix.titleModal();
   }
+
   &__input {
     @include mix.input();
     width: 90%;
   }
+
   &__btn {
     @include mix.btnPrimary();
   }
+
   &__question {
-    font-size: 1.5rem;
-    color: var.$color-primary;
+    @include mix.modalText();
   }
+
   &__actions {
     display: flex;
     gap: 4rem;
+
     &--btn {
       @include mix.btnPrimary();
     }
   }
 
   &__solveResult {
-    color: var.$color-primary;
-    margin: 0 auto;
+    @include mix.modalText();
     font-size: 3.5rem;
+
+    @media (min-width: var.$media_desktop_lg) {
+      font-size: 4.2rem;
+    }
   }
 }
+
+/* =========================
+   RISK PANEL
+========================= */
 
 .riskPanel {
   display: flex;
@@ -139,32 +179,38 @@
   justify-content: space-around;
   align-items: center;
   gap: 3rem;
+
   &__title {
     @include mix.titleModal();
   }
+
   &__info {
-    font-size: 1.5rem;
-    color: var.$color-bgPanel-2;
-    text-align: center;
+    @include mix.modalText();
+
     &--strong {
       color: var.$color-accent-1;
       letter-spacing: 2px;
       text-shadow: 1px 1px 5px var.$color-bgPanel-2;
     }
   }
+
   &__question {
-    font-size: 1.5rem;
-    color: var.$color-primary;
+    @include mix.modalText();
   }
+
   &__actions {
     display: flex;
     gap: 6rem;
+
     &--btn {
       @include mix.btnPrimary();
-      font-size: 1.3rem;
     }
   }
 }
+
+/* =========================
+   JOKER PANEL
+========================= */
 
 .jockerPanel {
   display: flex;
@@ -172,29 +218,31 @@
   justify-content: space-around;
   align-items: center;
   gap: 3rem;
+
   &__title {
     @include mix.titleModal();
   }
+
   &__info {
-    font-size: 1.5rem;
-    color: var.$color-bgPanel-2;
-    text-align: center;
+    @include mix.modalText();
+
     &--strong {
       color: var.$color-accent-1;
       letter-spacing: 2px;
       text-shadow: 1px 1px 5px var.$color-bgPanel-2;
     }
   }
+
   &__question {
-    font-size: 1.5rem;
-    color: var.$color-primary;
+    @include mix.modalText();
   }
+
   &__actions {
     display: flex;
     gap: 6rem;
+
     &--btn {
       @include mix.btnPrimary();
-      font-size: 1.3rem;
     }
   }
 }

@@ -9,16 +9,15 @@
   gap: 1rem;
   margin-top: 1rem;
   @media (min-width: var.$media_desktop) {
-
     flex-wrap: nowrap;
     padding-top: clamp(4rem, calc(3rem + 5.5vw), 5.5rem);
     padding-bottom: clamp(2rem, calc(1rem + 3.5vw), 3.5rem);
     justify-content: space-around;
   }
   @media (min-width: var.$media_desktop_lg) {
-    padding-block: 2rem;
-    grid-template-columns: repeat(4, minmax(12rem, 1fr));
-    align-content: center;
+    align-self: flex-start;
+    margin-top: 0;
+    padding-top: 0;
   }
   &__buttons {
     border: none;
@@ -53,6 +52,15 @@
       max-width: 20rem;
       font-size: 1.5rem;
       padding: 1.6rem;
+    }
+    @media (min-width: var.$media_desktop_lg) {
+      min-width: 14.5rem;
+      max-width: 22rem;
+
+      font-size: 1.85rem;
+      padding: 2rem 2.6rem;
+
+      border-radius: 8px;
     }
   }
 }

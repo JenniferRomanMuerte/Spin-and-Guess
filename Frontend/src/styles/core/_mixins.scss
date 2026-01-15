@@ -10,7 +10,7 @@
 }
 
 @mixin bgMain {
-  background: linear-gradient(#ffc43d 0%, #bd7272 40%, #ffc43d 100%);
+  background: linear-gradient(#bd7272 0%, #ffc43d 40%, #bd7272 100%);
 }
 
 @mixin titleModal {
@@ -21,23 +21,42 @@
   letter-spacing: 2.5px;
   text-shadow: 1px 2px 2px var.$color-bgPanel-2;
   text-align: center;
+
+  @media (min-width: var.$media_desktop) {
+    font-size: 2.4rem;
+  }
+
+  @media (min-width: var.$media_desktop_lg) {
+    font-size: 2.8rem;
+  }
 }
 
-@mixin titleAnimation{
-   text-align: center;
-    background: linear-gradient(
-      90deg,
-      #b30059 0%,
-      var.$color-primary 20%,
-      #d699a8 40%,
-      var.$color-primary 60%,
-      #b30059 80%
-    );
-    background-size: 200%;
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
+@mixin modalText {
+  font-size: 1.5rem;
+  line-height: 1.4;
+  text-align: center;
+  color: var.$color-primary;
+
+  @media (min-width: var.$media_desktop_lg) {
+    font-size: 1.8rem;
+  }
+}
+
+@mixin titleAnimation {
+  text-align: center;
+  background: linear-gradient(
+    90deg,
+    #b30059 0%,
+    var.$color-primary 20%,
+    #d699a8 40%,
+    var.$color-primary 60%,
+    #b30059 80%
+  );
+  background-size: 200%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 
 @mixin input {
@@ -62,6 +81,17 @@
   box-shadow: var.$shadow-default;
   background-color: var.$color-primary;
   color: var.$color-accent-1;
+
+  @media (min-width: var.$media_desktop) {
+    font-size: 2rem;
+    padding: 1.2rem 1.8rem;
+  }
+
+  @media (min-width: var.$media_desktop_lg) {
+    font-size: 2.2rem;
+    padding: 1.4rem 2.4rem;
+  }
+
   &.is-disabled {
     cursor: not-allowed;
     opacity: 0.6;
@@ -81,7 +111,6 @@
   width: clamp(110px, 24vw, 170px);
   height: clamp(60px, 10vw, 120px);
 }
-
 
 @mixin glowingText(
   $duration: 10s,
@@ -106,7 +135,6 @@
 
   animation: titleLight $duration $timing $delay $iteration;
 }
-
 
 @keyframes titleLight {
   0% {

@@ -209,7 +209,12 @@ const Roulette = forwardRef(
         ></div>
 
         {/* Contenedor de la ruleta (referencia para mediciones) */}
-        <div className="roulette__wheel" ref={wheelRef}>
+        <div
+          className={`roulette__wheel ${
+            !isBlockedByGame && !isSpinning ? "roulette__wheel--active" : ""
+          }`}
+          ref={wheelRef}
+        >
           {/* Botón central de acción */}
           <button
             className="roulette__wheel--btn"

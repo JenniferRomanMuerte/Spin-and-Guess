@@ -16,6 +16,13 @@
   font-weight: var.$font_weight_bold;
   @include mix.bg;
   box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.9);
+  @media (min-width: var.$media_desktop_lg) {
+    flex-direction: row;
+    justify-content: space-between;
+    padding-block: 2rem;
+    padding-inline: 5rem;
+    font-size: clamp(1.6rem, 0.8vw + 0.8rem, 2rem);
+  }
 
   &__actions {
     display: flex;
@@ -37,6 +44,10 @@
       @media (min-width: var.$media_desktop) {
         font-size: clamp(1.8rem, 2.5vw, 2.8rem);
       }
+      @media (min-width: var.$media_desktop_lg) {
+        font-size: clamp(1.6rem, 0.7vw + 0.8rem, 2.3rem);
+         align-items: center;
+      }
     }
     &--logout {
       background: none;
@@ -49,11 +60,15 @@
           width: clamp(52px, 6.1vw, 72px);
           height: clamp(52px, 6.1vw, 72px);
         }
+        @media (min-width: var.$media_desktop_lg) {
+          width: clamp(60px, 4vw, 82px);
+          height: clamp(60px, 4vw, 82px);
+        }
       }
 
       &:hover img {
         transform: scale(1.1);
-        filter: drop-shadow(0 0 10px var.$color-primary);
+        filter: drop-shadow(1px 1px 5px var.$color-primary);
       }
 
       &:active img {

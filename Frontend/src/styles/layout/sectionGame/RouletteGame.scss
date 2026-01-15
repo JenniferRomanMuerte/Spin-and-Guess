@@ -11,19 +11,26 @@
   margin-bottom: 1rem;
   width: min(100%, 420px);
   margin-inline: auto;
-   --scale: clamp(210px, min(78vw, 42vh), 330px);
+  --scale: clamp(210px, min(78vw, 42vh), 330px);
+  --btn-size: calc(var(--scale) * 0.16);
+  --label-font: calc(var(--scale) * 0.035);
+  --label-distance: calc(var(--scale) * 0.16);
+  --indicator-width: calc(var(--scale) * 0.28);
+  --indicator-height: calc(var(--scale) * 0.18);
+  --indicator-offset: calc(var(--scale) * -0.07);
 
   @media (min-width: var.$media_desktop) {
     margin-bottom: 1rem;
     --scale: clamp(300px, min(56vw, 60vh), 400px);
-
-
+  }
+  @media (min-width: var.$media_desktop_lg) {
+    --scale: clamp(380px, min(30vw, 62vh), 480px);
   }
 
   &__indicator {
-    width: clamp(6rem, 15vw, 10rem);
-    height: clamp(48px, 15vw, 72px);
-    margin-bottom: -2.6rem;
+    width: var(--indicator-width);
+height: var(--indicator-height);
+margin-bottom: var(--indicator-offset);
     z-index: 30;
     background: url("../../../images/arrow-transparent.svg") no-repeat center;
     background-size: contain;
@@ -58,12 +65,17 @@
     box-shadow: 0 0px 15px rgba(0, 0, 0, 0.95);
 
     &--btn {
+      width: calc(var(--btn-size) * 1.18);
+      height: calc(var(--btn-size) * 0.92);
+      padding: 0;
+
+      font-size: calc(var(--btn-size) * 0.22);
+      border-width: calc(var(--btn-size) * 0.06);
       position: absolute;
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
       border-radius: 50%;
-      padding: clamp(1rem, 3vw, 1.4rem) clamp(0.9rem, 3vw, 1.2rem);
       font-family: var.$font_family_comic;
       font-weight: var.$font_weight_bold;
       z-index: 50;
@@ -75,10 +87,8 @@
         lighten(var.$color-primary, 10%) 40%,
         var.$color-primary 80%
       );
-
       border: 3px solid var.$color-accent-1; // aro amarillo
       color: var.$color-accent-1;
-      font-size: clamp(0.95rem, 3vw, 1.2rem);
       text-transform: uppercase;
       letter-spacing: 0.05em;
       cursor: pointer;
@@ -141,6 +151,10 @@
         box-shadow: none;
         transform: translate(-50%, -50%);
       }
+    }
+
+    &--active {
+      animation: roulette-wheel-pulse 2s ease-in-out infinite;
     }
   }
 
@@ -344,10 +358,11 @@
     font-weight: var.$font_weight_bold;
     position: absolute;
     left: 50%;
-    top: 35%; // 🔹 más cerca del centro que del borde
+    top: var(--label-distance);
+    font-size: var(--label-font);
     transform: translate(-50%, -50%) rotate(-90deg);
     transform-origin: center;
-    font-size: clamp(0.8rem, 2.4vw, 1.2rem);
+
     text-align: center;
     white-space: nowrap;
     pointer-events: none;
@@ -392,5 +407,21 @@
   100% {
     transform: scale(1);
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.9));
+  }
+}
+
+// Animacion Ruleta cuando le toca al jugador
+@keyframes roulette-wheel-pulse {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
+  }
+  50% {
+    transform: scale(1.015);
+    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.45));
+  }
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
   }
 }

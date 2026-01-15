@@ -24,21 +24,24 @@
       "panel panel "
       "controls controls";
     grid-template-rows: auto auto;
-
     padding-inline: 2rem;
   }
 
-  /* Desktop grande (>= 1068): composición amplia */
+  /* Desktop grande */
   @media (min-width: var.$media_desktop_lg) {
-    grid-template-columns: minmax(360px, 1fr) minmax(360px, 1fr);
-    grid-template-rows: auto 1fr auto;
+    grid-template-columns: 1fr 1.25fr; /* ruleta más ancha */
+    grid-template-rows: minmax(0, 1fr) auto;
     grid-template-areas:
       "panel roulette"
-      "controls controls"
-      "markers markers";
+      "controls markers";
+    row-gap: clamp(0.5rem, 1vh, 1.2rem);
+    padding-bottom: clamp(3rem, 6vh, 6rem);
   }
 
   &__rouletteArea {
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }

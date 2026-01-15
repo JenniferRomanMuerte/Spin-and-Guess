@@ -9,17 +9,27 @@
   flex-direction: column;
   align-items: center;
   gap: clamp(1rem, 2.5vw, 2rem);
+  --letter-width: clamp(1.4rem, 7.2vw, 3.2rem);
+  --letter-height: clamp(1.8rem, 8.8vw, 3.6rem);
   @media (min-width: var.$media_desktop) {
     margin: 1rem auto;
+    --letter-width: clamp(3.2rem, 5.4vw, 4.4rem);
+    --letter-height: clamp(3.6rem, 6vw, 5rem);
   }
   @media (min-width: var.$media_desktop_lg) {
     justify-content: center;
-    padding: clamp(1rem, 8vw, 5.75rem) clamp(1rem, 8vw, 5.5rem) 0;
+    padding-left: 8rem;
+    gap: 3rem;
+    --letter-width: clamp(4.4rem, 4.6vw, 5.4rem);
+    --letter-height: clamp(5rem, 5.2vw, 6rem);
   }
   &__category {
     font-size: clamp(1.8rem, 6vw, 3.5rem);
     color: var.$color-primary;
     text-shadow: 0px 5px 10px var.$color-accent-2;
+    @media (min-width: var.$media_desktop_lg) {
+      font-size: clamp(2.6rem, 3.2vw, 4.2rem);
+    }
   }
   &__clue {
     text-align: center;
@@ -27,6 +37,10 @@
     color: var.$color-bgPanel-2;
     font-family: "Orbitron", sans-serif;
     text-shadow: 0px 2px 8px rgba(0, 0, 0, 0.25);
+    @media (min-width: var.$media_desktop_lg) {
+      font-size: clamp(2.2rem, 2.8vw, 3.6rem);
+      max-width: 42rem;
+    }
   }
   &__panel {
     width: 100%;
@@ -53,6 +67,12 @@
       gap: clamp(0.35rem, 1vw, 0.9rem);
       padding: clamp(1rem, 2vw, 2rem) clamp(0.9rem, 2vw, 1.4rem);
     }
+    @media (min-width: var.$media_desktop_lg) {
+      max-width: 88rem;
+      min-height: 22rem;
+      gap: clamp(0.6rem, 1vw, 1.1rem);
+      padding: clamp(1.6rem, 2.4vw, 2.6rem);
+    }
 
     &--word {
       display: flex;
@@ -63,9 +83,9 @@
       }
     }
     &--letter {
-      width: clamp(1.4rem, 7.2vw, 3.2rem);
-      height: clamp(1.8rem, 8.8vw, 3.6rem);
-      font-size: clamp(0.9rem, 4.8vw, 2.1rem);
+      width: var(--letter-width);
+      height: var(--letter-height);
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -76,40 +96,26 @@
       border-radius: 8px;
       box-shadow: var.$shadow-glow;
       text-transform: uppercase;
-
       transform: rotateY(0deg);
       transform-style: preserve-3d;
-
       transition: transform 0.6s ease, background 0.2s ease,
-        border-color 0.2s ease, color 0.2s ease;
-
-      @media (min-width: var.$media_desktop) {
-        width: clamp(3.2rem, 5.4vw, 4.4rem);
-        height: clamp(3.6rem, 6vw, 5rem);
-        font-size: clamp(1.4rem, 2.8vw, 2.6rem);
-      }
+      border-color 0.2s ease, color 0.2s ease;
     }
     &--letter--hidden {
-      width: clamp(1.4rem, 7.2vw, 3.2rem);
-      height: clamp(1.8rem, 8.8vw, 3.6rem);
+      width: var(--letter-width);
+      height: var(--letter-height);
       font-size: clamp(0.9rem, 4.8vw, 2.1rem);
       background: var.$color-text-light;
       border: 2px solid var.$color-bgPanel-2;
       color: transparent;
       text-shadow: none;
       box-shadow: var.$shadow-default;
-
       transform: rotateY(180deg);
-      @media (min-width: var.$media_desktop) {
-        width: clamp(3.2rem, 5.4vw, 4.4rem);
-        height: clamp(3.6rem, 6vw, 5rem);
-
-      }
     }
 
     &--gap {
-      width: clamp(0.8rem, 5vw, 1.2rem);
-      height: clamp(2rem, 12vw, 4rem);
+      width: calc(var(--letter-width) * 0.35);
+      height: calc(var(--letter-height) * 1.01);
       border-radius: 8px;
       background: #c2dfc4;
       border: none;
