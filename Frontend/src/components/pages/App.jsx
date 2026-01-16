@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+import focusImg from "../../images/focus.webp";
 import "../../styles/layout/Main.scss";
-import rouletteImg from "../../images/roulette.webp";
 import LoginForm from "../auth/LoginForm";
 import RegisterForm from "../auth/RegisterForm";
 
@@ -17,14 +16,14 @@ function App({ namePlayer, changeNamePlayer }) {
 
   // Se redirige a game
   useEffect(() => {
-  if (isLogged) {
-    const timeout = setTimeout(() => {
-      navigate("/game");
-    }, 2000);
+    if (isLogged) {
+      const timeout = setTimeout(() => {
+        navigate("/game");
+      }, 2000);
 
-    return () => clearTimeout(timeout);
-  }
-}, [isLogged, navigate]);
+      return () => clearTimeout(timeout);
+    }
+  }, [isLogged, navigate]);
 
   // Si se registra correctamente muestra el mensaje
   useEffect(() => {
@@ -39,73 +38,61 @@ function App({ namePlayer, changeNamePlayer }) {
   }, [authMode]);
 
   return (
-    <main className="main landing">
-      <article className="main__article">
-        <section className="main__article--section">
-          <img
-            src={rouletteImg}
-            alt="ruleta girando"
-            className="main__article--section-img"
-          />
-        </section>
-        {/* Botones del televisor */}
-        <section className="main__article--tv-buttons">
-          <button type="button" className="main__article--tv-buttons-tv-btn">
-            CH+
-          </button>
-          <button type="button" className="main__article--tv-buttons-tv-btn">
-            CH-
-          </button>
-          <button type="button" className="main__article--tv-buttons-tv-btn">
-            VOL+
-          </button>
-          <button type="button" className="main__article--tv-buttons-tv-btn">
-            VOL-
-          </button>
-          <button
-            type="button"
-            className="main__article--tv-buttons-tv-btn power"
-          >
-            ON
-          </button>
-        </section>
-      </article>
-      {isLogged && (
-        <p className="main__isSession">Bienvenida de nuevo, {namePlayer}</p>
-      )}
-      {!isLogged && authMode === "success" && (
-        <p className="main__success">Registro completado correctamente</p>
-      )}
-      {!isLogged && authMode === "login" && (
-        <div className="main__auth">
-          <LoginForm changeNamePlayer={changeNamePlayer} />
-          <p
-            className="main__auth--message"
-            onClick={() => setAuthMode("register")}
-          >
-            ¿No tienes cuenta? Regístrate
-          </p>
-        </div>
-      )}
+    <main className="landing">
+      <div className="landing__overlay" />
+      <div className="landing__spots" aria-hidden="true">
+       <span className="landing__spotWrap landing__spotWrap--left">
+        <img
+          className="landing__spot landing__spot--left"
+          src={focusImg}
+          alt=""
+        />
+        </span>
+        <span className="landing__spotWrap landing__spotWrap--right">
+        <img
+          className="landing__spot landing__spot--right"
+          src={focusImg}
+          alt=""
+        />
+        </span>
+      </div>
 
-      {!isLogged && authMode === "register" && (
-        <div className="main__auth">
-          <RegisterForm
-            onRegisterSuccess={() => {
-              setRegisterSuccessMsg(
-                "Registro completado. Ahora puedes iniciar sesión."
-              );
-              setAuthMode("success");
-            }}
-          />
-          <p
-            className="main__auth--message"
-            onClick={() => setAuthMode("login")}
-          >
-            ¿Ya tienes cuenta? Inicia sesión
-          </p>
-        </div>
-      )}
+      <section className="landing__content">
+        <h1 className="landing__title">Gira y Adivina</h1>
+
+        {isLogged && (
+          <p className="landing__welcome">Bienvenida de nuevo, {namePlayer}</p>
+        )}
+
+        {!isLogged && authMode === "login" && (
+          <div className="landing__auth">
+            <LoginForm changeNamePlayer={changeNamePlayer} />
+            <p
+              className="landing__switch"
+              onClick={() => setAuthMode("register")}
+            >
+              ¿No tienes cuenta? Regístrate
+            </p>
+          </div>
+        )}
+
+        {!isLogged && authMode === "register" && (
+          <div className="landing__auth">
+            <RegisterForm
+              onRegisterSuccess={() => {
+                setAuthMode("success");
+              }}
+            />
+            <p className="landing__switch" onClick={() => setAuthMode("login")}>
+              ¿Ya tienes cuenta? Inicia sesión
+            </p>
+          </div>
+        )}
+
+        {authMode === "success" && (
+          <p className="landing__success">Registro completado correctamente</p>
+        )}
+      </section>
     </main>
   );
 }

@@ -3,17 +3,43 @@
 
 .gameMain {
   @include mix.bgMain();
+  position: relative;
+  overflow: hidden;
   min-height: 0;
   display: grid;
   align-content: start;
   gap: clamp(0.75rem, 2.2vw, 1.25rem);
   padding-inline: clamp(0.75rem, 3vw, 1.5rem);
+  padding-top: 4rem;
   grid-template-areas:
     "panel"
     "roulette"
     "controls"
     "markers";
   grid-template-rows: auto auto auto auto;
+
+  /* ✅ Textura de partículas (sutil) */
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+
+    background-image: url("../../images/dust.webp");
+    background-repeat: repeat; /* 👈 nada de round */
+    background-size: 1100px auto; /* ajusta si quieres más/menos “zoom” */
+    background-position: center;
+
+    opacity: 0.18; /* súbelo/bájalo a ojo */
+    filter: blur(0.15px);
+  }
+
+  /* ✅ Garantiza que el contenido del grid va por encima */
+  > * {
+    position: relative;
+    z-index: 1;
+  }
 
   /* Tablet- Desktop*/
   @media (min-width: var.$media_desktop) {
