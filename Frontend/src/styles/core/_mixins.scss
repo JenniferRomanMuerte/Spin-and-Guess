@@ -1,10 +1,11 @@
 @use "./variables" as var;
 @mixin bg {
   background: radial-gradient(
-    circle at top,
-    #ffc43d 0%,
-    #ffe36b 40%,
-    #f1e9b6 100%
+    circle at 50% 0%,
+    #ffe07a 0%,
+    #ffbf4d 32%,
+    #fd9797 78%,
+    #ed8888 100%
   );
   z-index: 2;
 }
@@ -144,6 +145,10 @@
   background-repeat: no-repeat;
   width: clamp(110px, 24vw, 170px);
   height: clamp(60px, 10vw, 120px);
+}
+
+@mixin imgDropShadow($y: 10px, $blur: 10px, $alpha: 0.28) {
+  filter: drop-shadow(0 $y $blur rgba(0, 0, 0, $alpha));
 }
 
 @mixin glowingText(
