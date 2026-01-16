@@ -4,6 +4,8 @@
 .landing {
   min-height: 100vh;
   @include mix.bgMain();
+  @include mix.dustTexture($z: 2, $opacity: 0.28, $size: 1200px, $blur: 0.12px, $pos: 0 0);
+
   position: relative;
   display: flex;
   align-items: center;
@@ -37,32 +39,7 @@
       opacity: 0.95;
     }
 
-    /* Partículas con IMAGEN  */
-    &::after {
-      content: "";
-      position: absolute;
-      inset: 0;
 
-      background-image: url("../../images/dust.webp"),
-        url("../../images/dust.webp");
-
-      /* ✅ Cubre todo el contenedor sin “cortar” y sin costuras visibles */
-      background-repeat: round, round;
-
-      /* ✅ Tamaños “raros” para romper el patrón (no uses 720/1100 exactos) */
-      background-size: clamp(760px, 110vw, 1500px) auto,
-        clamp(980px, 150vw, 2100px) auto;
-
-      /* ✅ Evita center: suele hacer cantar la rejilla */
-      background-position: 0 0, 17% 23%;
-
-      opacity: 0.28; /* baja un pelín para que no marque tiles */
-      mix-blend-mode: soft-light;
-      filter: blur(0.12px);
-
-      /* ✅ micro-truco para evitar líneas de subpíxel en algunos navegadores */
-      transform: translateZ(0);
-    }
   }
 
   /* Contenedor de focos */
@@ -183,9 +160,9 @@
     display: flex;
     flex-direction: column;
     gap: 2.3rem;
-   
 
-    & ::after {
+
+    &::after {
       content: "";
       position: absolute;
       left: 50%;
@@ -197,11 +174,11 @@
       border-radius: 999px;
       background: radial-gradient(
         closest-side,
-        rgba(0, 0, 0, 0.65),
+        rgba(0, 0, 0, 0.95),
         rgba(0, 0, 0, 0)
       );
-      filter: blur(8px);
-      opacity: 0.35;
+      filter: blur(10px);
+      opacity: 0.55;
       pointer-events: none;
     }
 

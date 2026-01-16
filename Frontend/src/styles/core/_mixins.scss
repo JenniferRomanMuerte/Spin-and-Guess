@@ -13,6 +13,40 @@
   background: linear-gradient(#bd7272 0%, #ffc43d 40%, #bd7272 100%);
 }
 
+@mixin dustTexture(
+  $z: 0,
+  $opacity: 0.18,
+  $size: 1100px,
+  $blur: 0.15px,
+  $pos: center
+) {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: $z;
+
+    background-image: url("../../images/dust.webp");
+    background-repeat: repeat;
+    background-size: #{$size} auto;
+    background-position: $pos;
+
+    opacity: $opacity;
+    filter: blur($blur);
+    transform: translateZ(0);
+  }
+
+  /* todo lo que haya dentro, por encima */
+  > * {
+    position: relative;
+    z-index: $z + 1;
+  }
+}
+
 @mixin titleModal {
   font-size: 2rem;
   font-weight: 700;
