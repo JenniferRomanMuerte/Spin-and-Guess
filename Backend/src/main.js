@@ -58,21 +58,34 @@ server.use("/api/user-phrases", userPhrasesRoutes);
 server.use("/api/game",gameRoutes);
 
 // ===============================
-// ARRANQUE DEL SERVIDOR
-// ===============================
-
-const port = 3000;
-server.listen(port, () => {
-  console.log(`Servidor escuchando en http://localhost:${port}`);
-});
-
-// ===============================
 // SERVIDO DE ARCHIVOS ESTÁTICOS (FRONTEND)
 // ===============================
 
 server.use(
-  express.static(path.join(__dirname, "..", "Frontend", "docs"))
+  express.static(path.join(__dirname, "..", "Frontend", "dist"))
 );
+
+
+// ===============================
+// FALLBACK PARA REACT (SPA)
+// ===============================
+
+server.use((req, res) => {
+  res.sendFile(
+    path.join(__dirname, "..", "Frontend", "dist", "index.html")
+  );
+});
+
+// ===============================
+// ARRANQUE DEL SERVIDOR
+// ===============================
+
+const port = process.env.PORT || 3000;
+server.listen(port, () => {
+  console.log(`Servidor escuchando en http://localhost:${port}`);
+});
+
+
 
 
 
