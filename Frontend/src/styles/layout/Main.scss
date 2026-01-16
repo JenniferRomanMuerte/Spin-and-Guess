@@ -4,13 +4,21 @@
 .landing {
   min-height: 100vh;
   @include mix.bgMain();
-  @include mix.dustTexture($z: 2, $opacity: 0.28, $size: 1200px, $blur: 0.12px, $pos: 0 0);
+  @include mix.dustTexture(
+    $z: 2,
+    $opacity: 0.28,
+    $size: 1200px,
+    $blur: 0.12px,
+    $pos: 0 0
+  );
 
   position: relative;
+  flex-direction: column;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  gap: 8rem;
 
   &__overlay {
     position: absolute;
@@ -38,8 +46,6 @@
 
       opacity: 0.95;
     }
-
-
   }
 
   /* Contenedor de focos */
@@ -147,6 +153,104 @@
       width: clamp(240px, 16vw, 380px);
     }
   }
+  &__brand {
+    position: relative;
+    z-index: 4;
+    display: grid;
+    place-items: center;
+    margin-bottom: 0.8rem;
+    isolation: isolate;
+  }
+  &__title {
+    position: relative;
+    text-align: center;
+    font-size: clamp(3rem, 10vw, 6.8rem);
+    letter-spacing: 0.05em;
+    line-height: 1;
+    letter-spacing: 0.3rem;
+    isolation: isolate;
+
+    color: var.$color-primary;
+
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.16),
+      2px 2px 0 rgba(253, 228, 6, 0.48), 3px 3px 0 rgba(0, 0, 0, 0.22),
+      4px 4px 0 rgba(0, 0, 0, 0.24), 5px 5px 0 rgba(0, 0, 0, 0.18),
+      0 0 6px rgba(255, 77, 109, 0.55), 0 18px 26px rgba(255, 77, 109, 0.45),
+      0 0 14px rgba(255, 77, 109, 0.42), 0 0 28px rgba(255, 77, 109, 0.32),
+      0 0 48px rgba(255, 77, 109, 0.22);
+
+    &::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+
+      /* La capa NO debe “pintar” el texto base */
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+
+      background: linear-gradient(
+        120deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0) 46%,
+        rgba(245, 245, 245, 0.85) 50%,
+        rgba(255, 255, 255, 0) 54%,
+        rgba(255, 255, 255, 0) 100%
+      );
+
+      background-size: 360% 100%;
+      background-position: -260% 0;
+
+      -webkit-background-clip: text;
+      background-clip: text;
+
+      mix-blend-mode: screen;
+      opacity: 0.68;
+
+      text-shadow: none;
+
+      animation: landingLightSweep 18s linear infinite;
+      will-change: background-position;
+    }
+  }
+
+  &__spark {
+    position: absolute;
+    pointer-events: none;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+
+    /* Esto ayuda a que parezca luz real */
+    mix-blend-mode: screen;
+    filter: drop-shadow(0 0 10px rgba(255, 230, 170, 0.35));
+
+    opacity: 0;
+    transform: scale(0.25);
+    will-change: opacity, transform;
+
+    transform-origin: center;
+    &--1 {
+      width: clamp(34px, 5vw, 60px);
+      height: clamp(34px, 5vw, 60px);
+      animation: sparklePop1 5.5s steps(1, end) infinite;
+    }
+
+    &--2 {
+      width: clamp(44px, 6.2vw, 80px);
+      height: clamp(44px, 6.2vw, 80px);
+      animation: sparklePop2 6.4s steps(1, end) infinite;
+      animation-delay: 1.2s;
+    }
+
+    &--3 {
+      width: clamp(28px, 4.5vw, 52px);
+      height: clamp(28px, 4.5vw, 52px);
+      animation: sparklePop3 5.2s steps(1, end) infinite;
+      animation-delay: 2s;
+    }
+  }
+
   &__content {
     position: relative;
     z-index: 4;
@@ -160,7 +264,6 @@
     display: flex;
     flex-direction: column;
     gap: 2.3rem;
-
 
     &::after {
       content: "";
@@ -193,14 +296,14 @@
       padding: 3.5rem;
       gap: 3rem;
     }
-  }
 
-  &__title {
-    color: var.$color-accent-1;
-    text-shadow: 3px 3px 5px var.$color-primary;
-    font-size: 4rem;
-    letter-spacing: 1.5px;
-    text-align: center;
+    &--subtitle {
+      color: var.$color-accent-1;
+      text-shadow: 2px 2px 8px var.$color-primary;
+      font-size: 3rem;
+      letter-spacing: 1.5px;
+      text-align: center;
+    }
   }
 
   &__switch {
@@ -233,5 +336,178 @@
     form {
       width: 100%;
     }
+  }
+}
+
+@keyframes sparklePop1 {
+  0% {
+    opacity: 0;
+    left: 12%;
+    top: 8%;
+    transform: scale(0.2) rotate(0deg);
+  }
+  8% {
+    opacity: 1;
+    transform: scale(1.15) rotate(6deg);
+  }
+  14% {
+    opacity: 0;
+    transform: scale(0.55) rotate(10deg);
+  }
+
+  33% {
+    opacity: 0;
+    left: 58%;
+    top: 18%;
+    transform: scale(0.2) rotate(0deg);
+  }
+  41% {
+    opacity: 1;
+    transform: scale(1.05) rotate(-6deg);
+  }
+  47% {
+    opacity: 0;
+    transform: scale(0.55) rotate(-10deg);
+  }
+
+  66% {
+    opacity: 0;
+    left: 32%;
+    top: 62%;
+    transform: scale(0.2) rotate(0deg);
+  }
+  74% {
+    opacity: 1;
+    transform: scale(1.2) rotate(8deg);
+  }
+  80% {
+    opacity: 0;
+    transform: scale(0.55) rotate(12deg);
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes sparklePop2 {
+  0% {
+    opacity: 0;
+    left: 72%;
+    top: 10%;
+    transform: scale(0.2) rotate(0deg);
+  }
+  10% {
+    opacity: 1;
+    transform: scale(1.25) rotate(-10deg);
+  }
+  16% {
+    opacity: 0;
+    transform: scale(0.6) rotate(-16deg);
+  }
+
+  38% {
+    opacity: 0;
+    left: 18%;
+    top: 42%;
+    transform: scale(0.2) rotate(0deg);
+  }
+  48% {
+    opacity: 1;
+    transform: scale(1.15) rotate(10deg);
+  }
+  54% {
+    opacity: 0;
+    transform: scale(0.6) rotate(16deg);
+  }
+
+  74% {
+    opacity: 0;
+    left: 52%;
+    top: 70%;
+    transform: scale(0.2) rotate(0deg);
+  }
+  84% {
+    opacity: 1;
+    transform: scale(1.3) rotate(-8deg);
+  }
+  90% {
+    opacity: 0;
+    transform: scale(0.6) rotate(-12deg);
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes sparklePop3 {
+  0% {
+    opacity: 0;
+    left: 40%;
+    top: 22%;
+    transform: scale(0.2) rotate(0deg);
+  }
+  12% {
+    opacity: 1;
+    transform: scale(1.05) rotate(12deg);
+  }
+  18% {
+    opacity: 0;
+    transform: scale(0.55) rotate(18deg);
+  }
+
+  44% {
+    opacity: 0;
+    left: 84%;
+    top: 58%;
+    transform: scale(0.2) rotate(0deg);
+  }
+  56% {
+    opacity: 1;
+    transform: scale(1.1) rotate(-10deg);
+  }
+  62% {
+    opacity: 0;
+    transform: scale(0.55) rotate(-16deg);
+  }
+
+  78% {
+    opacity: 0;
+    left: 16%;
+    top: 12%;
+    transform: scale(0.2) rotate(0deg);
+  }
+  90% {
+    opacity: 1;
+    transform: scale(1.05) rotate(8deg);
+  }
+  96% {
+    opacity: 0;
+    transform: scale(0.55) rotate(14deg);
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes landingLightSweep {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -120% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing__spark,
+  .landing__title::after {
+    animation: none !important;
+  }
+
+  .landing__title::after {
+    opacity: 0.15;
   }
 }

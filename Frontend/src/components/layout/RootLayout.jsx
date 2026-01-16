@@ -67,12 +67,14 @@ const RootLayout = () => {
 
   return (
     <div className="appLayout">
-      <Header
-        isGame={isGame}
-        namePlayer={namePlayer}
-        turn={turn}
-        messageRoundInfo={messageRoundInfo}
-      />
+      {isGame && (
+        <Header
+          isGame={isGame}
+          namePlayer={namePlayer}
+          turn={turn}
+          messageRoundInfo={messageRoundInfo}
+        />
+      )}
 
       <Routes>
         <Route

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import focusImg from "../../images/focus.webp";
+import sparkle from "../../images/sparkle.webp";
 import "../../styles/layout/Main.scss";
 import LoginForm from "../auth/LoginForm";
 import RegisterForm from "../auth/RegisterForm";
@@ -41,25 +42,48 @@ function App({ namePlayer, changeNamePlayer }) {
     <main className="landing">
       <div className="landing__overlay" />
       <div className="landing__spots" aria-hidden="true">
-       <span className="landing__spotWrap landing__spotWrap--left">
-        <img
-          className="landing__spot landing__spot--left"
-          src={focusImg}
-          alt=""
-        />
+        <span className="landing__spotWrap landing__spotWrap--left">
+          <img
+            className="landing__spot landing__spot--left"
+            src={focusImg}
+            alt=""
+          />
         </span>
         <span className="landing__spotWrap landing__spotWrap--right">
-        <img
-          className="landing__spot landing__spot--right"
-          src={focusImg}
-          alt=""
-        />
+          <img
+            className="landing__spot landing__spot--right"
+            src={focusImg}
+            alt=""
+          />
         </span>
+      </div>
+      <div className="landing__brand">
+        <h1 className="landing__title" data-text="Gira y Adivina">
+          Gira y Adivina
+        </h1>
+
+        <span
+          className="landing__spark landing__spark--1"
+          style={{ backgroundImage: `url(${sparkle})` }}
+          aria-hidden="true"
+        />
+        <span
+          className="landing__spark landing__spark--2"
+          style={{ backgroundImage: `url(${sparkle})` }}
+          aria-hidden="true"
+        />
+        <span
+          className="landing__spark landing__spark--3"
+          style={{ backgroundImage: `url(${sparkle})` }}
+          aria-hidden="true"
+        />
       </div>
 
       <section className="landing__content">
-        <h1 className="landing__title">Gira y Adivina</h1>
-
+        <h2 className="landing__content--subtitle">
+          {" "}
+          {authMode === "register" ? "Crear cuenta" : "Iniciar sesión"}
+        </h2>
         {isLogged && (
           <p className="landing__welcome">Bienvenida de nuevo, {namePlayer}</p>
         )}
