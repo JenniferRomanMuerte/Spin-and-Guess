@@ -60,15 +60,17 @@ server.use("/api/game", gameRoutes);
 // ===============================
 // SERVIDO DE ARCHIVOS ESTÁTICOS (FRONTEND)
 // ===============================
+const ROOT_DIR = path.join(__dirname, "..", "..");
+const FRONT_DIST = path.join(ROOT_DIR, "Frontend", "dist");
 
-server.use(express.static(path.join(__dirname, "..", "Frontend", "dist")));
+server.use(express.static(FRONT_DIST));
 
 // ===============================
 // FALLBACK PARA REACT (SPA)
 // ===============================
 
 server.get(/^(?!\/api\/).*/, (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "Frontend", "dist", "index.html"));
+  res.sendFile(path.join(FRONT_DIST, "index.html"));
 });
 
 // ===============================
