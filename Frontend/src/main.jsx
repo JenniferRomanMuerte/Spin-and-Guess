@@ -5,6 +5,8 @@ import { HashRouter} from "react-router-dom";
 import "./styles/App.scss";
 import RootLayout from "./components/layout/RootLayout.jsx";
 
+
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <HashRouter>
