@@ -13,6 +13,8 @@ const LoginForm = ({ changeNamePlayer }) => {
   const [userEmail, setUserEmail] = useState("");
   const [userPass, setUserPass] = useState("");
 
+  const [showPass, setShowPass] = useState(false);
+
   const navigate = useNavigate();
 
   const handleEmailChange = (e) => {
@@ -28,7 +30,7 @@ const LoginForm = ({ changeNamePlayer }) => {
   const handlePassChange = (e) => {
     const value = e.target.value;
     setUserPass(value);
-    
+
     if (formError) setFormError("");
     if (value !== "") {
       setErrorPass("");
@@ -90,15 +92,31 @@ const LoginForm = ({ changeNamePlayer }) => {
           {errorEmail}
         </p>
       )}
-      <input
-        type="password"
-        className={`form__input ${errorPass ? "is-error" : ""}`}
-        placeholder="Introduce tu contraseña"
-        value={userPass}
-        aria-invalid={!!errorPass}
-        onChange={handlePassChange}
-        aria-describedby="pass-error"
-      />
+      <div className="form__password">
+        <input
+          type={showPass ? "text" : "password"}
+          className={`form__input form__input--withIcon ${
+            errorPass ? "is-error" : ""
+          }`}
+          placeholder="Introduce tu contraseña"
+          value={userPass}
+          aria-invalid={!!errorPass}
+          onChange={handlePassChange}
+          aria-describedby="pass-error"
+          autoComplete="current-password"
+        />
+
+        <button
+          type="button"
+          className="form__togglePass"
+          onClick={() => setShowPass((v) => !v)}
+          aria-label={showPass ? "Ocultar contraseña" : "Mostrar contraseña"}
+          title={showPass ? "Ocultar contraseña" : "Mostrar contraseña"}
+        >
+          {showPass ? "🙈" : "👁️"}
+        </button>
+      </div>
+
       {errorPass && (
         <p id="pass-error" className="form__error" role="alert">
           {errorPass}

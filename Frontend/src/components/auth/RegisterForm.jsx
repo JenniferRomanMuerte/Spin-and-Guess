@@ -3,7 +3,7 @@ import { useState } from "react";
 import { isValidEmail } from "../../utils/validators";
 import { register } from "../../services/auth.service";
 
-const RegisterForm = ({onRegisterSuccess}) => {
+const RegisterForm = ({ onRegisterSuccess }) => {
   const [errorEmail, setErrorEmail] = useState("");
   const [errorPass, setErrorPass] = useState("");
   const [errorName, setErrorName] = useState("");
@@ -12,6 +12,8 @@ const RegisterForm = ({onRegisterSuccess}) => {
   const [userEmail, setUserEmail] = useState("");
   const [userPass, setUserPass] = useState("");
   const [userName, setUserName] = useState("");
+
+  const [showPass, setShowPass] = useState(false);
 
   const handleEmailChange = (e) => {
     const value = e.target.value;
@@ -77,8 +79,8 @@ const RegisterForm = ({onRegisterSuccess}) => {
         pass: userPass,
       });
 
-       setFormError("");
-       onRegisterSuccess();
+      setFormError("");
+      onRegisterSuccess();
     } catch (error) {
       setFormError(
         error?.error || "Error al crear el usuario. Inténtalo de nuevo."
@@ -116,15 +118,31 @@ const RegisterForm = ({onRegisterSuccess}) => {
           {errorEmail}
         </p>
       )}
-      <input
-        type="password"
-        className={`form__input ${errorPass ? "is-error" : ""}`}
-        placeholder="Introduce tu contraseña"
-        value={userPass}
-        aria-invalid={!!errorPass}
-        onChange={handlePassChange}
-        aria-describedby="pass-error"
-      />
+      <div className="form__password">
+        <input
+          type={showPass ? "text" : "password"}
+          className={`form__input form__input--withIcon ${
+            errorPass ? "is-error" : ""
+          }`}
+          placeholder="Introduce tu contraseña"
+          value={userPass}
+          aria-invalid={!!errorPass}
+          onChange={handlePassChange}
+          aria-describedby="pass-error"
+          autoComplete="new-password"
+        />
+
+        <button
+          type="button"
+          className="form__togglePass"
+          onClick={() => setShowPass((v) => !v)}
+          aria-label={showPass ? "Ocultar contraseña" : "Mostrar contraseña"}
+          title={showPass ? "Ocultar contraseña" : "Mostrar contraseña"}
+        >
+          {showPass ? "🙈" : "👁️"}
+        </button>
+      </div>
+
       {errorPass && (
         <p id="pass-error" className="form__error" role="alert">
           {errorPass}
