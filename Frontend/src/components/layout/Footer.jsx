@@ -1,5 +1,5 @@
 import "../../styles/layout/Footer.scss";
-import logoutIcon from "../../images/logout.png";
+import logoutIcon from "../../images/logout.webp";
 
 const Footer = ({ namePlayer, onLogout, onShowHistory, onShowRanking }) => {
   return (

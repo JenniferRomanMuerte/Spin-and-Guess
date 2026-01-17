@@ -1,6 +1,6 @@
 
 import "../../styles/layout/sectionGame/MarkersGame.scss";
-import jokerIcon from "../../images/joker.png";
+import jokerIcon from "../../images/joker.webp";
 
 const Markers = ({
   namePlayer,
