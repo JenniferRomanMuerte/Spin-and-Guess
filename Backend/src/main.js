@@ -55,25 +55,20 @@ server.use("/api/phrases", phrasesRoutes);
 server.use("/api/user-phrases", userPhrasesRoutes);
 
 // Rutas para las puntuaciones del juego
-server.use("/api/game",gameRoutes);
+server.use("/api/game", gameRoutes);
 
 // ===============================
 // SERVIDO DE ARCHIVOS ESTÁTICOS (FRONTEND)
 // ===============================
 
-server.use(
-  express.static(path.join(__dirname, "..", "Frontend", "dist"))
-);
-
+server.use(express.static(path.join(__dirname, "..", "Frontend", "dist")));
 
 // ===============================
 // FALLBACK PARA REACT (SPA)
 // ===============================
 
-server.use((req, res) => {
-  res.sendFile(
-    path.join(__dirname, "..", "Frontend", "dist", "index.html")
-  );
+server.get(/^(?!\/api\/).*/, (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "Frontend", "dist", "index.html"));
 });
 
 // ===============================
@@ -84,9 +79,3 @@ const port = process.env.PORT || 3000;
 server.listen(port, () => {
   console.log(`Servidor escuchando en http://localhost:${port}`);
 });
-
-
-
-
-
-

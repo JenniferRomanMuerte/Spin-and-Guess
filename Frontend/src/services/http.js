@@ -3,7 +3,9 @@ import storage from "./localStorage";
 // - En desarrollo se toma de VITE_API_URL (archivo .env de Vite)
 // - Si no existe, usamos localhost:3000 por defecto
 // Esto permite cambiar la URL del backend sin tocar el código.
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_URL = import.meta.env.DEV
+  ? import.meta.env.VITE_API_URL || "http://localhost:3000"
+  : "";
 
 // Función genérica para hacer peticiones HTTP al backend.
 // Centraliza el uso de fetch para no repetir código en toda la app.
