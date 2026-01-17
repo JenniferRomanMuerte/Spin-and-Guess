@@ -6,9 +6,9 @@ import ControlsGame from "../../sectionsGame/ControlsGame";
 import Markers from "../../sectionsGame/Markers";
 import Panel from "../../sectionsGame/Panel";
 import Roulette from "../../sectionsGame/Roulette";
-import ActionModal from "../../sectionsGame/modal_temp/ActionModal";
+import ActionModal from "../../sectionsGame/modal/ActionModal";
 import Footer from "../../layout/Footer";
-import StatsModal from "../../sectionsGame/modal_temp/StatsModal";
+import StatsModal from "../../sectionsGame/modal/StatsModal";
 
 import {
   isScoringWedge,
