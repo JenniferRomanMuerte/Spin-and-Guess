@@ -221,29 +221,36 @@ margin-bottom: var(--indicator-offset);
   }
 
   &__slice::after {
-    content: "";
-    position: absolute;
-    top: 1px; // cuanto más pequeño, más pegado al borde exterior
-    left: 50%;
-    transform: translateX(-580%);
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
+  content: "";
+  position: absolute;
 
-    // 🌟 efecto metal plateado
-    background: radial-gradient(
-      circle at 30% 30%,
-      #f3efb5 0%,
-      #f7f7c5 35%,
-      #dad594 70%,
-      #e2cf25 100%
-    );
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.9),
-      inset 0 1px 1px rgba(247, 207, 99, 0.8);
+  /* El borde exterior del gajo es el "top: 0" */
+  top: 0;
+  left: 0;
 
-    pointer-events: none;
-    z-index: 20;
-  }
+  /* Centramos el punto sobre la línea del borde */
+  transform: translate(-50%, -50%);
+
+  /* ✅ tamaño proporcional a la ruleta */
+  width: calc(var(--scale) * 0.025);
+  height: calc(var(--scale) * 0.025);
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle at 30% 30%,
+    #f3efb5 0%,
+    #f7f7c5 35%,
+    #dad594 70%,
+    #e2cf25 100%
+  );
+
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.9),
+    inset 0 1px 1px rgba(247, 207, 99, 0.8);
+
+  pointer-events: none;
+  z-index: 20;
+}
+
 
   // Amarillo (brillo fuerte)
   &__slice--yellow::before {

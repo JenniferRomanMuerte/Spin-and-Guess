@@ -5,6 +5,7 @@ import {
   getRandomEnabledLetter,
   hasRemainingConsonantInPhrase,
   hasEnoughSolvedVowels,
+  isPhraseExhausted,
 } from "../utils/gameUtils";
 
 const useComputerTurn = ({
@@ -49,7 +50,7 @@ const useComputerTurn = ({
 
         await enqueue(
           "💥 ¡QUIEBRA! Pero la computadora usa un comodín y se salva",
-          2500
+          2500,
         );
 
         await enqueue("La computadora sigue jugando…", 1200);
@@ -63,7 +64,7 @@ const useComputerTurn = ({
 
       await enqueue(
         "💥 ¡QUIEBRA! La computadora pierde todos sus puntos. TE TOCA 👇",
-        2500
+        2500,
       );
 
       goToPlayerTurn();
@@ -103,6 +104,20 @@ const useComputerTurn = ({
     // 1) Informamos valor del gajo
     await enqueue(`La computadora juega por: ${wedge.value}`, 2000);
 
+    // FRASE AGOTADA: no quedan letras útiles =  debe resolver
+    if (isPhraseExhausted(consonants, vowels, phrase)) {
+      const solved = await computerTrySolve();
+
+      if (solved) {
+        onComputerSolve?.(true); // solo modal si gana
+        return;
+      }
+
+      await enqueue("TE TOCA! 👇", 1200);
+      goToPlayerTurn();
+      return;
+    }
+
     // No quedan consonantes por salir y hay >= 2 vocales acertadas
     if (
       !hasRemainingConsonantInPhrase(consonants, phrase) &&
@@ -110,12 +125,13 @@ const useComputerTurn = ({
     ) {
       const solved = await computerTrySolve();
 
-      onComputerSolve?.(solved);
-
-      if (!solved) {
-        goToPlayerTurn();
+      if (solved) {
+        onComputerSolve?.(true); // solo abrimos modal si gana
+        return;
       }
 
+      await enqueue("TE TOCA! 👇", 1200);
+      goToPlayerTurn();
       return;
     }
 
@@ -123,16 +139,16 @@ const useComputerTurn = ({
     if (computerShouldTrySolve()) {
       const solved = await computerTrySolve();
 
-      // Abrimos modal y mostramos resultado
-      onComputerSolve?.(solved);
-
-      // SI FALLA: pierde turno y pasa al jugador
-      if (!solved) {
-        goToPlayerTurn();
+      if (solved) {
+        onComputerSolve?.(true); // solo abrimos modal si gana
+        return;
       }
 
+      await enqueue("TE TOCA! 👇", 1200);
+      goToPlayerTurn();
       return;
     }
+
     // Decide vocal vs consonante
     const shouldBuyVowel = computeShouldBuyVowel();
 
@@ -168,11 +184,12 @@ const useComputerTurn = ({
 
     const solved = Math.random() < 0.5;
 
-    if (solved) {
-      await enqueue("😱 ¡La computadora ha acertado!", 2000);
-    } else {
-      await enqueue("😬 La computadora ha fallado al resolver", 2000);
-    }
+    await enqueue(
+      solved
+        ? "😱 ¡La computadora ha acertado!"
+        : "😬 La computadora ha fallado al resolver",
+      2000,
+    );
 
     return solved;
   };
@@ -203,11 +220,8 @@ const useComputerTurn = ({
   const playComputerVowel = async () => {
     await enqueue(
       `La computadora decide comprar una vocal por ${VOWEL_COST}...`,
-      1500
+      1500,
     );
-
-    // Paga
-    setComputerScore((prev) => prev - VOWEL_COST);
 
     const letter = computerChooseRandomVowel();
 
@@ -217,13 +231,16 @@ const useComputerTurn = ({
       return;
     }
 
+    // Paga
+    setComputerScore((prev) => prev - VOWEL_COST);
+
     const hits = countLetterInPhrase(phrase, letter);
     const timesText = pluralize(hits, "vez", "veces");
 
     if (hits > 0) {
       await enqueue(
         `La computadora compra ${letter}. Aparece ${hits} ${timesText}.`,
-        2500
+        2500,
       );
       await enqueue("✅ Acierta y sigue jugando 🎛️", 1200);
       requestSpinAgain();
@@ -231,7 +248,7 @@ const useComputerTurn = ({
     }
 
     await enqueue(`La computadora compra ${letter}… pero no está 😬`, 2500);
-    await enqueue("Te toca a ti 👇", 1200);
+    await enqueue("TE TOCA 👇", 1200);
     goToPlayerTurn();
   };
 
@@ -244,7 +261,7 @@ const useComputerTurn = ({
     if (!letter) {
       await enqueue(
         "La computadora no tiene consonantes disponibles 😵, TE TOCA!",
-        2000
+        2000,
       );
       goToPlayerTurn();
       return;
@@ -259,7 +276,7 @@ const useComputerTurn = ({
 
       await enqueue(
         `La computadora elige ${letter}. Aparece ${hits} ${timesText}. Gana ${earned}.`,
-        2500
+        2500,
       );
       await enqueue("La computadora ha acertado, sigue jugando 🎛️", 1200);
       requestSpinAgain();
@@ -278,12 +295,14 @@ const useComputerTurn = ({
     const letter = getRandomEnabledLetter(consonants); // devuelve string o null
     if (!letter) return null;
 
-    setSelectedLetters((prev) => [...prev, letter]);
+    setSelectedLetters((prev) =>
+      prev.includes(letter) ? prev : [...prev, letter],
+    );
 
     setConsonants((prev) =>
       prev.map((item) =>
-        item.letter === letter ? { ...item, enabled: false } : item
-      )
+        item.letter === letter ? { ...item, enabled: false } : item,
+      ),
     );
 
     return letter;
@@ -296,12 +315,14 @@ const useComputerTurn = ({
     const letter = getRandomEnabledLetter(vowels);
     if (!letter) return null;
 
-    setSelectedLetters((prev) => [...prev, letter]);
+    setSelectedLetters((prev) =>
+      prev.includes(letter) ? prev : [...prev, letter],
+    );
 
     setVowels((prev) =>
       prev.map((item) =>
-        item.letter === letter ? { ...item, enabled: false } : item
-      )
+        item.letter === letter ? { ...item, enabled: false } : item,
+      ),
     );
 
     return letter;

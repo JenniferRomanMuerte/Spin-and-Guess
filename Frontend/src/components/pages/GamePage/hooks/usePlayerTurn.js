@@ -1,7 +1,4 @@
-import {
-  isScoringWedge,
-  countLetterInPhrase,
-} from "../utils/gameUtils";
+import { isScoringWedge, countLetterInPhrase } from "../utils/gameUtils";
 
 const userPlayerTurn = ({
   phrase,
@@ -42,7 +39,6 @@ const userPlayerTurn = ({
 
     // Quiebra
     if (wedge.action === "quiebra") {
-
       return {
         type: "BANKRUPT",
       };
@@ -63,11 +59,8 @@ const userPlayerTurn = ({
    * Dispatcher según tipo de acción
    ******************************************************************/
   const handleLetterSelected = (letter, mode) => {
-    setSelectedLetters((prev) => [...prev, letter]);
-
     if (mode === "vowel") return handlePlayerVowel(letter);
     if (mode === "consonant") return handlePlayerConsonant(letter);
-
     return { type: "NONE" };
   };
 
@@ -75,54 +68,59 @@ const userPlayerTurn = ({
    * JUGADOR COMPRA VOCAL
    ******************************************************************/
   const handlePlayerVowel = (letter) => {
-    // Desactiva vocal
-    setVowels((prev) =>
-      prev.map((item) =>
-        item.letter === letter ? { ...item, enabled: false } : item
-      )
-    );
 
+    if (!isScoringWedge(currentWedge)) {
+      return { type: "INVALID_ACTION" };
+    }
+    
     // No tiene dinero suficiente
     if (playerScore < VOWEL_COST) {
       return { type: "NOT_ENOUGH_MONEY" };
     }
+
+    // Marca letra como usada
+    setSelectedLetters((prev) =>
+      prev.includes(letter) ? prev : [...prev, letter],
+    );
+
+    // Desactiva vocal
+    setVowels((prev) =>
+      prev.map((item) =>
+        item.letter === letter ? { ...item, enabled: false } : item,
+      ),
+    );
 
     // Paga la vocal
     setPlayerScore((prev) => prev - VOWEL_COST);
 
     const hits = countLetterInPhrase(phrase, letter);
 
-    // Acierta vocal
-    if (hits > 0) {
-      return {
-        type: "VOWEL_HIT",
-        letter,
-        hits,
-      };
-    }
-
-    // Falla vocal → pierde turno
-    return {
-      type: "VOWEL_MISS",
-      letter,
-    };
+    return hits > 0
+      ? { type: "VOWEL_HIT", letter, hits }
+      : { type: "VOWEL_MISS", letter };
   };
 
   /******************************************************************
    * JUGADOR ELIGE CONSONANTE
    ******************************************************************/
   const handlePlayerConsonant = (letter) => {
-    // Desactiva consonante
-    setConsonants((prev) =>
-      prev.map((item) =>
-        item.letter === letter ? { ...item, enabled: false } : item
-      )
-    );
 
     // Seguridad: solo con gajo puntuable
     if (!isScoringWedge(currentWedge)) {
       return { type: "INVALID_ACTION" };
     }
+
+    // Marca letra como usada
+    setSelectedLetters((prev) =>
+      prev.includes(letter) ? prev : [...prev, letter],
+    );
+
+    // Desactiva consonante
+    setConsonants((prev) =>
+      prev.map((item) =>
+        item.letter === letter ? { ...item, enabled: false } : item,
+      ),
+    );
 
     const hits = countLetterInPhrase(phrase, letter);
 

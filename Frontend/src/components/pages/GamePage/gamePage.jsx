@@ -14,6 +14,8 @@ import {
   isScoringWedge,
   pluralize,
   isPhraseExhausted,
+  hasRemainingConsonantInPhrase,
+  hasUsefulVowelsLeft,
 } from "./utils/gameUtils";
 import { useRoundInfoMessages } from "../../../hooks/useRoundInfoMessages";
 import { initialVowels, initialConsonants } from "../../../data/letters";
@@ -120,6 +122,13 @@ const GamePage = ({
   const VOWEL_COST = 50;
 
   /******************************************************************
+   * Regla UI:
+   * Si se han seleccionado todas las vocales o consosonantes
+   ******************************************************************/
+  const hasAvailableVowels = vowels.some((v) => v.enabled);
+  const hasAvailableConsonants = consonants.some((c) => c.enabled);
+
+  /******************************************************************
    * Regla UI: el jugador solo puede comprar vocal si:
    * - No es turno de la computadora
    * - El gajo actual es puntuable
@@ -128,7 +137,8 @@ const GamePage = ({
   const canBuyVowel =
     turn !== "computer" &&
     isScoringWedge(currentWedge) &&
-    playerScore >= VOWEL_COST;
+    playerScore >= VOWEL_COST &&
+    hasAvailableVowels;
 
   /******************************************************************
    * FUERZA UN NUEVO GIRO DE RULETA
@@ -230,15 +240,35 @@ const GamePage = ({
    ******************************************************************/
   const handlePlayerResult = (result, wedge) => {
     switch (result.type) {
-      case "SCORING_WEDGE":
+      case "SCORING_WEDGE": {
         closeModal();
         show(
           `${
             wedge.action === "superPremio" ? "SUPERPREMIO!!! " : ""
-          }Juegas por: ${wedge.value}`
+          }Juegas por: ${wedge.value}`,
         );
+
+        // Si no hay jugada útil, forzamos resolver
+        const hasUsefulConsonants = hasRemainingConsonantInPhrase(
+          consonants,
+          phrase,
+        );
+        const hasUsefulVowels = hasUsefulVowelsLeft(vowels, phrase);
+        const canBuyUsefulVowel = hasUsefulVowels && playerScore >= VOWEL_COST;
+
+        if (!hasUsefulConsonants && !canBuyUsefulVowel) {
+          showTemp(
+            "⚠️ No tienes jugadas posibles. Debes resolver la frase.",
+            2000,
+          );
+          setModalMode({ type: "solve", solver: "player" });
+          return;
+          
+        }
+
         enableActions();
         break;
+      }
 
       case "RISK_WEDGE":
         show("Has caído en un gajo misterioso… ❓");
@@ -256,7 +286,7 @@ const GamePage = ({
         const timesText = pluralize(hits, "vez", "veces");
         closeModal();
         show(
-          `La letra ${letter} aparece ${hits} ${timesText}. Ganas ${earned}. ¡Sigue jugando!`
+          `La letra ${letter} aparece ${hits} ${timesText}. Ganas ${earned}. ¡Sigue jugando!`,
         );
 
         enableSpinOnly();
@@ -268,7 +298,7 @@ const GamePage = ({
         closeModal();
         showTemp(
           `La letra ${result.letter} no está en la frase 😬, pierdes el turno`,
-          ms
+          ms,
         );
         lockUI();
         goToComputerTurnAfter(ms);
@@ -306,6 +336,12 @@ const GamePage = ({
         goToComputerTurnAfter(ms);
         break;
       }
+
+      case "INVALID_ACTION":
+        closeModal();
+        showTemp("Acción no válida en este momento 😬", 1500);
+        enableSpinOnly();
+        break;
 
       case "BANKRUPT": {
         // Si tiene comodín, preguntamos
@@ -375,7 +411,7 @@ const GamePage = ({
       show(
         lucky
           ? `🍀 ¡Suerte! Tus puntos se duplican (${newScore})`
-          : `💥 Mala suerte… tus puntos se dividen (${newScore})`
+          : `💥 Mala suerte… tus puntos se dividen (${newScore})`,
       );
 
       return newScore;
@@ -622,6 +658,8 @@ const GamePage = ({
           controlsDisabled={controlsDisabled}
           updateControlsGame={updateControlsGame}
           canBuyVowel={canBuyVowel}
+          hasAvailableVowels={hasAvailableVowels}
+          hasAvailableConsonants={hasAvailableConsonants}
         />
       </main>
       {modalMode && (

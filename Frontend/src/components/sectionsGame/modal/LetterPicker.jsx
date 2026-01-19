@@ -1,11 +1,6 @@
 import "../../../styles/layout/sectionGame/Modal.scss";
 
-const LetterPicker = ({
-  mode,
-  vowels,
-  consonants,
-  handleletterSelected,
-}) => {
+const LetterPicker = ({ mode, vowels, consonants, handleletterSelected }) => {
   const letters = mode === "vowel" ? vowels : consonants;
 
   const handleSelect = (letter) => {
@@ -25,6 +20,8 @@ const LetterPicker = ({
               className="letterPicker__button"
               disabled={!enabled}
               onClick={() => handleSelect(letter)}
+              onContextMenu={(e) => e.preventDefault()}
+              onPointerDown={(e) => e.preventDefault()}
             >
               {letter}
             </button>

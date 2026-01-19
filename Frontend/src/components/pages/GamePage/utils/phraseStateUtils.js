@@ -12,7 +12,7 @@ export const hasUsefulVowelsLeft = (vowels, phrase) => {
   );
 };
 
-// Comprobar si hay 2 vocales acertadas
+// Comprobar si hay 1 vocal acertada
 export const hasEnoughSolvedVowels = (selectedLetters, phrase) => {
   const vowelsSet = ["a", "e", "i", "o", "u"];
 
